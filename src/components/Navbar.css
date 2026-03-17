@@ -22,18 +22,47 @@
   align-items: center;
 }
 
-.navbar__logo-circle {
+.navbar__logo-square {
+  position: relative;
   width: 44px;
   height: 44px;
-  border-radius: 50%;
-  background: var(--color-accent);
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 1px;
   font-family: var(--font-display);
   font-weight: 800;
-  font-size: 14px;
+  font-size: 16px;
   color: var(--color-text);
+  overflow: hidden;
+  cursor: none;
+}
+
+.navbar__logo-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--color-accent);
+  z-index: -1;
+  will-change: transform;
+}
+
+.navbar__logo-char-wrap {
+  position: relative;
+  height: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar__logo-char {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 16px;
+  line-height: 1;
   will-change: transform;
 }
 

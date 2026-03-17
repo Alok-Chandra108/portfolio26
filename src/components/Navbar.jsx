@@ -9,7 +9,9 @@ export default function Navbar() {
   const navRef = useRef(null);
   const menuOverlayRef = useRef(null);
   const menuLinksRef = useRef([]);
-  const logoRef = useRef(null);
+  const logoBgRef = useRef(null);
+  const charAInnerRef = useRef(null);
+  const charCInnerRef = useRef(null);
   const navigate = useNavigate();
 
   // Scroll-triggered navbar style
@@ -18,6 +20,10 @@ export default function Navbar() {
       setScrolled(window.scrollY > 80);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
+    
+    // Set initial position for C container
+    gsap.set(charCInnerRef.current, { yPercent: -50 });
+    
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -53,12 +59,44 @@ export default function Navbar() {
   }, [menuOpen]);
 
   const handleLogoHover = () => {
-    gsap.to(logoRef.current, {
-      rotation: 360,
-      scale: 1.1,
+    // Rotate background
+    gsap.to(logoBgRef.current, {
+      rotation: 90,
       duration: 0.6,
-      ease: 'back.out(1.7)',
-      onComplete: () => gsap.set(logoRef.current, { rotation: 0 }),
+      ease: 'expo.out',
+    });
+    // Move A up (displays second A)
+    gsap.to(charAInnerRef.current, {
+      yPercent: -50,
+      duration: 0.6,
+      ease: 'expo.out',
+    });
+    // Move C down (displays top C)
+    gsap.to(charCInnerRef.current, {
+      yPercent: 0,
+      duration: 0.6,
+      ease: 'expo.out',
+    });
+  };
+
+  const handleLogoLeave = () => {
+    // Reverse background
+    gsap.to(logoBgRef.current, {
+      rotation: 0,
+      duration: 0.6,
+      ease: 'expo.out',
+    });
+    // Reset A
+    gsap.to(charAInnerRef.current, {
+      yPercent: 0,
+      duration: 0.6,
+      ease: 'expo.out',
+    });
+    // Reset C
+    gsap.to(charCInnerRef.current, {
+      yPercent: -50,
+      duration: 0.6,
+      ease: 'expo.out',
     });
   };
 
@@ -84,9 +122,29 @@ export default function Navbar() {
   return (
     <>
       <nav ref={navRef} className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
-        <Link to="/" className="navbar__logo" onMouseEnter={handleLogoHover}>
-          <div className="navbar__logo-circle" ref={logoRef}>
-            <span>00</span>
+        <Link 
+          to="/" 
+          className="navbar__logo" 
+          onMouseEnter={handleLogoHover}
+          onMouseLeave={handleLogoLeave}
+        >
+          <div className="navbar__logo-square">
+            <div className="navbar__logo-bg" ref={logoBgRef}></div>
+            
+            <div className="navbar__logo-char-wrap">
+              <div ref={charAInnerRef} style={{ display: 'flex', flexDirection: 'column' }}>
+                <span className="navbar__logo-char">A</span>
+                <span className="navbar__logo-char">A</span>
+              </div>
+            </div>
+
+            <div className="navbar__logo-char-wrap">
+              <div ref={charCInnerRef} style={{ display: 'flex', flexDirection: 'column' }}>
+                <span className="navbar__logo-char">C</span>
+                <span className="navbar__logo-char">C</span>
+              </div>
+            </div>
+            
           </div>
         </Link>
 

@@ -27,7 +27,22 @@ export default function CustomCursor() {
       yTo(e.clientY);
     };
 
-    const handleMouseEnterLink = () => {
+    const handleMouseEnterLink = (e) => {
+      // Check if the hovered element is part of the navbar or menu overlay
+      if (e.target.closest && e.target.closest('.navbar, .menu-overlay')) {
+        gsap.to(ring, {
+          scale: 0.5,
+          opacity: 0,
+          duration: 0.2,
+          ease: 'power2.out',
+        });
+        gsap.to(dot, { 
+          scale: 1.5,
+          duration: 0.2 
+        });
+        return;
+      }
+
       gsap.to(ring, {
         scale: 2,
         backgroundColor: 'rgba(184, 255, 0, 0.15)',
@@ -38,9 +53,10 @@ export default function CustomCursor() {
       gsap.to(dot, { opacity: 0, duration: 0.2 });
     };
 
-    const handleMouseLeaveLink = () => {
+    const handleMouseLeaveLink = (e) => {
       gsap.to(ring, {
         scale: 1,
+        opacity: 1,
         backgroundColor: 'transparent',
         borderColor: 'var(--color-accent)',
         borderRadius: '50%',
@@ -48,7 +64,7 @@ export default function CustomCursor() {
         duration: 0.3,
         ease: 'power2.out',
       });
-      gsap.to(dot, { opacity: 1, duration: 0.2 });
+      gsap.to(dot, { opacity: 1, scale: 1, duration: 0.2 });
     };
 
     const handleMouseEnterHide = () => {
