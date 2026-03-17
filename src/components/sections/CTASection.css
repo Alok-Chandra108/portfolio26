@@ -76,4 +76,15 @@
   .cta__line {
     font-size: clamp(34px, 10vw, 60px);
   }
+
+  .cta__line--3 {
+    font-size: clamp(24px, 6vw, 40px);
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 414px) {
+  .cta__line--3 {
+    font-size: clamp(18px, 5vw, 24px);
+  }
 }

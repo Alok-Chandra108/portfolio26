@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap, ScrollTrigger } from '../../utils/gsapPlugins.js';
 import PillTag from '../ui/PillTag.jsx';
+import DownloadCV from '../ui/DownloadCV.jsx';
 import './Hero.css';
 
 const subtitles = [
@@ -14,6 +15,7 @@ export default function Hero() {
   const headingRef = useRef(null);
   const subtitleRef = useRef(null);
   const pillsRef = useRef(null);
+  const cvBtnRef = useRef(null);
   const marqueeRef = useRef(null);
   const [subIndex, setSubIndex] = useState(0);
 
@@ -60,6 +62,18 @@ export default function Hero() {
           stagger: 0.06,
           ease: 'back.out(2)',
           delay: 4.2,
+        });
+      }
+
+      // CV Button
+      if (cvBtnRef.current) {
+        gsap.from(cvBtnRef.current, {
+          y: 30,
+          opacity: 0,
+          scale: 0.9,
+          duration: 0.8,
+          ease: 'power3.out',
+          delay: 4.3,
         });
       }
 
@@ -111,12 +125,6 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="hero__pills container" ref={pillsRef}>
-        <PillTag variant="dark">(available for work)</PillTag>
-        <PillTag variant="dark">(since 2022)</PillTag>
-        <PillTag variant="dark">(based in India)</PillTag>
-      </div>
-
       <div className="hero__marquee" ref={marqueeRef}>
         <div className="hero__marquee-track">
           <span className="hero__marquee-text">{marqueeContent}</span>
@@ -124,6 +132,11 @@ export default function Hero() {
           <span className="hero__marquee-text">{marqueeContent}</span>
         </div>
       </div>
+
+      <div ref={cvBtnRef}>
+        <DownloadCV />
+      </div>
     </section>
   );
 }
+

@@ -1,0 +1,106 @@
+.cv-button-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: clamp(30px, 5vh, 60px) 0;
+  perspective: 1000px;
+}
+
+.cv-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 40px;
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-pill);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(14px, 1.2vw, 16px);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  overflow: hidden;
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.05),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+  transition: background 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease, backdrop-filter 0.4s ease;
+  will-change: transform;
+}
+
+.cv-button:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
+.cv-button__text {
+  position: relative;
+  z-index: 2;
+}
+
+.cv-button__icon {
+  position: relative;
+  z-index: 2;
+  font-size: 1.2em;
+  transition: transform 0.4s var(--transition-spring);
+}
+
+.cv-button:hover .cv-button__icon {
+  transform: translateY(3px) scale(1.1);
+}
+
+/* ── The Creative "Glow" Follower ──────────────── */
+.cv-button__glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, var(--color-accent) 0%, transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  filter: blur(20px);
+  transition: opacity 0.4s ease;
+}
+
+.cv-button:hover .cv-button__glow {
+  opacity: 0.4;
+}
+
+/* ── Interactive Shimmer ───────────────────────── */
+.cv-button::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(184, 255, 0, 0.1),
+    transparent
+  );
+  transform: rotate(45deg) translateX(-100%);
+  transition: transform 0.8s ease;
+  pointer-events: none;
+}
+
+.cv-button:hover::before {
+  transform: rotate(45deg) translateX(100%);
+}
+
+@media (max-width: 768px) {
+  .cv-button-container {
+    margin: 30px 0 40px;
+  }
+  
+  .cv-button {
+    padding: 14px 32px;
+  }
+}

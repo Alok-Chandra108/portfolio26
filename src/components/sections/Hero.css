@@ -15,7 +15,7 @@
 }
 
 .hero__heading-wrap {
-  margin-bottom: 40px;
+  margin-bottom: clamp(60px, 8vh, 100px);
 }
 
 .hero__heading {
@@ -36,7 +36,7 @@
 
 .hero__subtitle-wrap {
   overflow: hidden;
-  margin-top: 16px;
+  margin-top: clamp(20px, 3vh, 32px);
   height: clamp(40px, 6vw, 80px);
 }
 
@@ -50,19 +50,23 @@
 
 .hero__pills {
   display: flex;
-  gap: 8px;
+  justify-content: center;
+  gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 60px;
+  margin-bottom: clamp(60px, 8vh, 100px);
 }
 
 /* ── Marquee ─────────────────────────────────────── */
 .hero__marquee {
-  width: 100%;
+  width: 96%;
+  max-width: 1440px;
+  margin: clamp(60px, 8vh, 100px) auto 0;
   overflow: hidden;
   padding: 24px 0;
-  background-color: var(--color-text); /* Use the dark text color as background */
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: var(--color-text);
+  border-radius: 100px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
 .hero__marquee-track {
@@ -103,7 +107,7 @@
   }
 
   .hero__heading {
-    font-size: clamp(38px, 12vw, 72px);
+    font-size: clamp(44px, 12vw, 72px);
   }
 
   .hero__subtitle-wrap {
@@ -111,6 +115,40 @@
   }
 
   .hero__annotation {
-    top: 80px;
+    top: 60px;
+    right: 20px;
+  }
+
+  .hero__heading-wrap {
+    margin-bottom: 30px;
+  }
+
+  .hero__marquee {
+    margin-top: 40px;
+    width: 90%;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding-top: 60px;
+  }
+
+  .hero__heading {
+    font-size: clamp(34px, 12.5vw, 60px);
+  }
+  
+  .hero__heading-wrap {
+    margin-bottom: 24px;
+  }
+
+  .hero__marquee {
+    margin-top: 32px;
+    width: 88%;
+    padding: 16px 0;
+  }
+  
+  .hero__marquee-text {
+    font-size: 14px;
   }
 }

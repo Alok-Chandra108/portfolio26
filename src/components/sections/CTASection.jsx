@@ -40,7 +40,7 @@ export default function CTASection() {
     const handleMouseMove = (e) => {
       const rect = sectionRef.current?.getBoundingClientRect();
       if (!rect) return;
-      
+
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
 
@@ -64,9 +64,9 @@ export default function CTASection() {
       >
         <div className="cta__circle" ref={circleRef} />
         <div className="container cta__content">
-          <p className="cta__line cta__line--1 heading-hero">Your website is...</p>
-          <p className="cta__line cta__line--2 heading-hero">boring?</p>
-          <p className="cta__line cta__line--3 heading-section">Perfect. Let's talk.</p>
+          <p className="cta__line cta__line--1 heading-hero">READY TO SCALE...</p>
+          <p className="cta__line cta__line--2 heading-hero">YOUR VISION?</p>
+          <p className="cta__line cta__line--3 heading-section">LEAD THE ARCHITECTURE.</p>
         </div>
       </section>
     </Link>
