@@ -1,67 +1,43 @@
 const books = [
   {
     id: 1,
-    title: "The Design of Everyday Things",
-    author: "Don Norman",
-    cover: "https://covers.openlibrary.org/b/id/8231856-L.jpg",
-    status: "Read",
-    category: "Design"
+    title: "Attitude is Everything",
+    author: "Jeff Keller",
+    cover: "https://m.media-amazon.com/images/I/61go3pwTLYL.jpg",
+    status: "Reading",
+    category: "Self-Help"
   },
   {
     id: 2,
-    title: "Creative Selection",
-    author: "Ken Kocienda",
-    cover: "https://covers.openlibrary.org/b/id/10521270-L.jpg",
-    status: "Read",
-    category: "Tech"
+    title: "One Arranged Murder",
+    author: "Chetan Bhagat",
+    cover: "https://5.imimg.com/data5/SELLER/Default/2021/9/IM/NZ/XP/133456484/one-arranged-murder-paperback.jpg",
+    status: "Reading",
+    category: "Fiction"
   },
   {
     id: 3,
-    title: "Atomic Habits",
-    author: "James Clear",
-    cover: "https://covers.openlibrary.org/b/id/10387513-L.jpg",
-    status: "Reading",
-    category: "Productivity"
+    title: "She Stood by Me",
+    author: "Tarun Vikash",
+    cover: "https://m.media-amazon.com/images/I/61J3vMSsxzL._UF1000,1000_QL80_.jpg",
+    status: "Read",
+    category: "Fiction"
   },
   {
     id: 4,
-    title: "Sprint",
-    author: "Jake Knapp",
-    cover: "https://covers.openlibrary.org/b/id/8226194-L.jpg",
-    status: "Want to Read",
-    category: "Design"
+    title: "The Right Guy",
+    author: "Tarun Vikash",
+    cover: "https://m.media-amazon.com/images/I/716jMCk5dvL._UF1000,1000_QL80_.jpg",
+    status: "Read",
+    category: "Fiction"
   },
   {
     id: 5,
-    title: "Don't Make Me Think",
-    author: "Steve Krug",
-    cover: "https://covers.openlibrary.org/b/id/8091016-L.jpg",
+    title: "The Power of Your Subconscious Mind",
+    author: "Dr. Joseph Murphy",
+    cover: "https://fingerprintpublishing.com/cache/public/uploads/books/9788172345662.jpg-544x550.jpg",
     status: "Read",
-    category: "Design"
-  },
-  {
-    id: 6,
-    title: "Zero to One",
-    author: "Peter Thiel",
-    cover: "https://covers.openlibrary.org/b/id/7895457-L.jpg",
-    status: "Read",
-    category: "Business"
-  },
-  {
-    id: 7,
-    title: "The Lean Startup",
-    author: "Eric Ries",
-    cover: "https://covers.openlibrary.org/b/id/7237261-L.jpg",
-    status: "Want to Read",
-    category: "Business"
-  },
-  {
-    id: 8,
-    title: "Hooked",
-    author: "Nir Eyal",
-    cover: "https://covers.openlibrary.org/b/id/8106676-L.jpg",
-    status: "Read",
-    category: "Productivity"
+    category: "Self-Help"
   }
 ];
 

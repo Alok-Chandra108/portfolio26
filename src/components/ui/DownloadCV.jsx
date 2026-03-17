@@ -67,6 +67,11 @@ export default function DownloadCV() {
           console.log('Downloading CV...');
         }}
       >
+        <div className="cv-button__bg-orbs">
+          <div className="cv-orb cv-orb--1"></div>
+          <div className="cv-orb cv-orb--2"></div>
+          <div className="cv-orb cv-orb--3"></div>
+        </div>
         <div ref={glowRef} className="cv-button__glow"></div>
         <span className="cv-button__text">Download CV</span>
         <span className="cv-button__icon">↓</span>
