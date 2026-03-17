@@ -67,7 +67,7 @@
 .hero__marquee-track {
   display: flex;
   white-space: nowrap;
-  animation: marqueeScroll 25s linear infinite;
+  animation: marqueeScroll 14s linear infinite;
 }
 
 .hero__marquee-track:hover {
@@ -87,6 +87,7 @@
   from {
     transform: translateX(0);
   }
+
   to {
     transform: translateX(-33.333%);
   }
