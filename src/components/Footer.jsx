@@ -29,7 +29,7 @@ export default function Footer() {
         <div className="footer__grid">
           <div className="footer__col">
             <h4 className="footer__col-label sub-label">(Connect)</h4>
-            <a href="mailto:hello@portfolio.dev" className="footer__link link-hover">hello@portfolio.dev</a>
+            <a href="mailto:hello@portfolio.dev" className="footer__link link-hover">alokchandra2611@gmail.com</a>
             <span className="footer__link">India</span>
           </div>
           <div className="footer__col">
@@ -43,8 +43,6 @@ export default function Footer() {
             <h4 className="footer__col-label sub-label">(Follow)</h4>
             <a href="#" className="footer__social link-hover">LinkedIn</a>
             <a href="#" className="footer__social link-hover">GitHub</a>
-            <a href="#" className="footer__social link-hover">Dribbble</a>
-            <a href="#" className="footer__social link-hover">Twitter</a>
           </div>
         </div>
 

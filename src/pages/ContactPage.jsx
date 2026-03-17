@@ -88,8 +88,6 @@ export default function ContactPage() {
               <h4 className="sub-label">(Social)</h4>
               <a href="#" className="contact-page__info-link link-hover">LinkedIn</a>
               <a href="#" className="contact-page__info-link link-hover">GitHub</a>
-              <a href="#" className="contact-page__info-link link-hover">Dribbble</a>
-              <a href="#" className="contact-page__info-link link-hover">Twitter</a>
             </div>
             <div className="contact-page__info-block">
               <h4 className="sub-label">(Location)</h4>

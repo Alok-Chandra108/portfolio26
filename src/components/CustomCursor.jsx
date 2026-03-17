@@ -51,6 +51,15 @@ export default function CustomCursor() {
       gsap.to(dot, { opacity: 1, duration: 0.2 });
     };
 
+    const handleMouseEnterHide = () => {
+      gsap.to([dot, ring], { opacity: 0, duration: 0.2 });
+    };
+
+    const handleMouseLeaveHide = () => {
+      gsap.to(dot, { opacity: 1, duration: 0.2 });
+      gsap.to(ring, { opacity: 1, duration: 0.2 });
+    };
+
     const handleMouseEnterHeading = () => {
       gsap.to(ring, {
         scale: 3,
@@ -75,6 +84,10 @@ export default function CustomCursor() {
       document.querySelectorAll('h1, h2, h3, .heading-hero, .heading-section').forEach(el => {
         el.addEventListener('mouseenter', handleMouseEnterHeading);
         el.addEventListener('mouseleave', handleMouseLeaveLink);
+      });
+      document.querySelectorAll('[data-cursor="hide"]').forEach(el => {
+        el.addEventListener('mouseenter', handleMouseEnterHide);
+        el.addEventListener('mouseleave', handleMouseLeaveHide);
       });
     };
 

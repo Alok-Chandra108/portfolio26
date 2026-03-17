@@ -34,15 +34,18 @@ export default function CTASection() {
   useEffect(() => {
     if (!circleRef.current) return;
 
+    const xSetter = gsap.quickSetter(circleRef.current, "x", "px");
+    const ySetter = gsap.quickSetter(circleRef.current, "y", "px");
+
     const handleMouseMove = (e) => {
       const rect = sectionRef.current?.getBoundingClientRect();
       if (!rect) return;
-      gsap.to(circleRef.current, {
-        x: e.clientX - rect.left - 150,
-        y: e.clientY - rect.top - 150,
-        duration: 0.6,
-        ease: 'power2.out',
-      });
+      
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      xSetter(mouseX - 100);
+      ySetter(mouseY - 100);
     };
 
     const section = sectionRef.current;
@@ -57,6 +60,7 @@ export default function CTASection() {
         ref={sectionRef}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
+        data-cursor="hide"
       >
         <div className="cta__circle" ref={circleRef} />
         <div className="container cta__content">
