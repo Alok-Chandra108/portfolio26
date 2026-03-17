@@ -1,16 +1,50 @@
-# React + Vite
+# Alok Chandra — Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A high-end, immersive personal portfolio designed with a focus on fluid motion, premium aesthetics, and engineering excellence.
 
-Currently, two official plugins are available:
+## 🚀 Overview
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+This portfolio showcases a modern, minimalist design inspired by top-tier creative agencies. It features sophisticated glassmorphism, dynamic GSAP-powered interactions, and a fully responsive architecture that adapts seamlessly across all devices.
 
-## React Compiler
+## ✨ Key Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Immersive Hero Section**: Featuring a sleek marquee, a magnetic "Download CV" button with glassmorphic effects, and fluid typography.
+- **Dynamic "My Reads" Library**: A personalized book collection with interactive card hover effects and category filtering.
+- **Magnetic Interactions**: UI elements that subtly react to cursor proximity for a tactile experience.
+- **Frosted Aesthetics**: Deep backdrop blurs and soft luminous glows consistent with modern premium design standards.
+- **Fully Responsive**: Meticulously optimized for everything from ultra-wide monitors to narrow mobile devices (320px+).
 
-## Expanding the ESLint configuration
+## 🛠️ Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **Core**: [React 19](https://react.dev/)
+- **Build Tool**: [Vite](https://vitejs.dev/)
+- **Animation**: [GSAP (GreenSock Animation Platform)](https://greensock.com/gsap/) with [ScrollTrigger](https://greensock.com/scrolltrigger/) & [Flip](https://greensock.com/docs/v3/Plugins/Flip/)
+- **Scrolling**: [Lenis](https://lenis.darkroom.engineering/) for smooth inertial scrolling
+- **Routing**: [React Router 7](https://reactrouter.com/)
+- **Styling**: Vanilla CSS with modern features (CSS Variables, Flex/Grid, Clamp)
+
+## 📦 Getting Started
+
+1. **Clone the repository**:
+   ```bash
+   git clone https://github.com/Alok-Chandra108/portfolio26.git
+   ```
+
+2. **Install dependencies**:
+   ```bash
+   npm install
+   ```
+
+3. **Run the development server**:
+   ```bash
+   npm run dev
+   ```
+
+4. **Build for production**:
+   ```bash
+   npm run build
+   ```
+
+## 📄 License
+
+This project is licensed under the MIT License.

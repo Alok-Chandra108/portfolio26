@@ -31,14 +31,14 @@
 }
 
 .cv-button:hover {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(32px);
-  -webkit-backdrop-filter: blur(32px);
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #fff;
+  background: var(--color-accent);
+  backdrop-filter: blur(0);
+  -webkit-backdrop-filter: blur(0);
+  border-color: var(--color-accent);
+  color: var(--color-text);
   box-shadow: 
-    0 15px 50px rgba(111, 0, 255, 0.3),
-    0 0 0 1px rgba(255, 255, 255, 0.1);
+    0 10px 40px rgba(184, 255, 0, 0.3),
+    0 0 0 1px rgba(184, 255, 0, 0.1);
 }
 
 .cv-button__bg-orbs {
@@ -50,12 +50,12 @@
   z-index: 1;
   pointer-events: none;
   overflow: hidden;
-  opacity: 0;
-  transition: opacity 0.6s ease;
+  opacity: 0; /* Hidden initially */
+  transition: opacity 0.4s ease;
 }
 
 .cv-button:hover .cv-button__bg-orbs {
-  opacity: 1;
+  opacity: 0; /* Still hidden on hover for the solid green look */
 }
 
 .cv-orb {
