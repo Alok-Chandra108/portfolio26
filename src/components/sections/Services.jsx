@@ -6,18 +6,18 @@ import './Services.css';
 const services = [
   {
     num: '01',
-    title: 'Design',
-    skills: ['UI/UX', 'Design Systems', 'Wireframes', 'Prototyping'],
+    title: 'Infrastructure',
+    skills: ['AWS', 'GCP', 'Terraform', 'Linux'],
   },
   {
     num: '02',
-    title: 'Build',
-    skills: ['React', 'Next.js', 'Webflow', 'GSAP', 'Three.js'],
+    title: 'CI/CD',
+    skills: ['GitHub Actions', 'Jenkins', 'Docker', 'Git'],
   },
   {
     num: '03',
-    title: 'Optimize',
-    skills: ['Performance', 'SEO', 'CRO', 'Accessibility'],
+    title: 'Monitoring',
+    skills: ['Prometheus', 'Grafana', 'Datadog', 'Logging'],
   },
 ];
 
@@ -83,7 +83,7 @@ export default function Services() {
       <div className="container services__grid">
         <div className="services__left">
           <h2 className="heading-section" ref={headingRef}>
-            I've cracked the code on great web experiences
+            I'm building a strong foundation in Cloud & DevOps
           </h2>
         </div>
         <div className="services__right">

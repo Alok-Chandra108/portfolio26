@@ -59,9 +59,10 @@
 .hero__marquee {
   width: 100%;
   overflow: hidden;
-  padding: 20px 0;
-  border-top: 1px solid rgba(26, 26, 24, 0.08);
-  border-bottom: 1px solid rgba(26, 26, 24, 0.08);
+  padding: 24px 0;
+  background-color: var(--color-text); /* Use the dark text color as background */
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .hero__marquee-track {
@@ -78,7 +79,7 @@
   font-family: var(--font-display);
   font-size: clamp(16px, 2vw, 22px);
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--color-bg); /* Use the light background color as text */
   letter-spacing: 0.02em;
   padding-right: 0;
 }

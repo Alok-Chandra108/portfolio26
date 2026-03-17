@@ -80,14 +80,14 @@ export default function ContactPage() {
           <div className="contact-page__info">
             <div className="contact-page__info-block">
               <h4 className="sub-label">(Email)</h4>
-              <a href="mailto:hello@portfolio.dev" className="contact-page__info-link link-hover">
-                hello@portfolio.dev
+              <a href="mailto:alokchandra2611@gmail.com" className="contact-page__info-link link-hover">
+                alokchandra2611@gmail.com
               </a>
             </div>
             <div className="contact-page__info-block">
               <h4 className="sub-label">(Social)</h4>
-              <a href="#" className="contact-page__info-link link-hover">LinkedIn</a>
-              <a href="#" className="contact-page__info-link link-hover">GitHub</a>
+              <a href="https://www.linkedin.com/in/alok-chandra108/" target="_blank" rel="noopener noreferrer" className="contact-page__info-link link-hover">LinkedIn</a>
+              <a href="https://github.com/Alok-Chandra108/" target="_blank" rel="noopener noreferrer" className="contact-page__info-link link-hover">GitHub</a>
             </div>
             <div className="contact-page__info-block">
               <h4 className="sub-label">(Location)</h4>

@@ -1,12 +1,14 @@
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
-import { Flip } from "gsap/Flip";
-import { Observer } from "gsap/Observer";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import { TextPlugin } from "gsap/TextPlugin";
-import { MotionPathPlugin } from "gsap/MotionPathPlugin";
-import { Draggable } from "gsap/Draggable";
+import {
+  Flip,
+  Observer,
+  ScrollTrigger,
+  ScrollToPlugin,
+  TextPlugin,
+  MotionPathPlugin,
+  Draggable
+} from "gsap/all";
 
 // Club GSAP plugins – these require a GSAP Club license.
 // They'll be imported but may not resolve without proper license config.

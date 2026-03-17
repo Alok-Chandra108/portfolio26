@@ -4,9 +4,9 @@ import PillTag from '../ui/PillTag.jsx';
 import './Hero.css';
 
 const subtitles = [
-  'building things that convert',
-  'crafting digital experiences',
-  'turning brands into websites',
+  'building scalable infrastructure',
+  'automating deployment pipelines',
+  'architecting cloud solutions',
 ];
 
 export default function Hero() {
@@ -89,7 +89,7 @@ export default function Hero() {
     return () => ctx.revert();
   }, []);
 
-  const marqueeContent = 'React ✦ GSAP ✦ Webflow ✦ Next.js ✦ UI Design ✦ Interaction Design ✦ ';
+  const marqueeContent = 'AWS ✦ Docker ✦ Kubernetes ✦ Terraform ✦ CI/CD ✦ Linux ✦ DevOps ✦ Ansible ✦ Jenkins ✦ Prometheus ✦ Grafana ✦ Git ✦ Bash ✦ ';
 
   return (
     <section className="hero section" ref={sectionRef}>

@@ -47,18 +47,18 @@ export default function AboutPage() {
           </div>
           <div className="about-page__right">
             <h2 className="heading-section">
-              I build to beat boring, because boring is bad
+              I build robust infrastructure, because downtime is bad
             </h2>
             <p className="body-text about-page__bio">
-              I'm a creative developer with a passion for crafting exceptional digital
-              experiences. My journey started with a curiosity for how things work on the
-              web, and it has evolved into a career dedicated to pushing the boundaries
-              of what's possible with modern web technologies.
+              I'm a Cloud & DevOps enthusiast with a passion for architecting resilient,
+              scalable systems. My journey started with a curiosity for how servers and networks
+              operate, and it has evolved into a career dedicated to automating deployments and
+              building secure, reliable cloud infrastructure.
             </p>
             <p className="body-text about-page__bio">
-              I specialize in React, GSAP animations, and building performant, beautiful
-              interfaces that users love. When I'm not coding, you'll find me reading about
-              design, exploring new technologies, or working on creative side projects.
+              I specialize in AWS, CI/CD pipelines, containerization, and Infrastructure as Code.
+              When I'm not configuring clusters or writing automation scripts, you'll find me reading about
+              system architecture, exploring new cloud services, or contributing to open-source tools.
             </p>
 
             <div className="about-page__stats">
@@ -67,12 +67,12 @@ export default function AboutPage() {
                 <span className="about-page__stat-label sub-label">Years Experience</span>
               </div>
               <div className="about-page__stat">
-                <span className="about-page__stat-num">30+</span>
-                <span className="about-page__stat-label sub-label">Projects Completed</span>
+                <span className="about-page__stat-num">20+</span>
+                <span className="about-page__stat-label sub-label">Pipelines Built</span>
               </div>
               <div className="about-page__stat">
-                <span className="about-page__stat-num">15+</span>
-                <span className="about-page__stat-label sub-label">Happy Clients</span>
+                <span className="about-page__stat-num">99.9%</span>
+                <span className="about-page__stat-label sub-label">Uptime Delivered</span>
               </div>
             </div>
 

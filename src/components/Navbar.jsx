@@ -113,10 +113,8 @@ export default function Navbar() {
   ];
 
   const socialLinks = [
-    { label: 'LinkedIn', url: '#' },
-    { label: 'GitHub', url: '#' },
-    { label: 'Dribbble', url: '#' },
-    { label: 'Twitter', url: '#' },
+    { label: 'LinkedIn', url: 'https://www.linkedin.com/in/alok-chandra108/' },
+    { label: 'GitHub', url: 'https://github.com/Alok-Chandra108/' },
   ];
 
   return (
@@ -191,7 +189,7 @@ export default function Navbar() {
               ))}
             </div>
             <div className="menu-overlay__info">
-              <p className="mono-label">hello@portfolio.dev</p>
+              <p className="mono-label">alokchandra2611@gmail.com</p>
               <p className="mono-label">
                 {new Date().toLocaleTimeString('en-US', {
                   hour: '2-digit',

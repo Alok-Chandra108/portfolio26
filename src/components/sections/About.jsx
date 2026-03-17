@@ -56,14 +56,14 @@ export default function About() {
       <div className="container about__grid">
         <div className="about__text">
           <h2 className="heading-section" ref={headingRef}>
-            I build to beat boring, because boring is bad
+            I build robust infrastructure, because downtime is bad
           </h2>
           <p className="body-text about__body">
-            I'm a creative developer passionate about crafting digital experiences 
-            that go beyond the ordinary. With a deep love for clean code, smooth 
-            animations, and thoughtful design, I bridge the gap between what looks 
-            good and what works brilliantly. Every project is an opportunity to push 
-            creative boundaries while delivering real business results.
+            I'm a Cloud & DevOps enthusiast passionate about architecting scalable,
+            resilient systems that power modern applications. With a deep interest in
+            automation, continuous integration, and cloud-native technologies, I bridge
+            the gap between development and operations. Every project is an opportunity
+            to optimize performance while ensuring high availability and secure deployments.
           </p>
           <AnimatedButton to="/about">tell me more</AnimatedButton>
         </div>
