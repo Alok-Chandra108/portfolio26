@@ -17,8 +17,8 @@ export default function CustomCursor() {
     const ring = ringRef.current;
     if (!dot || !ring) return;
 
-    const xTo = gsap.quickTo(ring, "x", { duration: 0.5, ease: "power3" });
-    const yTo = gsap.quickTo(ring, "y", { duration: 0.5, ease: "power3" });
+    const xTo = gsap.quickTo(ring, "x", { duration: 0.6, ease: "power3.out" });
+    const yTo = gsap.quickTo(ring, "y", { duration: 0.6, ease: "power3.out" });
 
     const handleMouseMove = (e) => {
       posRef.current = { x: e.clientX, y: e.clientY };
@@ -76,29 +76,12 @@ export default function CustomCursor() {
       gsap.to(ring, { opacity: 1, duration: 0.2 });
     };
 
-    const handleMouseEnterHeading = () => {
-      gsap.to(ring, {
-        scale: 3,
-        borderRadius: '4px',
-        rotation: 15,
-        backgroundColor: 'rgba(184, 255, 0, 0.08)',
-        borderColor: 'rgba(184, 255, 0, 0.4)',
-        duration: 0.4,
-        ease: 'power2.out',
-      });
-      gsap.to(dot, { opacity: 0, duration: 0.2 });
-    };
-
     window.addEventListener('mousemove', handleMouseMove);
 
     // Delegate hover events
     const addHoverListeners = () => {
       document.querySelectorAll('a, button, .card, [data-cursor="pointer"]').forEach(el => {
         el.addEventListener('mouseenter', handleMouseEnterLink);
-        el.addEventListener('mouseleave', handleMouseLeaveLink);
-      });
-      document.querySelectorAll('h1, h2, h3, .heading-hero, .heading-section').forEach(el => {
-        el.addEventListener('mouseenter', handleMouseEnterHeading);
         el.addEventListener('mouseleave', handleMouseLeaveLink);
       });
       document.querySelectorAll('[data-cursor="hide"]').forEach(el => {
