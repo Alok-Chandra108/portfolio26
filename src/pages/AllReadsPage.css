@@ -62,3 +62,10 @@
     padding-top: 100px;
   }
 }
+
+@media (max-width: 480px) {
+  .reads-page__grid {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}

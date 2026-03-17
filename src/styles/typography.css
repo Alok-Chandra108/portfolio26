@@ -2,7 +2,7 @@
 
 .heading-hero {
   font-family: var(--font-display);
-  font-size: clamp(72px, 10vw, 140px);
+  font-size: clamp(48px, 10vw, 140px);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: -0.03em;
@@ -11,7 +11,7 @@
 
 .heading-section {
   font-family: var(--font-display);
-  font-size: clamp(40px, 6vw, 80px);
+  font-size: clamp(32px, 6vw, 80px);
   font-weight: 700;
   line-height: 1.1;
 }

@@ -50,4 +50,8 @@
     flex-direction: column;
     gap: 8px;
   }
+
+  .my-reads__title {
+    font-size: clamp(38px, 10vw, 60px);
+  }
 }
