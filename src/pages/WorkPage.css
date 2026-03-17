@@ -1,0 +1,33 @@
+.work-page {
+  min-height: 100vh;
+  padding-top: 140px;
+  padding-bottom: 80px;
+}
+
+.work-page__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 60px;
+}
+
+.work-page__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .work-page {
+    padding-top: 100px;
+  }
+
+  .work-page__header {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .work-page__grid {
+    grid-template-columns: 1fr;
+  }
+}

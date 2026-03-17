@@ -1,0 +1,31 @@
+.work__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 60px;
+  gap: 20px;
+}
+
+.work__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 48px;
+}
+
+.work__cta {
+  display: flex;
+  justify-content: center;
+}
+
+/* ── Responsive ──────────────────────────────────── */
+@media (max-width: 768px) {
+  .work__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .work__header {
+    flex-direction: column;
+    gap: 8px;
+  }
+}

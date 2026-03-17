@@ -1,0 +1,53 @@
+.my-reads__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 60px;
+}
+
+.my-reads__title {
+  line-height: 0.9;
+}
+
+.my-reads__annotation {
+  margin-top: 8px;
+}
+
+.my-reads__cards {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  padding: 40px 0;
+  flex-wrap: nowrap;
+}
+
+.my-reads__card-wrap {
+  will-change: transform;
+}
+
+.my-reads__cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 48px;
+}
+
+/* ── Responsive ──────────────────────────────────── */
+@media (max-width: 768px) {
+  .my-reads__cards {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    justify-content: flex-start;
+    gap: 16px;
+    padding: 20px 0;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .my-reads__card-wrap {
+    scroll-snap-align: start;
+  }
+
+  .my-reads__header {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
