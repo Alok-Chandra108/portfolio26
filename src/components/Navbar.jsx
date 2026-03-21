@@ -61,21 +61,21 @@ export default function Navbar() {
   const handleLogoHover = () => {
     // Rotate background
     gsap.to(logoBgRef.current, {
-      rotation: 90,
-      duration: 0.6,
-      ease: 'expo.out',
+      rotation: 180,
+      duration: 0.8,
+      ease: 'power3.out',
     });
     // Move A up (displays second A)
     gsap.to(charAInnerRef.current, {
       yPercent: -50,
-      duration: 0.6,
-      ease: 'expo.out',
+      duration: 0.8,
+      ease: 'power3.out',
     });
     // Move C down (displays top C)
     gsap.to(charCInnerRef.current, {
       yPercent: 0,
-      duration: 0.6,
-      ease: 'expo.out',
+      duration: 0.8,
+      ease: 'power3.out',
     });
   };
 
@@ -83,20 +83,20 @@ export default function Navbar() {
     // Reverse background
     gsap.to(logoBgRef.current, {
       rotation: 0,
-      duration: 0.6,
-      ease: 'expo.out',
+      duration: 0.8,
+      ease: 'power3.out',
     });
     // Reset A
     gsap.to(charAInnerRef.current, {
       yPercent: 0,
-      duration: 0.6,
-      ease: 'expo.out',
+      duration: 0.8,
+      ease: 'power3.out',
     });
     // Reset C
     gsap.to(charCInnerRef.current, {
       yPercent: -50,
-      duration: 0.6,
-      ease: 'expo.out',
+      duration: 0.8,
+      ease: 'power3.out',
     });
   };
 
