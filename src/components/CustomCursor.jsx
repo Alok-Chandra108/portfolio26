@@ -28,6 +28,12 @@ export default function CustomCursor() {
     };
 
     const handleMouseEnterLink = (e) => {
+      // Fully hide the custom cursor when hovering over the navbar logo
+      if (e.target.closest && e.target.closest('.navbar__logo')) {
+        gsap.to([dot, ring], { opacity: 0, duration: 0.2 });
+        return;
+      }
+
       // Check if the hovered element is part of the navbar or menu overlay
       if (e.target.closest && e.target.closest('.navbar, .menu-overlay')) {
         gsap.to(ring, {
