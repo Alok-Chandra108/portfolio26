@@ -105,7 +105,7 @@ export default function Services() {
               </ul>
             </div>
           ))}
-          <AnimatedButton to="/contact">tell me more</AnimatedButton>
+          <AnimatedButton to="/contact" variant="lime">tell me more</AnimatedButton>
         </div>
       </div>
     </section>

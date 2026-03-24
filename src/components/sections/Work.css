@@ -1,3 +1,9 @@
+.work {
+  background-color: var(--color-bg);
+  position: relative;
+  z-index: 1;
+}
+
 .work__header {
   display: flex;
   align-items: baseline;

@@ -5,12 +5,12 @@
   justify-content: center;
   position: relative;
   overflow: hidden;
-  transition: background 0.6s ease, color 0.6s ease;
+  transition: background 0.8s var(--transition-base), color 0.8s var(--transition-base);
   text-align: center;
 }
 
 .cta-section--hovered {
-  background: #1a1a18;
+  background: var(--color-dark-card);
 }
 
 .cta-section--hovered .cta__line {
