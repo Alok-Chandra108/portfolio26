@@ -34,9 +34,14 @@
   gap: 0;
 }
 
+.services__right .animated-btn {
+  margin-top: clamp(32px, 5vh, 64px);
+  justify-content: center; /* Ensures text stays centered even when the button is fully stretched */
+}
+
 .service-block {
   padding: 32px 0;
-  transition: background 0.3s ease;
+  transition: background 0.3s ease, transform 0.3s ease;
   border-radius: 8px;
   padding-left: 16px;
   padding-right: 16px;
@@ -45,7 +50,9 @@
 }
 
 .service-block:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--color-bg);
+  color: var(--color-text);
+  transform: scale(1.02);
 }
 
 .service-block__line {
@@ -53,6 +60,12 @@
   background: rgba(255, 255, 255, 0.15);
   margin-bottom: 24px;
   will-change: transform;
+  transition: background 0.3s ease, opacity 0.3s ease;
+}
+
+.service-block:hover .service-block__line {
+  background: var(--color-text);
+  opacity: 0.2;
 }
 
 .service-block__header {
@@ -69,14 +82,20 @@
   transition: color 0.3s ease;
 }
 
+/* Force text change on hover for maximum impact */
 .service-block:hover .service-block__num {
-  color: var(--color-accent);
+  color: var(--color-text) !important;
 }
 
 .service-block__title {
   font-family: var(--font-display);
   font-size: 28px;
   font-weight: 700;
+  transition: color 0.3s ease;
+}
+
+.service-block:hover .service-block__title {
+  color: var(--color-text) !important;
 }
 
 .service-block__skills {
@@ -88,13 +107,18 @@
 
 .service-block__skill {
   font-family: var(--font-body);
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.5);
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 .service-block:hover .service-block__skill {
   transform: translateX(8px);
+}
+
+/* Ensure PillTags invert their colors when the block is hovered! */
+.service-block:hover .pill-tag {
+  background: var(--color-text) !important;
+  color: var(--color-bg) !important;
+  border-color: transparent !important;
 }
 
 /* ── Responsive ──────────────────────────────────── */

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { gsap, ScrollTrigger } from '../../utils/gsapPlugins.js';
 import AnimatedButton from '../ui/AnimatedButton.jsx';
+import PillTag from '../ui/PillTag.jsx';
 import './Services.css';
 
 const services = [
@@ -100,7 +101,9 @@ export default function Services() {
               </div>
               <ul className="service-block__skills">
                 {service.skills.map(skill => (
-                  <li key={skill} className="service-block__skill">{skill}</li>
+                  <li key={skill} className="service-block__skill">
+                    <PillTag variant="outline">{skill}</PillTag>
+                  </li>
                 ))}
               </ul>
             </div>
