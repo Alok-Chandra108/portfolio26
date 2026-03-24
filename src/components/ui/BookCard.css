@@ -85,9 +85,32 @@
 /* ── Responsive ──────────────────────────────────── */
 @media (max-width: 768px) {
   .book-card {
-    width: 220px;
-    min-width: 220px;
-    height: 320px;
-    scroll-snap-align: start;
+    width: 100%;
+    min-width: 0;
+    height: 120px;
+    display: flex;
+    flex-direction: row;
+    scroll-snap-align: none;
+  }
+
+  .book-card__cover {
+    height: 100%;
+    width: 90px;
+    flex-shrink: 0;
+  }
+
+  .book-card__info {
+    padding: 12px 16px;
+    justify-content: center;
+    flex: 1;
+    min-width: 0; /* allows text truncation to work inside flex */
+  }
+
+  .book-card__title {
+    font-size: 15px;
+  }
+
+  .book-card__author {
+    font-size: 13px;
   }
 }

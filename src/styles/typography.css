@@ -43,3 +43,23 @@
   font-size: 12px;
   letter-spacing: 0.08em;
 }
+
+@media (max-width: 768px) {
+  .heading-hero {
+    line-height: 0.85;
+    letter-spacing: -0.05em;
+  }
+  .heading-section {
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+  }
+}
+
+@media (max-width: 480px) {
+  .heading-hero {
+    font-size: clamp(48px, 14vw, 80px);
+  }
+  .heading-section {
+    font-size: clamp(40px, 12vw, 64px);
+  }
+}

@@ -34,16 +34,18 @@
 /* ── Responsive ──────────────────────────────────── */
 @media (max-width: 768px) {
   .my-reads__cards {
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
+    flex-direction: column;
+    overflow-x: visible;
+    scroll-snap-type: none;
+    align-items: stretch;
     justify-content: flex-start;
     gap: 16px;
     padding: 20px 0;
-    -webkit-overflow-scrolling: touch;
   }
 
   .my-reads__card-wrap {
-    scroll-snap-align: start;
+    scroll-snap-align: none;
+    width: 100%;
   }
 
   .my-reads__header {

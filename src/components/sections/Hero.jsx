@@ -38,66 +38,72 @@ export default function Hero() {
 
   // Entry animations
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Heading words
-      const words = headingRef.current?.querySelectorAll('.hero__word');
-      if (words?.length) {
-        gsap.from(words, {
-          y: '110%',
-          opacity: 0,
-          duration: 1.1,
-          stagger: 0.08,
-          ease: 'expo.out',
-          delay: 3.5, // after loader
-        });
-      }
+    let ctx = gsap.context(() => {
+      let mm = gsap.matchMedia();
 
-      // Pills
-      const pills = pillsRef.current?.children;
-      if (pills?.length) {
-        gsap.from(pills, {
-          scale: 0.8,
-          opacity: 0,
-          duration: 0.6,
-          stagger: 0.06,
-          ease: 'back.out(2)',
-          delay: 4.2,
-        });
-      }
+      mm.add("all", () => {
+        // Heading words
+        const words = headingRef.current?.querySelectorAll('.hero__word');
+        if (words?.length) {
+          gsap.from(words, {
+            y: '110%',
+            opacity: 0,
+            duration: 1.1,
+            stagger: 0.08,
+            ease: 'expo.out',
+            delay: 3.5, // after loader
+          });
+        }
 
-      // CV Button
-      if (cvBtnRef.current) {
-        gsap.from(cvBtnRef.current, {
-          y: 30,
-          opacity: 0,
-          scale: 0.9,
-          duration: 0.8,
-          ease: 'power3.out',
-          delay: 4.3,
-        });
-      }
+        // Pills
+        const pills = pillsRef.current?.children;
+        if (pills?.length) {
+          gsap.from(pills, {
+            scale: 0.8,
+            opacity: 0,
+            duration: 0.6,
+            stagger: 0.06,
+            ease: 'back.out(2)',
+            delay: 4.2,
+          });
+        }
 
-      // Marquee
-      if (marqueeRef.current) {
-        gsap.from(marqueeRef.current, {
-          y: 40,
-          opacity: 0,
-          duration: 0.8,
-          ease: 'power3.out',
-          delay: 4.4,
-        });
-      }
+        // CV Button
+        if (cvBtnRef.current) {
+          gsap.from(cvBtnRef.current, {
+            y: 30,
+            opacity: 0,
+            scale: 0.9,
+            duration: 0.8,
+            ease: 'power3.out',
+            delay: 4.3,
+          });
+        }
 
-      // Parallax on heading
-      if (headingRef.current) {
-        ScrollTrigger.create({
-          trigger: sectionRef.current,
-          start: 'top top',
-          end: 'bottom top',
-          scrub: 1,
-          animation: gsap.to(headingRef.current, { y: 100, ease: 'none' }),
-        });
-      }
+        // Marquee
+        if (marqueeRef.current) {
+          gsap.from(marqueeRef.current, {
+            y: 40,
+            opacity: 0,
+            duration: 0.8,
+            ease: 'power3.out',
+            delay: 4.4,
+          });
+        }
+      });
+
+      mm.add("(min-width: 769px)", () => {
+        // Parallax on heading only on larger screens to avoid mobile jitter
+        if (headingRef.current) {
+          ScrollTrigger.create({
+            trigger: sectionRef.current,
+            start: 'top top',
+            end: 'bottom top',
+            scrub: 1,
+            animation: gsap.to(headingRef.current, { y: 100, ease: 'none' }),
+          });
+        }
+      });
     }, sectionRef);
 
     return () => ctx.revert();
