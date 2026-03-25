@@ -2,10 +2,14 @@ import { useEffect, useRef } from 'react';
 import { gsap } from '../utils/gsapPlugins.js';
 import './CustomCursor.css';
 
+/**
+ * CustomCursor component that provides a premium, responsive cursor experience.
+ * Optimized with GSAP quickTo and event delegation for performance.
+ */
 export default function CustomCursor() {
   const dotRef = useRef(null);
   const ringRef = useRef(null);
-  const posRef = useRef({ x: 0, y: 0 });
+  const isVisible = useRef(false);
 
   useEffect(() => {
     // Skip on mobile/touch
@@ -17,99 +21,105 @@ export default function CustomCursor() {
     const ring = ringRef.current;
     if (!dot || !ring) return;
 
-    const xTo = gsap.quickTo(ring, "x", { duration: 0.6, ease: "power3.out" });
-    const yTo = gsap.quickTo(ring, "y", { duration: 0.6, ease: "power3.out" });
+    // Set initial state
+    gsap.set([dot, ring], { opacity: 0, scale: 0 });
+
+    // Optimized movement with GSAP quickTo
+    const dotXTo = gsap.quickTo(dot, "x", { duration: 0.1, ease: "power3.out" });
+    const dotYTo = gsap.quickTo(dot, "y", { duration: 0.1, ease: "power3.out" });
+    const ringXTo = gsap.quickTo(ring, "x", { duration: 0.4, ease: "power2.out" });
+    const ringYTo = gsap.quickTo(ring, "y", { duration: 0.4, ease: "power2.out" });
 
     const handleMouseMove = (e) => {
-      posRef.current = { x: e.clientX, y: e.clientY };
-      gsap.set(dot, { x: e.clientX, y: e.clientY });
-      xTo(e.clientX);
-      yTo(e.clientY);
+      if (!isVisible.current) {
+        gsap.to([dot, ring], { opacity: 1, scale: 1, duration: 0.3 });
+        isVisible.current = true;
+      }
+      
+      dotXTo(e.clientX);
+      dotYTo(e.clientY);
+      ringXTo(e.clientX);
+      ringYTo(e.clientY);
     };
 
-    const handleMouseEnterLink = (e) => {
-      // Fully hide the custom cursor when hovering over the navbar logo
-      if (e.target.closest && e.target.closest('.navbar__logo')) {
-        gsap.to([dot, ring], { opacity: 0, duration: 0.2 });
-        return;
-      }
+    const handleMouseDown = () => {
+      gsap.to(ring, { scale: 0.8, duration: 0.2, ease: "power2.out" });
+      gsap.to(dot, { scale: 1.5, duration: 0.2 });
+    };
 
-      // Check if the hovered element is part of the navbar or menu overlay
-      if (e.target.closest && e.target.closest('.navbar, .menu-overlay')) {
+    const handleMouseUp = () => {
+      gsap.to(ring, { scale: 1, duration: 0.3, ease: "elastic.out(1, 0.3)" });
+      gsap.to(dot, { scale: 1, duration: 0.3 });
+    };
+
+    const handleMouseLeave = () => {
+      gsap.to([dot, ring], { opacity: 0, scale: 0, duration: 0.3 });
+      isVisible.current = false;
+    };
+
+    // Event Delegation for hover states
+    const handleMouseOver = (e) => {
+      const target = e.target;
+      const clickable = target.closest('a, button, .card, [data-cursor="pointer"], .clickable');
+      const hideCursor = target.closest('[data-cursor="hide"], .navbar__logo');
+      const textCursor = target.closest('p, h1, h2, h3, h4, h5, h6, span, li');
+
+      if (hideCursor) {
+        gsap.to([dot, ring], { opacity: 0, scale: 0, duration: 0.2 });
+      } else if (clickable) {
         gsap.to(ring, {
-          scale: 0.5,
-          opacity: 0,
-          duration: 0.2,
+          scale: 1.8,
+          backgroundColor: 'rgba(184, 255, 0, 0.12)',
+          borderColor: 'rgba(184, 255, 0, 0.4)',
+          duration: 0.3,
           ease: 'power2.out',
         });
-        gsap.to(dot, { 
-          scale: 1.5,
-          duration: 0.2 
+        gsap.to(dot, { opacity: 0, duration: 0.2 });
+      } else if (textCursor && !clickable) {
+        gsap.to(ring, {
+          scale: 1.2,
+          borderColor: 'rgba(255, 255, 255, 0.3)',
+          duration: 0.3
         });
-        return;
       }
-
-      gsap.to(ring, {
-        scale: 2,
-        backgroundColor: 'rgba(184, 255, 0, 0.15)',
-        borderColor: 'rgba(184, 255, 0, 0.6)',
-        duration: 0.3,
-        ease: 'power2.out',
-      });
-      gsap.to(dot, { opacity: 0, duration: 0.2 });
     };
 
-    const handleMouseLeaveLink = (e) => {
-      gsap.to(ring, {
-        scale: 1,
-        opacity: 1,
-        backgroundColor: 'transparent',
-        borderColor: 'var(--color-accent)',
-        borderRadius: '50%',
-        rotation: 0,
-        duration: 0.3,
-        ease: 'power2.out',
-      });
-      gsap.to(dot, { opacity: 1, scale: 1, duration: 0.2 });
-    };
-
-    const handleMouseEnterHide = () => {
-      gsap.to([dot, ring], { opacity: 0, duration: 0.2 });
-    };
-
-    const handleMouseLeaveHide = () => {
-      gsap.to(dot, { opacity: 1, duration: 0.2 });
-      gsap.to(ring, { opacity: 1, duration: 0.2 });
+    const handleMouseOut = (e) => {
+      const target = e.target;
+      const clickable = target.closest('a, button, .card, [data-cursor="pointer"], .clickable');
+      const hideCursor = target.closest('[data-cursor="hide"], .navbar__logo');
+      
+      if (clickable || hideCursor) {
+        gsap.to(ring, {
+          scale: 1,
+          opacity: 1,
+          backgroundColor: 'transparent',
+          borderColor: 'var(--color-accent)',
+          duration: 0.3,
+          ease: 'power2.out',
+        });
+        gsap.to(dot, { opacity: 1, scale: 1, duration: 0.2 });
+      }
     };
 
     window.addEventListener('mousemove', handleMouseMove);
-
-    // Delegate hover events
-    const addHoverListeners = () => {
-      document.querySelectorAll('a, button, .card, [data-cursor="pointer"]').forEach(el => {
-        el.addEventListener('mouseenter', handleMouseEnterLink);
-        el.addEventListener('mouseleave', handleMouseLeaveLink);
-      });
-      document.querySelectorAll('[data-cursor="hide"]').forEach(el => {
-        el.addEventListener('mouseenter', handleMouseEnterHide);
-        el.addEventListener('mouseleave', handleMouseLeaveHide);
-      });
-    };
-
-    // MutationObserver to re-bind on DOM changes
-    const observer = new MutationObserver(() => {
-      addHoverListeners();
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-    addHoverListeners();
+    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('mouseleave', handleMouseLeave);
+    document.addEventListener('mouseover', handleMouseOver);
+    document.addEventListener('mouseout', handleMouseOut);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
-      observer.disconnect();
+      window.removeEventListener('mousedown', handleMouseDown);
+      window.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+      document.removeEventListener('mouseover', handleMouseOver);
+      document.removeEventListener('mouseout', handleMouseOut);
     };
   }, []);
 
-  // Don't render on mobile
+  // Don't render on mobile/touch
   if (typeof window !== 'undefined' &&
     (window.matchMedia('(max-width: 768px)').matches || 'ontouchstart' in window)) {
     return null;
