@@ -46,6 +46,12 @@ const AdminDashboard = () => {
             <p>List your skills and technical expertise.</p>
             <Link to="/admin/skills" className="btn-manage" style={{ textDecoration: 'none' }}>Update Skills</Link>
           </div>
+
+          <div className="admin-card">
+            <h3>My Reads</h3>
+            <p>Add, edit, or remove books and update reading status.</p>
+            <Link to="/admin/reads" className="btn-manage" style={{ textDecoration: 'none' }}>Manage Books</Link>
+          </div>
         </div>
       </div>
     </div>

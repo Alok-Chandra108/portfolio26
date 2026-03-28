@@ -19,6 +19,7 @@ import AdminDashboard from './pages/AdminDashboard.jsx';
 import AdminProjects from './pages/admin/AdminProjects.jsx';
 import AdminExperience from './pages/admin/AdminExperience.jsx';
 import AdminSkills from './pages/admin/AdminSkills.jsx';
+import AdminReads from './pages/admin/AdminReads.jsx';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 
@@ -123,6 +124,14 @@ function AppContent() {
               element={
                 <ProtectedRoute>
                   <AdminSkills />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/reads" 
+              element={
+                <ProtectedRoute>
+                  <AdminReads />
                 </ProtectedRoute>
               } 
             />
