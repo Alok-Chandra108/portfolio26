@@ -14,6 +14,15 @@ import WorkPage from './pages/WorkPage.jsx';
 import AboutPage from './pages/AboutPage.jsx';
 import AllReadsPage from './pages/AllReadsPage.jsx';
 import ContactPage from './pages/ContactPage.jsx';
+import Login from './pages/Login.jsx';
+import AdminDashboard from './pages/AdminDashboard.jsx';
+import AdminProjects from './pages/admin/AdminProjects.jsx';
+import AdminExperience from './pages/admin/AdminExperience.jsx';
+import AdminSkills from './pages/admin/AdminSkills.jsx';
+import AdminReads from './pages/admin/AdminReads.jsx';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
+
 
 export const TransitionContext = createContext({});
 export const LenisContext = createContext(null);
@@ -85,6 +94,47 @@ function AppContent() {
             <Route path="/about" element={<AboutPage />} />
             <Route path="/reads" element={<AllReadsPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route 
+              path="/admin" 
+              element={
+                <ProtectedRoute>
+                  <AdminDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/projects" 
+              element={
+                <ProtectedRoute>
+                  <AdminProjects />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/experience" 
+              element={
+                <ProtectedRoute>
+                  <AdminExperience />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/skills" 
+              element={
+                <ProtectedRoute>
+                  <AdminSkills />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/reads" 
+              element={
+                <ProtectedRoute>
+                  <AdminReads />
+                </ProtectedRoute>
+              } 
+            />
           </Routes>
         </main>
         <Footer />
@@ -96,7 +146,9 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </BrowserRouter>
   );
 }
