@@ -25,6 +25,12 @@ This portfolio is not just a collection of projects; it's a statement on digital
 
 ---
 
+## 🔮 Future Roadmap
+
+- **🔒 Custom Admin Dashboard**: Integrating a Backend-as-a-Service (BaaS) solution (Firebase / Supabase) to build a secure, authenticated `/admin` portal. This will enable dynamic content management (adding, editing, and deleting portfolio items) directly within the React interface.
+
+---
+
 ## 🛠️ Tech Stack
 
 ### Frontend
