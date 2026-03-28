@@ -158,7 +158,9 @@ const AdminReads = () => {
           </div>
 
           {/* List Section */}
-          <h2>Your Reading List</h2>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+            <h2 style={{ margin: 0 }}>Your Reading List</h2>
+          </div>
           <div style={{ marginTop: "20px", display: "flex", flexDirection: "column", gap: "15px" }}>
             {loading ? (
               <p style={{ color: "var(--color-muted)" }}>Loading books...</p>
