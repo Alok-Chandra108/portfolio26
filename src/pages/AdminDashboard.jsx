@@ -1,5 +1,5 @@
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "../styles/admin.css";
 
 const AdminDashboard = () => {
@@ -32,19 +32,19 @@ const AdminDashboard = () => {
           <div className="admin-card">
             <h3>Portfolio Items</h3>
             <p>Manage your projects, descriptions, and tags.</p>
-            <div className="btn-manage">Manage Projects</div>
+            <Link to="/admin/projects" className="btn-manage" style={{ textDecoration: 'none' }}>Manage Projects</Link>
           </div>
 
           <div className="admin-card">
             <h3>Experience</h3>
             <p>Update your professional journey and timeline.</p>
-            <div className="btn-manage">Edit Experience</div>
+            <Link to="/admin/experience" className="btn-manage" style={{ textDecoration: 'none' }}>Edit Experience</Link>
           </div>
 
           <div className="admin-card">
             <h3>Capabilities</h3>
             <p>List your skills and technical expertise.</p>
-            <div className="btn-manage">Update Skills</div>
+            <Link to="/admin/skills" className="btn-manage" style={{ textDecoration: 'none' }}>Update Skills</Link>
           </div>
         </div>
       </div>

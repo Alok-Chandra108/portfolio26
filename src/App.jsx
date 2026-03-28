@@ -16,6 +16,9 @@ import AllReadsPage from './pages/AllReadsPage.jsx';
 import ContactPage from './pages/ContactPage.jsx';
 import Login from './pages/Login.jsx';
 import AdminDashboard from './pages/AdminDashboard.jsx';
+import AdminProjects from './pages/admin/AdminProjects.jsx';
+import AdminExperience from './pages/admin/AdminExperience.jsx';
+import AdminSkills from './pages/admin/AdminSkills.jsx';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 
@@ -96,6 +99,30 @@ function AppContent() {
               element={
                 <ProtectedRoute>
                   <AdminDashboard />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/projects" 
+              element={
+                <ProtectedRoute>
+                  <AdminProjects />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/experience" 
+              element={
+                <ProtectedRoute>
+                  <AdminExperience />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/admin/skills" 
+              element={
+                <ProtectedRoute>
+                  <AdminSkills />
                 </ProtectedRoute>
               } 
             />
