@@ -36,9 +36,7 @@ function ScrollToTop() {
 }
 
 function AppContent() {
-  const [isLoading, setIsLoading] = useState(() => {
-    return !sessionStorage.getItem('hasVisited');
-  });
+  const [isLoading, setIsLoading] = useState(true);
   const [transitioning, setTransitioning] = useState(false);
   const lenisRef = useRef(null);
 
@@ -75,7 +73,6 @@ function AppContent() {
   }, [isLoading]);
 
   const handleLoadComplete = () => {
-    sessionStorage.setItem('hasVisited', 'true');
     setIsLoading(false);
   };
 

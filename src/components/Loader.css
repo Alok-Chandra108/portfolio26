@@ -4,55 +4,63 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: #1a1a18;
+  background: #0f0f0e; /* Deep midnight tone */
   z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
   clip-path: inset(0 0 0 0);
+  overflow: hidden;
 }
+
+/* Background grid noise effect or subtle lighting can go here if needed */
 
 .loader-content {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 32px;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+  /* The entire block will be scaled via GSAP */
 }
 
-.loader-text {
+.loader-counter-wrapper {
   display: flex;
-  gap: 4px;
-  overflow: hidden;
-}
-
-.loader-letter {
-  font-family: var(--font-display);
-  font-size: clamp(48px, 8vw, 96px);
-  font-weight: 800;
-  color: #fff;
-  display: inline-block;
-  letter-spacing: 0.05em;
+  overflow: hidden; /* To allow digits sliding up */
+  padding: 10px 0;
 }
 
 .loader-counter {
+  font-family: var(--font-display);
+  font-size: clamp(120px, 30vw, 400px);
+  color: #ffffff; /* Sharp white */
+  font-weight: 900;
+  line-height: 0.8;
+  letter-spacing: -0.04em;
+  text-transform: uppercase;
+  /* Slight text shadow for a glow effect or high-end lighting */
+  text-shadow: 0px 10px 30px rgba(0, 255, 0, 0.1); /* Subtle neon green glow */
+}
+
+.loader-percent {
+  font-family: var(--font-display);
+  font-size: clamp(30px, 8vw, 80px);
+  color: var(--color-accent); /* Neon accent for the % sign */
+  font-weight: 700;
+  line-height: 1;
+  margin-left: 8px;
+  opacity: 0.8;
+}
+
+/* Optional subtle absolute decorative text for context */
+.loader-hint {
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
   font-family: var(--font-mono);
-  font-size: clamp(14px, 2vw, 18px);
+  font-size: 10px;
+  letter-spacing: 0.2rem;
   color: var(--color-accent);
-  letter-spacing: 0.2em;
-}
-
-.loader-progress-track {
-  width: clamp(200px, 40vw, 400px);
-  height: 2px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.loader-progress-bar {
-  width: 100%;
-  height: 100%;
-  background: var(--color-accent);
-  transform: scaleX(0);
-  transform-origin: left;
+  text-transform: uppercase;
 }
