@@ -11,6 +11,7 @@
   justify-content: center;
   clip-path: inset(0 0 0 0);
   overflow: hidden;
+  will-change: clip-path;
 }
 
 /* Background grid noise effect or subtle lighting can go here if needed */
@@ -22,6 +23,7 @@
   justify-content: center;
   position: relative;
   z-index: 2;
+  will-change: transform, opacity;
   /* The entire block will be scaled via GSAP */
 }
 

@@ -51,7 +51,7 @@ export default function Hero() {
             duration: 1.1,
             stagger: 0.08,
             ease: 'expo.out',
-            delay: 3.5, // after loader
+            delay: 2.6, // after faster loader
           });
         }
 
@@ -64,7 +64,7 @@ export default function Hero() {
             duration: 0.6,
             stagger: 0.06,
             ease: 'back.out(2)',
-            delay: 4.2,
+            delay: 3.2,
           });
         }
 
@@ -76,7 +76,7 @@ export default function Hero() {
             scale: 0.9,
             duration: 0.8,
             ease: 'power3.out',
-            delay: 4.3,
+            delay: 3.3,
           });
         }
 
@@ -87,7 +87,7 @@ export default function Hero() {
             opacity: 0,
             duration: 0.8,
             ease: 'power3.out',
-            delay: 4.4,
+            delay: 3.4,
           });
         }
       });
