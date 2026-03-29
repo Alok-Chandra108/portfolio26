@@ -1,0 +1,187 @@
+.education {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding: 120px 0;
+  
+  /* 🔴 60% DOMINANT COLOR: Matches site theme */
+  background-color: var(--color-bg);
+}
+
+.education__wrapper {
+  position: relative;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 40px;
+}
+
+.education__header {
+  text-align: center;
+  margin-bottom: 100px;
+}
+
+.education__header h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 800;
+  text-transform: uppercase;
+  line-height: 1;
+  /* 🔵 30% SECONDARY COLOR: Dark typography on light */
+  color: var(--color-text);
+  letter-spacing: -0.02em;
+}
+
+.education__header .sub-label {
+  color: var(--color-muted);
+  display: block;
+  margin-top: 15px;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+}
+
+.education__timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
+
+/* Base structural track */
+.education__line {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.1); 
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.education__line-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* 🟡 10% ACCENT COLOR: Dark stroke drawing down */
+  background: var(--color-text);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  transform-origin: top;
+}
+
+.education__item {
+  position: relative;
+  width: 50%;
+  padding: 0 60px;
+  z-index: 2;
+  /* We use simple flex to allow natural alignment without cards */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Alternate sides for desktop */
+.education__item:nth-child(odd) {
+  align-self: flex-start;
+  align-items: flex-end;
+  text-align: right;
+  padding-right: 80px;
+}
+
+.education__item:nth-child(even) {
+  align-self: flex-end;
+  align-items: flex-start;
+  text-align: left;
+  padding-left: 80px;
+}
+
+/* Timeline glowing node */
+.education__node {
+  position: absolute;
+  top: 0px; 
+  width: 18px;
+  height: 18px;
+  background: var(--color-bg);
+  /* 🟡 10% ACCENT COLOR: Dark rings */
+  border: 4px solid var(--color-text);
+  border-radius: 50%;
+  z-index: 3;
+}
+
+.education__item:nth-child(odd) .education__node {
+  right: -9px;
+}
+
+.education__item:nth-child(even) .education__node {
+  left: -9px;
+}
+
+/* 🔵 30% SECODARY LAYER: Clean Typography without borders */
+.education__content {
+  /* Removed border-top, border-bottom entirely. Just floating beautiful text */
+  max-width: 450px;
+}
+
+.education__year {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  /* 🟡 10% ACCENT COLOR: Highlighting the timeline year */
+  color: var(--color-bg);
+  background: var(--color-text);
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  margin-bottom: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.education__degree {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+  font-weight: 800;
+  margin-bottom: 12px;
+  line-height: 1.15;
+  color: var(--color-text); /* Clean crisp dark for 30% */
+}
+
+.education__institution {
+  font-family: var(--font-body);
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: var(--color-muted);
+  margin-bottom: 20px;
+}
+
+.education__description {
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  color: var(--color-muted);
+  line-height: 1.8;
+}
+
+/* Tablet & Mobile Responsiveness */
+@media (max-width: 900px) {
+  .education__line {
+    left: 20px;
+  }
+  
+  .education__item {
+    width: 100%;
+    padding: 0 0 0 60px !important;
+    text-align: left !important;
+    align-self: flex-start !important;
+    align-items: flex-start !important;
+  }
+
+  .education__node {
+    left: 11px !important;
+    right: auto !important;
+  }
+  
+  .education__content {
+    max-width: 100%;
+  }
+}

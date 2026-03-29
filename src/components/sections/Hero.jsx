@@ -117,9 +117,23 @@ export default function Hero() {
 
       <div className="hero__heading-wrap container">
         <h1 className="hero__heading heading-hero" ref={headingRef}>
-          {'ALOK CHANDRA'.split(' ').map((word, i) => (
-            <span key={i} className="hero__word-wrap">
-              <span className="hero__word">{word}</span>
+          {'ALOK CHANDRA'.split(' ').map((word, wIndex) => (
+            <span key={wIndex} className="hero__word-wrap">
+              <span className="hero__word">
+                {word.split('').map((char, cIndex) => {
+                  const randomColor = `hsl(${Math.floor(Math.random() * 360)}, 80%, 65%)`;
+                  return (
+                    <span 
+                      key={cIndex} 
+                      className="hero__char-wrap"
+                      style={{ '--hover-color': randomColor }}
+                    >
+                      <span className="hero__char hero__char--main">{char}</span>
+                      <span className="hero__char hero__char--clone" aria-hidden="true">{char}</span>
+                    </span>
+                  );
+                })}
+              </span>
             </span>
           ))}
         </h1>
