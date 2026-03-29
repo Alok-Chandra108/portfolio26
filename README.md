@@ -18,7 +18,8 @@ This portfolio is not just a collection of projects; it's a statement on digital
 
 - **🚀 Performance-First Hero**: A high-impact entry section with GSAP-orchestrated motion, a magnetic marquee, and smooth text reveals.
 - **🖱️ Magnetic Custom Cursor**: A persistent, reactive cursor that scales and responds to interactive elements for a premium feel.
-- **📚 Immersive "My Reads"**: A dynamic library system with advanced filtering, interactive book cards, and smooth state transitions.
+- **📚 Immersive "My Reads"**: A dynamic library system powered by Firebase Firestore, featuring advanced filtering, interactive book cards, and an integrated status manager.
+- **🔒 Secure Admin Dashboard**: An authenticated `/admin` portal (Firebase Auth) allowing on-the-fly content management without touching the codebase.
 - **🛹 Inertial Scrolling**: Integrated with [Lenis](https://lenis.darkroom.engineering/) for that signature "heavy" and smooth scroll feel.
 - **📱 True Fluid Responsiveness**: Meticulously crafted with CSS Clamp and Flexbox/Grid to ensure a flawless experience from mobile to ultra-wide displays.
 - **🌀 Seamless Transitions**: Page-to-page motion that maintains context and reduces cognitive load.
@@ -27,11 +28,15 @@ This portfolio is not just a collection of projects; it's a statement on digital
 
 ## 🔮 Future Roadmap
 
-- **🔒 Custom Admin Dashboard**: Integrating a Backend-as-a-Service (BaaS) solution (Firebase / Supabase) to build a secure, authenticated `/admin` portal. This will enable dynamic content management (adding, editing, and deleting portfolio items) directly within the React interface.
+- **✍️ Interactive Experience Timeline**: Building out the CMS forms for managing the Work Experience section dynamically.
+- **🖼️ Advanced Image Optimization**: Implementing lazy loading and automated WebP conversions for high-res project photography.
 
 ---
 
 ## 🛠️ Tech Stack
+
+### Backend & Database
+- **Firebase**: Utilizing Firebase Authentication for secured routes and Cloud Firestore for real-time dynamic content syncing.
 
 ### Frontend
 - **Framework**: [React 19](https://react.dev/) (Concurrent rendering & improved hooks)
@@ -93,13 +98,24 @@ prime-einstein/
    npm install
    ```
 
-3. **Launch Development Server**:
+3. **Environment Setup**:
+   Create a `.env.local` file in the root directory and add your Firebase credentials:
+   ```env
+   VITE_FIREBASE_API_KEY=your_api_key
+   VITE_FIREBASE_AUTH_DOMAIN=your_auth_domain
+   VITE_FIREBASE_PROJECT_ID=your_project_id
+   VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+   VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+   VITE_FIREBASE_APP_ID=your_app_id
+   ```
+
+4. **Launch Development Server**:
    ```bash
    npm run dev
    ```
    *The site will be available at `http://localhost:5173`.*
 
-4. **Production Build**:
+5. **Production Build**:
    ```bash
    npm run build
    ```

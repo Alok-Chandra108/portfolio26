@@ -1,15 +1,35 @@
 import { useState, useRef, useEffect } from 'react';
 import { gsap, Flip, ScrollTrigger } from '../utils/gsapPlugins.js';
 import BookCard from '../components/ui/BookCard.jsx';
-import books from '../data/books.js';
+import { db } from '../firebase/config';
+import { collection, getDocs } from 'firebase/firestore';
 import './AllReadsPage.css';
 
-const categories = ['All', 'Design', 'Tech', 'Productivity', 'Business'];
+const categories = ['All', 'Design', 'Tech', 'Productivity', 'Business', 'Self-Help', 'Fiction', 'Non-Fiction'];
 const rotations = [-2, 1.5, -1, 2.5, -1.5, 2, -0.5, 1];
 
 export default function AllReadsPage() {
   const [activeFilter, setActiveFilter] = useState('All');
+  const [books, setBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const gridRef = useRef(null);
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "reads"));
+        const booksData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setBooks(booksData);
+      } catch (error) {
+        console.error("Error fetching books:", error);
+      }
+      setLoading(false);
+    };
+    fetchBooks();
+  }, []);
 
   const filteredBooks = activeFilter === 'All'
     ? books
@@ -80,15 +100,25 @@ export default function AllReadsPage() {
         </div>
 
         <div className="reads-page__grid" ref={gridRef}>
-          {filteredBooks.map((book, i) => (
-            <div key={book.id} data-flip-id={`book-${book.id}`} className="reads-page__card-wrap">
-              <BookCard
-                book={book}
-                index={i}
-                rotation={rotations[i % rotations.length]}
-              />
-            </div>
-          ))}
+          {loading ? (
+            <p style={{ gridColumn: "1 / -1", textAlign: "center", color: "var(--color-muted)", padding: "40px 0" }}>
+              Loading reading catalog...
+            </p>
+          ) : filteredBooks.length === 0 ? (
+            <p style={{ gridColumn: "1 / -1", textAlign: "center", color: "var(--color-muted)", padding: "40px 0" }}>
+              No books found in this category.
+            </p>
+          ) : (
+            filteredBooks.map((book, i) => (
+              <div key={book.id} data-flip-id={`book-${book.id}`} className="reads-page__card-wrap">
+                <BookCard
+                  book={book}
+                  index={i}
+                  rotation={rotations[i % rotations.length]}
+                />
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>
