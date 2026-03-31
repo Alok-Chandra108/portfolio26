@@ -33,49 +33,69 @@ This portfolio is not just a collection of projects; it's a statement on digital
 
 ---
 
-## 🛠️ Tech Stack
-
-### Backend & Database
-- **Firebase**: Utilizing Firebase Authentication for secured routes and Cloud Firestore for real-time dynamic content syncing.
-
-### Frontend
-- **Framework**: [React 19](https://react.dev/) (Concurrent rendering & improved hooks)
-- **Routing**: [React Router 7](https://reactrouter.com/)
-- **Styling**: Vanilla Modern CSS (CSS Variables, Container Queries, `:has()` selector)
-
-### Motion & Interactions
-- **GSAP**: The engine behind every complex animation and scroll-triggered effect.
-- **Lenis**: For smooth, high-fidelity inertial scrolling.
-- **GSAP Flip**: Used for seamless layout transitions between states.
-
-### Build & Tooling
-- **Vite**: Ultra-fast dev server and HMR.
-- **ESLint**: Modern flat-config linting for code quality.
-- **Vercel**: Optimized edge deployment and performance monitoring.
-
----
-
 ## 🏗️ Project Architecture
+
+A high-level overview of the repository's structural design:
 
 ```text
 prime-einstein/
 ├── public/                 # Static assets (fonts, icons, etc.)
 ├── src/
-│   ├── assets/             # Global visual assets
+│   ├── assets/             # Global visual assets (SVGs, Lottie, etc.)
 │   ├── components/
-│   │   ├── sections/       # Major page sections (Hero, About, Work, etc.)
-│   │   ├── ui/             # Reusable UI components (Buttons, Pills, Cards)
+│   │   ├── admin/          # Management UI for CMS features
+│   │   ├── sections/       # Atomic page sections (Hero, Services, etc.)
+│   │   ├── ui/             # "Atoms" & "Molecules" (Buttons, Pills, Cards)
 │   │   ├── CustomCursor.jsx
 │   │   ├── Navbar.jsx
-│   │   └── Loader.jsx      # Initial entrance experience
-│   ├── data/               # Content data for projects, reads, etc.
-│   ├── pages/              # Main route views
-│   ├── styles/             # Global CSS and typography modules
-│   ├── utils/              # Animation helpers and math utilities
-│   ├── App.jsx             # Main application entry and router
-│   └── main.jsx            # React root mount
-└── vite.config.js          # Build configuration
+│   │   ├── Loader.jsx      # Initial entrance experience
+│   │   └── ProtectedRoute.jsx # Auth-guarded navigation
+│   ├── context/            # Global state (AuthContext, ThemeContext)
+│   ├── data/               # Static/Local JSON data for mockups
+│   ├── firebase/           # Configuration & Firestore initialization
+│   ├── pages/
+│   │   └── admin/          # Full-page administrative views
+│   ├── styles/
+│   │   └── sections/       # Modular CSS scoped to individual sections
+│   ├── utils/              # Animation helpers & mathematical utilities
+│   ├── App.jsx             # Root router & layout orchestration
+│   └── main.jsx            # Entry point for React 19
+├── vite.config.js          # Optimized build pipeline
+└── vercel.json             # Deployment & redirect configuration
 ```
+
+---
+
+## 🔍 Deep Folder Analysis
+
+| Directory | Purpose | Design Pattern |
+| :--- | :--- | :--- |
+| `src/components/sections` | Contains high-impact visual blocks like `Hero.jsx` and `Work.jsx`. | **Organisms**: Self-contained layout units with scoped CSS. |
+| `src/components/ui` | Reusable, stateless components like `AnimatedButton.jsx` or `PillTag.jsx`. | **Atoms/Molecules**: Highly reusable across different sections. |
+| `src/pages/admin` | Private views for managing projects and reads. | **Admin Portal**: Secured by Firebase Auth. |
+| `src/styles/sections` | One-to-one CSS mapping for every section in the app. | **Modular CSS**: Keeps styles maintainable and avoids global collisions. |
+| `src/context` | Centralized state management for authentication. | **Provider Pattern**: Injects auth state into the component tree. |
+| `src/firebase` | Central configuration hub for Firestore and Auth. | **Service Layer**: Abstracts database logic from UI. |
+
+---
+
+## 🛠️ Tech Stack
+
+### 🚀 Frontend
+- **Framework**: [React 19](https://react.dev/) — Leveraging the latest concurrent features and server-side improvements.
+- **Routing**: [React Router 7](https://reactrouter.com/) — Handling dynamic paths and administrative guards.
+- **Motion**: [GSAP 3.14](https://greensock.com/gsap/) — The industry standard for high-performance web animations.
+- **Scrolling**: [Lenis](https://lenis.darkroom.engineering/) — Providing smooth, buttery-soft inertial scrolling across all browsers.
+- **Styling**: **Vanilla Modern CSS** — Utilizing CSS Variables, `:has()` selectors, and Container Queries for a zero-dependency, ultra-fast design system.
+
+### 🛡️ Backend & Security
+- **Auth**: [Firebase Authentication](https://firebase.google.com/products/auth) — Securing the `/admin` portal.
+- **Database**: [Cloud Firestore](https://firebase.google.com/products/firestore) — Real-time synchronization for projects, reads, and experience data.
+
+### 🛠️ Tooling & DevOps
+- **Build**: [Vite 8](https://vitejs.dev/) — Next-generation frontend tooling for instant HMR.
+- **Deployment**: [Vercel](https://vercel.com/) — Optimized Edge Network hosting with automated CI/CD.
+- **Linting**: [ESLint 9](https://eslint.org/) — Enforcing modern coding standards with flat-config.
 
 ---
 
