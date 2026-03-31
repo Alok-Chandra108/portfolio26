@@ -1,3 +1,8 @@
+/* Added global preloader body class to prevent white-flash */
+body.site-is-loading {
+  background-color: #0f0f0e !important;
+}
+
 .loader-overlay {
   position: fixed;
   top: 0;
@@ -14,7 +19,39 @@
   will-change: clip-path;
 }
 
-/* Background grid noise effect or subtle lighting can go here if needed */
+/* ── Background Flair ────────────────────────────── */
+.loader-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(rgba(0, 255, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 0, 0.05) 1px, transparent 1px);
+  background-size: clamp(20px, 5vw, 40px) clamp(20px, 5vw, 40px);
+  background-position: center center;
+  opacity: 0.3;
+  z-index: 1;
+  animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(40px); }
+}
+
+.loader-overlay::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, transparent 0%, rgba(15, 15, 14, 0.8) 80%);
+  z-index: 1;
+  pointer-events: none;
+}
 
 .loader-content {
   display: flex;
@@ -29,40 +66,56 @@
 
 .loader-counter-wrapper {
   display: flex;
+  align-items: baseline;
+  justify-content: center;
   overflow: hidden; /* To allow digits sliding up */
   padding: 10px 0;
+  white-space: nowrap; /* Ensures percentage stays on the same line */
 }
 
 .loader-counter {
   font-family: var(--font-display);
-  font-size: clamp(120px, 30vw, 400px);
+  font-size: clamp(72px, 24vw, 400px); /* Tighter min limit for tiny screens */
   color: #ffffff; /* Sharp white */
   font-weight: 900;
   line-height: 0.8;
   letter-spacing: -0.04em;
   text-transform: uppercase;
   /* Slight text shadow for a glow effect or high-end lighting */
-  text-shadow: 0px 10px 30px rgba(0, 255, 0, 0.1); /* Subtle neon green glow */
+  text-shadow: 0px 10px 30px rgba(184, 255, 0, 0.15); /* Subtle neon accent glow */
 }
 
 .loader-percent {
   font-family: var(--font-display);
-  font-size: clamp(30px, 8vw, 80px);
+  font-size: clamp(20px, 7vw, 80px); /* Tighter min limit for tiny screens */
   color: var(--color-accent); /* Neon accent for the % sign */
   font-weight: 700;
   line-height: 1;
-  margin-left: 8px;
+  margin-left: clamp(4px, 1vw, 8px);
   opacity: 0.8;
+  animation: percentPulse 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes percentPulse {
+  from { opacity: 0.6; filter: blur(0px); }
+  to { opacity: 1; filter: blur(1px); }
 }
 
 /* Optional subtle absolute decorative text for context */
 .loader-hint {
   position: absolute;
-  bottom: 40px;
-  right: 40px;
+  bottom: clamp(24px, 6vh, 48px);
+  right: clamp(24px, 6vw, 48px);
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: clamp(8px, 1.2vw, 11px);
   letter-spacing: 0.2rem;
   color: var(--color-accent);
   text-transform: uppercase;
+  opacity: 0.7;
+}
+
+@media (max-width: 320px) {
+  .loader-counter {
+    font-size: 60px; /* Backup for extreme tiny screens */
+  }
 }

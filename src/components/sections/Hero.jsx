@@ -18,6 +18,7 @@ export default function Hero() {
   const cvBtnRef = useRef(null);
   const marqueeRef = useRef(null);
   const [subIndex, setSubIndex] = useState(0);
+  const usedHues = useRef({}); // History of colors for each character index
 
   // Cycle subtitles
   useEffect(() => {
@@ -51,7 +52,7 @@ export default function Hero() {
             duration: 1.1,
             stagger: 0.08,
             ease: 'expo.out',
-            delay: 2.6, // after faster loader
+            delay: 2.2, // synchronized with loader exit start
           });
         }
 
@@ -64,7 +65,7 @@ export default function Hero() {
             duration: 0.6,
             stagger: 0.06,
             ease: 'back.out(2)',
-            delay: 3.2,
+            delay: 2.8,
           });
         }
 
@@ -76,7 +77,7 @@ export default function Hero() {
             scale: 0.9,
             duration: 0.8,
             ease: 'power3.out',
-            delay: 3.3,
+            delay: 2.9,
           });
         }
 
@@ -87,7 +88,7 @@ export default function Hero() {
             opacity: 0,
             duration: 0.8,
             ease: 'power3.out',
-            delay: 3.4,
+            delay: 2.2,
           });
         }
       });
@@ -111,6 +112,34 @@ export default function Hero() {
 
   const marqueeContent = 'AWS ✦ Docker ✦ Kubernetes ✦ Terraform ✦ CI/CD ✦ Linux ✦ DevOps ✦ Ansible ✦ Jenkins ✦ Prometheus ✦ Grafana ✦ Git ✦ Bash ✦ ';
 
+  const handleMouseEnter = (key, e) => {
+    if (!usedHues.current[key]) usedHues.current[key] = [];
+    const history = usedHues.current[key];
+    
+    let newHue;
+    let attempts = 0;
+    const minDistance = 30; // Min degrees difference
+
+    while (attempts < 50) {
+      newHue = Math.floor(Math.random() * 360);
+      // Ensure it's not too close to the last color or any in recent history
+      const isUnique = history.every(h => {
+        const diff = Math.abs(h - newHue);
+        return diff > minDistance && diff < (360 - minDistance);
+      });
+      
+      if (isUnique) break;
+      attempts++;
+    }
+
+    history.push(newHue);
+    if (history.length > 50) history.shift(); // Max history of 50 to allow some recycling eventually
+
+    e.currentTarget.style.setProperty('--hover-color', `hsl(${newHue}, 80%, 65%)`);
+  };
+
+  const initialHues = useRef('ALOK CHANDRA'.split('').map(() => Math.floor(Math.random() * 360)));
+
   return (
     <section className="hero section" ref={sectionRef}>
       <div className="hero__annotation sub-label">(portfolio)</div>
@@ -121,12 +150,16 @@ export default function Hero() {
             <span key={wIndex} className="hero__word-wrap">
               <span className="hero__word">
                 {word.split('').map((char, cIndex) => {
-                  const randomColor = `hsl(${Math.floor(Math.random() * 360)}, 80%, 65%)`;
+                  const charIdx = word.split('').slice(0, cIndex).length + (wIndex > 0 ? 'ALOK '.length : 0);
+                  const globalIdx = `${wIndex}-${cIndex}`;
+                  const initialHue = initialHues.current[charIdx] || 0;
+                  
                   return (
-                    <span 
-                      key={cIndex} 
+                    <span
+                      key={cIndex}
                       className="hero__char-wrap"
-                      style={{ '--hover-color': randomColor }}
+                      style={{ '--hover-color': `hsl(${initialHue}, 80%, 65%)` }}
+                      onMouseEnter={(e) => handleMouseEnter(globalIdx, e)}
                     >
                       <span className="hero__char hero__char--main">{char}</span>
                       <span className="hero__char hero__char--clone" aria-hidden="true">{char}</span>

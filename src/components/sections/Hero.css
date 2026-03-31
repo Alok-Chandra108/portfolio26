@@ -44,8 +44,8 @@
 
 .hero__char {
   display: inline-block;
-  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1), color 0.4s ease;
-  will-change: transform;
+  transition: transform 0.7s cubic-bezier(0.23, 1, 0.32, 1), color 0.3s ease;
+  will-change: transform, color;
 }
 
 .hero__char--main {
@@ -57,7 +57,8 @@
   top: 0;
   left: 0;
   transform: translateX(110%);
-  color: var(--hover-color, var(--color-accent)); /* Use random color, fallback to accent */
+  color: var(--hover-color, var(--color-accent));
+  /* Use random color, fallback to accent */
 }
 
 .hero__char-wrap:hover .hero__char--main {
