@@ -19,14 +19,14 @@ export default function CTASection() {
       }, (ctx) => {
         const { isMobile } = ctx.conditions;
 
-        /* ── Line entrances ───────────────────── */
+        /* ── Line entrances ─────────────────── */
         const lines = linesRef.current.filter(Boolean);
         if (lines.length) {
           gsap.from(lines, {
-            y: isMobile ? 24 : 80,
+            y: isMobile ? 30 : 100,
             opacity: 0,
-            duration: isMobile ? 0.7 : 1,
-            stagger: 0.15,
+            duration: isMobile ? 0.9 : 1.2,
+            stagger: 0.2,
             ease: 'expo.out',
             scrollTrigger: {
               trigger: sectionRef.current,
@@ -43,8 +43,8 @@ export default function CTASection() {
               { letterSpacing: '0.2em' },
               {
                 letterSpacing: '0.01em',
-                duration: 1,
-                delay: i * 0.15,
+                duration: 1.3,
+                delay: i * 0.2,
                 ease: 'expo.out',
                 scrollTrigger: {
                   trigger: sectionRef.current,

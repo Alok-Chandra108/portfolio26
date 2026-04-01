@@ -23,9 +23,9 @@ export default function Work() {
           { clipPath: 'inset(0 100% 0 0)', opacity: 1 },
           {
             clipPath: 'inset(0 0% 0 0)',
-            duration: 1.1,
+            duration: 1.5,
             ease: 'expo.out',
-            scrollTrigger: { trigger: headingRef.current, start: 'top 85%' },
+            scrollTrigger: { trigger: headingRef.current, start: 'top 80%' },
           }
         );
       }
@@ -36,9 +36,9 @@ export default function Work() {
         gsap.from(line, {
           scaleX: 0,
           transformOrigin: 'left',
-          duration: 0.7,
-          ease: 'power3.inOut',
-          scrollTrigger: { trigger: line, start: 'top 90%' },
+          duration: 1.1,
+          ease: 'expo.inOut',
+          scrollTrigger: { trigger: line, start: 'top 88%' },
         });
       });
 
@@ -55,12 +55,12 @@ export default function Work() {
           if (!row) return;
           if (isMobile) {
             gsap.from(row, {
-              y: 24,
+              y: 30,
               opacity: 0,
-              duration: 0.7,
-              delay: i * 0.06,
+              duration: 0.9,
+              delay: i * 0.1,
               ease: 'power3.out',
-              scrollTrigger: { trigger: row, start: 'top 90%' },
+              scrollTrigger: { trigger: row, start: 'top 88%' },
             });
           } else {
             gsap.fromTo(
@@ -68,10 +68,10 @@ export default function Work() {
               { clipPath: 'inset(0 100% 0 0)', opacity: 1 },
               {
                 clipPath: 'inset(0 0% 0 0)',
-                duration: 0.85,
-                delay: i * 0.08,
+                duration: 1.1,
+                delay: i * 0.14,
                 ease: 'expo.out',
-                scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' },
+                scrollTrigger: { trigger: sectionRef.current, start: 'top 68%' },
               }
             );
           }

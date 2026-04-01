@@ -37,14 +37,14 @@ export default function Education() {
         );
       }
 
-      /* ── Heading ────────────────────────────── */
+      /* ── Heading ─────────────────────── */
       if (headingRef.current) {
         gsap.from(headingRef.current, {
-          y: 30,
+          y: 40,
           opacity: 0,
-          duration: 0.9,
+          duration: 1.1,
           ease: 'expo.out',
-          scrollTrigger: { trigger: headingRef.current, start: 'top 85%' },
+          scrollTrigger: { trigger: headingRef.current, start: 'top 82%' },
         });
       }
 
@@ -63,40 +63,40 @@ export default function Education() {
           gsap.fromTo(
             item,
             {
-              x: isMobile ? 0 : isOdd ? -40 : 40,
-              y: isMobile ? 20 : 0,
+              x: isMobile ? 0 : isOdd ? -50 : 50,
+              y: isMobile ? 28 : 0,
               opacity: 0,
-              scale: 0.94,
+              scale: 0.96,
             },
             {
               x: 0,
               y: 0,
               opacity: 1,
               scale: 1,
-              duration: isMobile ? 0.7 : 1.1,
+              duration: isMobile ? 0.85 : 1.3,
               ease: 'power3.out',
               scrollTrigger: {
                 trigger: item,
-                start: 'top 88%',
+                start: 'top 86%',
               },
             }
           );
         });
 
-        /* ── Node pulse ring (all screens) ────── */
+        /* ── Node pulse ring (all screens) ──── */
         nodesRef.current.forEach((node) => {
           if (!node) return;
           gsap.fromTo(
             node,
-            { scale: 0.5, opacity: 0 },
+            { scale: 0.3, opacity: 0 },
             {
               scale: 1,
               opacity: 1,
-              duration: 0.5,
-              ease: 'back.out(2)',
+              duration: 0.7,
+              ease: 'back.out(1.4)',
               scrollTrigger: {
                 trigger: node,
-                start: 'top 90%',
+                start: 'top 88%',
               },
             }
           );

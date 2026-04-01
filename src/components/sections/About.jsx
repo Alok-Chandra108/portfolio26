@@ -29,31 +29,31 @@ export default function About() {
       }, (ctx) => {
         const { isMobile, isDesktop } = ctx.conditions;
 
-        /* ── Heading ──────────────────────────── */
+        /* ── Heading ─────────────────────── */
         if (headingRef.current) {
           gsap.from(headingRef.current, {
-            y: isMobile ? 24 : 60,
+            y: isMobile ? 28 : 70,
             opacity: 0,
-            duration: 1,
+            duration: 1.2,
             ease: 'expo.out',
             scrollTrigger: {
               trigger: headingRef.current,
-              start: 'top 88%',
+              start: 'top 85%',
             },
           });
         }
 
-        /* ── Body paragraph fade-up ───────────── */
+        /* ── Body paragraph fade-up ─────────── */
         if (bodyRef.current) {
           gsap.from(bodyRef.current, {
-            y: isMobile ? 16 : 40,
+            y: isMobile ? 20 : 48,
             opacity: 0,
-            duration: 0.9,
+            duration: 1.1,
             ease: 'power3.out',
-            delay: 0.1,
+            delay: 0.15,
             scrollTrigger: {
               trigger: headingRef.current,
-              start: 'top 85%',
+              start: 'top 82%',
             },
           });
         }
@@ -75,13 +75,13 @@ export default function About() {
           } else {
             // Tablet / Desktop: slide in from right on enter
             gsap.from(stripRef.current, {
-              x: isDesktop ? 120 : 60,
+              x: isDesktop ? 140 : 70,
               opacity: 0,
-              duration: 1,
+              duration: 1.2,
               ease: 'power3.out',
               scrollTrigger: {
                 trigger: sectionRef.current,
-                start: 'top 65%',
+                start: 'top 63%',
               },
             });
           }

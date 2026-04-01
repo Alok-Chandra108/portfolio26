@@ -45,11 +45,11 @@ export default function Services() {
             { clipPath: 'inset(0 100% 0 0)', opacity: 1 },
             {
               clipPath: 'inset(0 0% 0 0)',
-              duration: isMobile ? 0.8 : 1.1,
+              duration: isMobile ? 1.0 : 1.4,
               ease: 'expo.out',
               scrollTrigger: {
                 trigger: headingRef.current,
-                start: 'top 85%',
+                start: 'top 82%',
               },
             }
           );
@@ -61,9 +61,9 @@ export default function Services() {
           gsap.from(line, {
             scaleX: 0,
             transformOrigin: 'left',
-            duration: 0.7,
-            ease: 'power3.inOut',
-            scrollTrigger: { trigger: line, start: 'top 90%' },
+            duration: 1.0,
+            ease: 'expo.inOut',
+            scrollTrigger: { trigger: line, start: 'top 88%' },
           });
         });
 
@@ -74,14 +74,14 @@ export default function Services() {
         const validBlocks = blocksRef.current.filter(Boolean);
         if (validBlocks.length) {
           gsap.from(validBlocks, {
-            y: isMobile ? 20 : 40,
+            y: isMobile ? 24 : 50,
             opacity: 0,
-            duration: isMobile ? 0.6 : 0.85,
-            stagger: isMobile ? 0.07 : 0.12,
+            duration: isMobile ? 0.8 : 1.1,
+            stagger: isMobile ? 0.1 : 0.16,
             ease: 'power3.out',
             scrollTrigger: {
               trigger: sectionRef.current,
-              start: isMobile ? 'top 80%' : 'top 72%',
+              start: isMobile ? 'top 78%' : 'top 70%',
             },
           });
         }
@@ -92,15 +92,15 @@ export default function Services() {
             const pills = block?.querySelectorAll('.pill-tag');
             if (!pills?.length) return;
             gsap.from(pills, {
-              y: -16,
+              y: -20,
               opacity: 0,
-              duration: 0.5,
-              stagger: 0.06,
-              ease: 'back.out(1.7)',
-              delay: 0.3 + i * 0.12,
+              duration: 0.65,
+              stagger: 0.08,
+              ease: 'back.out(1.4)',
+              delay: 0.5 + i * 0.16,
               scrollTrigger: {
                 trigger: sectionRef.current,
-                start: 'top 72%',
+                start: 'top 70%',
               },
             });
           });

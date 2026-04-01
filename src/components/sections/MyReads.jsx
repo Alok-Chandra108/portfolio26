@@ -41,13 +41,13 @@ export default function MyReads() {
         /* ── Heading entrance ─────────────────── */
         if (headingRef.current) {
           gsap.from(headingRef.current, {
-            y: isMobile ? 24 : 120,
+            y: isMobile ? 30 : 140,
             opacity: 0,
-            duration: isMobile ? 0.7 : 0.9,
-            ease: isMobile ? 'power3.out' : 'back.out(1.7)',
+            duration: isMobile ? 0.9 : 1.2,
+            ease: isMobile ? 'power3.out' : 'expo.out',
             scrollTrigger: {
               trigger: sectionRef.current,
-              start: isMobile ? 'top 85%' : 'top 70%',
+              start: isMobile ? 'top 83%' : 'top 68%',
             },
           });
         }
@@ -59,11 +59,11 @@ export default function MyReads() {
             { letterSpacing: '0.32em' },
             {
               letterSpacing: '0.04em',
-              duration: 1,
+              duration: 1.3,
               ease: 'expo.out',
               scrollTrigger: {
                 trigger: sectionRef.current,
-                start: 'top 70%',
+                start: 'top 68%',
               },
             }
           );
@@ -74,15 +74,15 @@ export default function MyReads() {
           if (!card) return;
 
           gsap.from(card, {
-            y: isMobile ? 20 : 80,
+            y: isMobile ? 24 : 100,
             rotation: 0,
             opacity: 0,
-            duration: isMobile ? 0.6 : 0.8,
-            delay: i * (isMobile ? 0.07 : 0.12),
+            duration: isMobile ? 0.75 : 1.05,
+            delay: i * (isMobile ? 0.1 : 0.16),
             ease: 'power3.out',
             scrollTrigger: {
               trigger: sectionRef.current,
-              start: isMobile ? 'top 85%' : 'top 65%',
+              start: isMobile ? 'top 83%' : 'top 63%',
             },
           });
 
@@ -90,12 +90,12 @@ export default function MyReads() {
           if (!isMobile) {
             gsap.to(card, {
               rotation: rotations[i],
-              duration: 0.4,
-              delay: 0.9 + i * 0.1,
-              ease: 'power2.out',
+              duration: 0.75,
+              delay: 1.2 + i * 0.13,
+              ease: 'power2.inOut',
               scrollTrigger: {
                 trigger: sectionRef.current,
-                start: 'top 65%',
+                start: 'top 63%',
               },
             });
           }
