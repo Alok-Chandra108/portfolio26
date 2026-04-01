@@ -34,6 +34,7 @@
   color: var(--color-text);
 }
 
+/* ── Grid: 4 columns desktop ── */
 .reads-page__grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -42,30 +43,77 @@
 }
 
 .reads-page__card-wrap {
+  width: 100%;
   will-change: transform;
 }
 
-/* ── Responsive ──────────────────────────────────── */
-@media (max-width: 1024px) {
+/* ── Responsive ────────────────────────────────────────────────────── */
+
+/*
+  Device tiers (2026):
+  ≤ 360px  → xs: Very small phones
+  361–430px → sm: iPhone 17, Pixel 10, Galaxy S25 — 2 columns
+  431–767px → md: iPhone 17 Plus, Galaxy A56, OnePlus 13 — 2 columns (wider)
+  768–1023px → lg: Foldables (8.0"), small tablets — 3 columns
+  ≥ 1024px → xl: Desktop — 4 columns
+*/
+
+/* ── lg: Foldables & tablets (768–1023px): 3 columns ── */
+@media (max-width: 1023px) {
   .reads-page__grid {
     grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
   }
 }
 
-@media (max-width: 768px) {
-  .reads-page__grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-  }
-
+/* ── md phones (431–767px): 2 wide columns, portrait cards ── */
+@media (max-width: 767px) {
   .reads-page {
     padding-top: 100px;
+    padding-bottom: 60px;
+  }
+
+  .reads-page__header {
+    margin-bottom: 28px;
+  }
+
+  .reads-page__filters {
+    gap: 6px;
+    margin-bottom: 32px;
+  }
+
+  .reads-page__filter {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+
+  .reads-page__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
   }
 }
 
-@media (max-width: 480px) {
+/* ── sm phones (≤ 430px): 2 compact columns ── */
+@media (max-width: 430px) {
+  .reads-page {
+    padding-top: 90px;
+  }
+
   .reads-page__grid {
-    grid-template-columns: 1fr;
-    gap: 24px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .reads-page__filter {
+    padding: 7px 14px;
+    font-size: 12px;
+  }
+}
+
+/* ── xs phones (≤ 360px): 2 very compact columns ── */
+@media (max-width: 360px) {
+  .reads-page__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
   }
 }

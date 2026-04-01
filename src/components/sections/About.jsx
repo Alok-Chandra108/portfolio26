@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { gsap, ScrollTrigger } from '../../utils/gsapPlugins.js';
+import { gsap } from '../../utils/gsapPlugins.js';
 import AnimatedButton from '../ui/AnimatedButton.jsx';
 import './About.css';
 
@@ -15,37 +15,92 @@ const photos = [
 export default function About() {
   const sectionRef = useRef(null);
   const headingRef = useRef(null);
+  const bodyRef = useRef(null);
   const stripRef = useRef(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Heading reveal
-      if (headingRef.current) {
-        gsap.from(headingRef.current, {
-          y: 60,
-          opacity: 0,
-          duration: 1,
-          ease: 'expo.out',
-          scrollTrigger: {
-            trigger: headingRef.current,
-            start: 'top 72%',
-          },
-        });
-      }
+      const mm = gsap.matchMedia();
 
-      // Photo strip entrance
-      if (stripRef.current) {
-        gsap.from(stripRef.current, {
-          x: 200,
-          opacity: 0,
-          duration: 1,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top 60%',
-          },
-        });
-      }
+      mm.add({
+        isMobile: '(max-width: 639px)',
+        isTablet: '(min-width: 640px) and (max-width: 1023px)',
+        isDesktop: '(min-width: 1024px)',
+      }, (ctx) => {
+        const { isMobile, isDesktop } = ctx.conditions;
+
+        /* ── Heading ──────────────────────────── */
+        if (headingRef.current) {
+          gsap.from(headingRef.current, {
+            y: isMobile ? 24 : 60,
+            opacity: 0,
+            duration: 1,
+            ease: 'expo.out',
+            scrollTrigger: {
+              trigger: headingRef.current,
+              start: 'top 88%',
+            },
+          });
+        }
+
+        /* ── Body paragraph fade-up ───────────── */
+        if (bodyRef.current) {
+          gsap.from(bodyRef.current, {
+            y: isMobile ? 16 : 40,
+            opacity: 0,
+            duration: 0.9,
+            ease: 'power3.out',
+            delay: 0.1,
+            scrollTrigger: {
+              trigger: headingRef.current,
+              start: 'top 85%',
+            },
+          });
+        }
+
+        /* ── Photo strip ──────────────────────── */
+        if (stripRef.current) {
+          if (isMobile) {
+            // Mobile: simple fade-up, NO x-translate (prevents overflow)
+            gsap.from(stripRef.current, {
+              y: 20,
+              opacity: 0,
+              duration: 0.8,
+              ease: 'power3.out',
+              scrollTrigger: {
+                trigger: sectionRef.current,
+                start: 'top 80%',
+              },
+            });
+          } else {
+            // Tablet / Desktop: slide in from right on enter
+            gsap.from(stripRef.current, {
+              x: isDesktop ? 120 : 60,
+              opacity: 0,
+              duration: 1,
+              ease: 'power3.out',
+              scrollTrigger: {
+                trigger: sectionRef.current,
+                start: 'top 65%',
+              },
+            });
+          }
+
+          // Desktop-only scrubbed parallax
+          if (isDesktop) {
+            gsap.to(stripRef.current, {
+              y: 60,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: sectionRef.current,
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: 1.5,
+              },
+            });
+          }
+        }
+      });
     }, sectionRef);
 
     return () => ctx.revert();
@@ -55,11 +110,11 @@ export default function About() {
     <section className="about section" ref={sectionRef}>
       <div className="container about__grid">
         <div className="about__text">
-          <h2 className="heading-section" ref={headingRef}>
+          <h2 className="heading-section will-animate" ref={headingRef}>
             I build robust infrastructure, because downtime is bad
           </h2>
-          <p className="body-text about__body">
-            I'm a Cloud & DevOps enthusiast passionate about architecting scalable,
+          <p className="body-text about__body will-animate" ref={bodyRef}>
+            I'm a Cloud &amp; DevOps enthusiast passionate about architecting scalable,
             resilient systems that power modern applications. With a deep interest in
             automation, continuous integration, and cloud-native technologies, I bridge
             the gap between development and operations. Every project is an opportunity
@@ -67,7 +122,7 @@ export default function About() {
           </p>
           <AnimatedButton to="/about">tell me more</AnimatedButton>
         </div>
-        <div className="about__photos" ref={stripRef}>
+        <div className="about__photos will-animate" ref={stripRef}>
           <div className="about__photo-strip">
             {[...photos, ...photos].map((src, i) => (
               <div key={i} className="about__photo">

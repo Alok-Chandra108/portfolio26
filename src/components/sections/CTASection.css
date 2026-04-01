@@ -63,11 +63,13 @@
   opacity: 1;
 }
 
-/* ── Responsive ──────────────────────────────────── */
-@media (max-width: 768px) {
+/* ── Responsive ──────────────────────────────── */
+
+/* ── sm + md phones (≤ 767px) ── */
+@media (max-width: 767px) {
   .cta-section {
     min-height: 60vh;
-    padding: 60px 16px; 
+    padding: 60px 16px;
   }
 
   .cta__circle {
@@ -81,20 +83,41 @@
   }
 
   .cta__line {
-    font-size: clamp(40px, 13vw, 80px);
+    font-size: clamp(36px, 12vw, 72px);
     line-height: 1;
     text-align: left;
   }
 
   .cta__line--3 {
-    font-size: clamp(28px, 8vw, 48px);
+    font-size: clamp(24px, 7vw, 44px);
     margin-top: 24px;
     align-self: flex-start;
   }
 }
 
-@media (max-width: 414px) {
+/* ── sm phones (≤ 430px) ── */
+@media (max-width: 430px) {
+  .cta__line {
+    font-size: clamp(32px, 11vw, 60px);
+  }
+
   .cta__line--3 {
-    font-size: clamp(18px, 5vw, 24px);
+    font-size: clamp(20px, 6vw, 36px);
+  }
+}
+
+/* ── xs phones (≤ 360px) ── */
+@media (max-width: 360px) {
+  .cta-section {
+    padding: 48px 12px;
+  }
+
+  .cta__line {
+    font-size: clamp(28px, 10.5vw, 48px);
+  }
+
+  .cta__line--3 {
+    font-size: clamp(16px, 5.5vw, 28px);
+    margin-top: 16px;
   }
 }

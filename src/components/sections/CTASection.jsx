@@ -1,51 +1,92 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { gsap, ScrollTrigger } from '../../utils/gsapPlugins.js';
+import { gsap } from '../../utils/gsapPlugins.js';
 import './CTASection.css';
 
 export default function CTASection() {
   const sectionRef = useRef(null);
   const circleRef = useRef(null);
+  const linesRef = useRef([]);
   const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Heading entrance
-      const lines = sectionRef.current?.querySelectorAll('.cta__line');
-      if (lines?.length) {
-        gsap.from(lines, {
-          y: 80,
-          opacity: 0,
-          duration: 1,
-          stagger: 0.15,
-          ease: 'expo.out',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top 70%',
-          },
-        });
-      }
+      const mm = gsap.matchMedia();
+
+      mm.add({
+        isMobile: '(max-width: 639px)',
+        isDesktop: '(min-width: 640px)',
+      }, (ctx) => {
+        const { isMobile } = ctx.conditions;
+
+        /* ── Line entrances ───────────────────── */
+        const lines = linesRef.current.filter(Boolean);
+        if (lines.length) {
+          gsap.from(lines, {
+            y: isMobile ? 24 : 80,
+            opacity: 0,
+            duration: isMobile ? 0.7 : 1,
+            stagger: 0.15,
+            ease: 'expo.out',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 70%',
+            },
+          });
+        }
+
+        /* ── Letter-spacing collapse (desktop) ── */
+        if (!isMobile) {
+          lines.forEach((line, i) => {
+            gsap.fromTo(
+              line,
+              { letterSpacing: '0.2em' },
+              {
+                letterSpacing: '0.01em',
+                duration: 1,
+                delay: i * 0.15,
+                ease: 'expo.out',
+                scrollTrigger: {
+                  trigger: sectionRef.current,
+                  start: 'top 70%',
+                },
+              }
+            );
+          });
+        }
+
+        /* ── Background noise parallax shift (desktop) */
+        if (!isMobile) {
+          gsap.to(sectionRef.current, {
+            backgroundPositionY: '+=20px',
+            ease: 'none',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 2,
+            },
+          });
+        }
+      });
     }, sectionRef);
 
     return () => ctx.revert();
   }, []);
 
-  // Cursor-following circle
+  /* ── Cursor-following circle (desktop only) ── */
   useEffect(() => {
     if (!circleRef.current) return;
+    if (window.matchMedia('(max-width: 639px)').matches) return;
 
-    const xSetter = gsap.quickSetter(circleRef.current, "x", "px");
-    const ySetter = gsap.quickSetter(circleRef.current, "y", "px");
+    const xSetter = gsap.quickSetter(circleRef.current, 'x', 'px');
+    const ySetter = gsap.quickSetter(circleRef.current, 'y', 'px');
 
     const handleMouseMove = (e) => {
       const rect = sectionRef.current?.getBoundingClientRect();
       if (!rect) return;
-
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-
-      xSetter(mouseX - 100);
-      ySetter(mouseY - 100);
+      xSetter(e.clientX - rect.left - 100);
+      ySetter(e.clientY - rect.top - 100);
     };
 
     const section = sectionRef.current;
@@ -64,9 +105,9 @@ export default function CTASection() {
       >
         <div className="cta__circle" ref={circleRef} />
         <div className="container cta__content">
-          <p className="cta__line cta__line--1 heading-hero">READY TO SCALE...</p>
-          <p className="cta__line cta__line--2 heading-hero">YOUR VISION?</p>
-          <p className="cta__line cta__line--3 heading-section">LEAD THE ARCHITECTURE.</p>
+          <p className="cta__line cta__line--1 heading-hero will-animate" ref={el => linesRef.current[0] = el}>READY TO SCALE...</p>
+          <p className="cta__line cta__line--2 heading-hero will-animate" ref={el => linesRef.current[1] = el}>YOUR VISION?</p>
+          <p className="cta__line cta__line--3 heading-section will-animate" ref={el => linesRef.current[2] = el}>LEAD THE ARCHITECTURE.</p>
         </div>
       </section>
     </Link>

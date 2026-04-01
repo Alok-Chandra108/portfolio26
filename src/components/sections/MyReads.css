@@ -31,29 +31,69 @@
   margin-top: 48px;
 }
 
-/* ── Responsive ──────────────────────────────────── */
-@media (max-width: 768px) {
-  .my-reads__cards {
-    flex-direction: column;
-    overflow-x: visible;
-    scroll-snap-type: none;
-    align-items: stretch;
-    justify-content: flex-start;
-    gap: 16px;
-    padding: 20px 0;
-  }
+/* ── Responsive ──────────────────────────────────────────────────────── */
 
-  .my-reads__card-wrap {
-    scroll-snap-align: none;
-    width: 100%;
-  }
+/*
+  Device reference (2026):
+  ≤ 360px  → xs: Very small phones (edge cases)
+  361–430px → sm: iPhone 17 (6.3"), Pixel 10 (6.3"), Galaxy S25 (6.2")
+  431–767px → md: iPhone 17 Plus (6.7"), Galaxy A56 (6.6"), OnePlus 13 (6.82")
+  ≥ 768px  → lg+: Foldables (8.0"), tablets, desktop
 
+  MyReads section: 1 book per row (horizontal strip) on all mobile sizes.
+  Fan layout stays on desktop only.
+*/
+
+/* ── All phones (sm + md): single column horizontal strips ── */
+@media (max-width: 767px) {
   .my-reads__header {
     flex-direction: column;
     gap: 8px;
+    margin-bottom: 32px;
   }
 
   .my-reads__title {
-    font-size: clamp(38px, 10vw, 60px);
+    font-size: clamp(38px, 9.5vw, 58px);
+  }
+
+  .my-reads__cards {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 16px 0;
+    flex-wrap: nowrap;
+    align-items: stretch;
+  }
+
+  /* Flatten rotation — horizontal strips must sit level */
+  .my-reads__card-wrap {
+    width: 100%;
+    transform: none !important;
+  }
+
+  .my-reads__cta {
+    margin-top: 32px;
+  }
+}
+
+/* ── xs phones (≤ 360px): tighter spacing ── */
+@media (max-width: 360px) {
+  .my-reads__cards {
+    gap: 10px;
+  }
+
+  .my-reads__title {
+    font-size: clamp(30px, 8.5vw, 44px);
+  }
+}
+
+/* ── md phones (431–767px): slightly more breathing room ── */
+@media (min-width: 431px) and (max-width: 767px) {
+  .my-reads__cards {
+    gap: 16px;
+  }
+
+  .my-reads__title {
+    font-size: clamp(44px, 10vw, 60px);
   }
 }

@@ -114,6 +114,16 @@ body::before {
   padding: clamp(60px, 10vh, 140px) 0;
 }
 
+/* ── xs phones (≤ 360px): tighter container ── */
+@media (max-width: 360px) {
+  .container {
+    padding: 0 12px;
+  }
+  .section {
+    padding: clamp(48px, 8vh, 80px) 0;
+  }
+}
+
 /* ── Link hover underline ──────────────────────────── */
 .link-hover {
   position: relative;
@@ -153,7 +163,11 @@ body::before {
 }
 
 /* ── Responsive ────────────────────────────────────── */
-@media (max-width: 768px) {
+/*
+  Device tiers (2026):
+  ≤ 360px  → xs  | 361–430px → sm | 431–767px → md | 768–1023px → lg | ≥ 1024px → xl
+*/
+@media (max-width: 767px) {
   html, body, a, button {
     cursor: auto;
   }
@@ -178,4 +192,21 @@ html.lenis, html.lenis body {
 
 .lenis.lenis-smooth iframe {
   pointer-events: none;
+}
+
+/* ── GPU Compositing Utility ────────────────────────────────────────── */
+.will-animate {
+  will-change: transform, opacity;
+}
+
+/* ── Prefers Reduced Motion ─────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

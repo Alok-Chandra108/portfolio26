@@ -108,8 +108,10 @@
   color: var(--color-accent);
 }
 
-/* ── Responsive ──────────────────────────────────── */
-@media (max-width: 768px) {
+/* ── Responsive ──────────────────────────────── */
+
+/* ── sm + md phones (≤ 767px) ── */
+@media (max-width: 767px) {
   .footer__grid {
     grid-template-columns: 1fr 1fr;
     gap: 32px;
@@ -120,11 +122,41 @@
     gap: 12px;
     text-align: center;
   }
+
+  .footer {
+    padding: 60px 0 24px;
+  }
+
+  .footer__big-text {
+    margin-bottom: 60px;
+  }
 }
 
-@media (max-width: 480px) {
+/* ── sm phones (≤ 430px): single column links ── */
+@media (max-width: 430px) {
   .footer__grid {
     grid-template-columns: 1fr;
-    gap: 32px;
+    gap: 28px;
+  }
+
+  .footer__big-text {
+    gap: clamp(8px, 1.5vw, 16px);
+    margin-bottom: 48px;
+  }
+}
+
+/* ── xs phones (≤ 360px) ── */
+@media (max-width: 360px) {
+  .footer {
+    padding: 48px 0 20px;
+  }
+
+  .footer__big-text {
+    gap: 6px;
+    margin-bottom: 40px;
+  }
+
+  .footer__grid {
+    gap: 24px;
   }
 }

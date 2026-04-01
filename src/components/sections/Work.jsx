@@ -1,44 +1,80 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap, ScrollTrigger } from '../../utils/gsapPlugins.js';
-import ProjectCard from '../ui/ProjectCard.jsx';
 import AnimatedButton from '../ui/AnimatedButton.jsx';
+import PillTag from '../ui/PillTag.jsx';
 import projects from '../../data/projects.js';
 import './Work.css';
 
 export default function Work() {
   const sectionRef = useRef(null);
   const headingRef = useRef(null);
-  const cardsRef = useRef([]);
+  const rowsRef = useRef([]);
+  const linesRef = useRef([]);
+  const previewRef = useRef(null);
+  const [hoveredId, setHoveredId] = useState(null);
 
+  /* ── Scroll entrance animations ───────────────────────── */
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Heading char cascade
+      // Heading wipe reveal
       if (headingRef.current) {
-        gsap.from(headingRef.current, {
-          y: 80,
-          opacity: 0,
-          duration: 1,
-          ease: 'expo.out',
-          scrollTrigger: {
-            trigger: headingRef.current,
-            start: 'top 75%',
-          },
-        });
+        gsap.fromTo(
+          headingRef.current,
+          { clipPath: 'inset(0 100% 0 0)', opacity: 1 },
+          {
+            clipPath: 'inset(0 0% 0 0)',
+            duration: 1.1,
+            ease: 'expo.out',
+            scrollTrigger: { trigger: headingRef.current, start: 'top 85%' },
+          }
+        );
       }
 
-      // Cards stagger in
-      cardsRef.current.forEach((card, i) => {
-        if (!card) return;
-        gsap.from(card, {
-          y: 80,
-          opacity: 0,
-          duration: 0.8,
-          delay: i * 0.15,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: card,
-            start: 'top 85%',
-          },
+      // Ruling lines draw in
+      linesRef.current.forEach((line, i) => {
+        if (!line) return;
+        gsap.from(line, {
+          scaleX: 0,
+          transformOrigin: 'left',
+          duration: 0.7,
+          ease: 'power3.inOut',
+          scrollTrigger: { trigger: line, start: 'top 90%' },
+        });
+      });
+
+      // Row clip-path wipe with stagger on desktop, simple fade on mobile
+      const mm = gsap.matchMedia();
+      mm.add({
+        isMobile: '(max-width: 639px)',
+        isTablet: '(min-width: 640px) and (max-width: 1023px)',
+        isDesktop: '(min-width: 1024px)',
+      }, (ctx) => {
+        const { isMobile } = ctx.conditions;
+
+        rowsRef.current.forEach((row, i) => {
+          if (!row) return;
+          if (isMobile) {
+            gsap.from(row, {
+              y: 24,
+              opacity: 0,
+              duration: 0.7,
+              delay: i * 0.06,
+              ease: 'power3.out',
+              scrollTrigger: { trigger: row, start: 'top 90%' },
+            });
+          } else {
+            gsap.fromTo(
+              row,
+              { clipPath: 'inset(0 100% 0 0)', opacity: 1 },
+              {
+                clipPath: 'inset(0 0% 0 0)',
+                duration: 0.85,
+                delay: i * 0.08,
+                ease: 'expo.out',
+                scrollTrigger: { trigger: sectionRef.current, start: 'top 70%' },
+              }
+            );
+          }
         });
       });
     }, sectionRef);
@@ -46,22 +82,123 @@ export default function Work() {
     return () => ctx.revert();
   }, []);
 
+  /* ── Floating preview follows cursor (desktop only) ──── */
+  useEffect(() => {
+    const preview = previewRef.current;
+    if (!preview) return;
+
+    let raf;
+    const xS = gsap.quickSetter(preview, 'x', 'px');
+    const yS = gsap.quickSetter(preview, 'y', 'px');
+
+    const onMove = (e) => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(() => {
+        const rect = sectionRef.current?.getBoundingClientRect();
+        if (!rect) return;
+        xS(e.clientX - rect.left + 24);
+        yS(e.clientY - rect.top - 80);
+      });
+    };
+
+    const section = sectionRef.current;
+    const mq = window.matchMedia('(min-width: 1024px)');
+    if (mq.matches) section?.addEventListener('mousemove', onMove);
+
+    return () => {
+      section?.removeEventListener('mousemove', onMove);
+      cancelAnimationFrame(raf);
+    };
+  }, []);
+
+  /* ── Preview show/hide on row hover ─────────────────── */
+  const handleRowEnter = (project) => {
+    setHoveredId(project.id);
+    if (window.innerWidth < 1024) return;
+    gsap.to(previewRef.current, {
+      opacity: 1,
+      scale: 1,
+      duration: 0.4,
+      ease: 'power3.out',
+    });
+  };
+
+  const handleRowLeave = () => {
+    setHoveredId(null);
+    gsap.to(previewRef.current, {
+      opacity: 0,
+      scale: 0.88,
+      duration: 0.3,
+      ease: 'power3.in',
+    });
+  };
+
+  const hoveredProject = projects.find(p => p.id === hoveredId);
+
   return (
     <section className="work section" ref={sectionRef}>
       <div className="container">
+
+        {/* Section header */}
         <div className="work__header">
-          <h2 className="heading-section" ref={headingRef}>
-            Wanna see some good work?
+          <h2 className="heading-section work__heading" ref={headingRef}>
+            Selected Work
           </h2>
           <span className="sub-label">(Work)</span>
         </div>
 
-        <div className="work__grid">
+        {/* Top ruling line */}
+        <div
+          className="work__rule"
+          ref={el => linesRef.current[-1] = el}
+          style={{ scaleX: 1 }}
+        />
+
+        {/* Numbered showcase list */}
+        <div className="work__list">
           {projects.map((project, i) => (
-            <div key={project.id} ref={el => cardsRef.current[i] = el}>
-              <ProjectCard project={project} />
+            <div key={project.id}>
+              <a
+                href={project.link}
+                className={`work__row ${hoveredId && hoveredId !== project.id ? 'work__row--dimmed' : ''}`}
+                ref={el => rowsRef.current[i] = el}
+                onMouseEnter={() => handleRowEnter(project)}
+                onMouseLeave={handleRowLeave}
+              >
+                {/* Index */}
+                <span className="work__row-num mono-label">{String(i + 1).padStart(2, '0')}</span>
+
+                {/* Title */}
+                <h3 className="work__row-title heading-card">{project.title}</h3>
+
+                {/* Tags — hidden on mobile, shown on tablet+ */}
+                <div className="work__row-tags">
+                  {project.tags.map(tag => (
+                    <PillTag key={tag} variant="outline">{tag}</PillTag>
+                  ))}
+                </div>
+
+                {/* Mobile thumbnail */}
+                <div className="work__row-thumb">
+                  <img src={project.image} alt={project.title} loading="lazy" />
+                </div>
+
+                {/* Arrow */}
+                <span className="work__row-arrow">→</span>
+              </a>
+              {/* Ruling line below each row */}
+              <div className="work__rule" ref={el => linesRef.current[i] = el} />
             </div>
           ))}
+        </div>
+
+        {/* Floating preview image (desktop hover) */}
+        <div className="work__preview" ref={previewRef} aria-hidden="true">
+          <img
+            src={hoveredProject?.image || projects[0].image}
+            alt=""
+            loading="eager"
+          />
         </div>
 
         <div className="work__cta">

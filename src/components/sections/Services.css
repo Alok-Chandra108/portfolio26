@@ -121,8 +121,10 @@
   border-color: transparent !important;
 }
 
-/* ── Responsive ──────────────────────────────────── */
-@media (max-width: 768px) {
+/* ── Responsive ──────────────────────────────── */
+
+/* ── sm + md phones (≤ 767px) ── */
+@media (max-width: 767px) {
   .services__grid {
     grid-template-columns: 1fr;
     gap: 40px;
@@ -149,7 +151,7 @@
   }
 
   .service-block__title {
-    font-size: clamp(40px, 11vw, 56px);
+    font-size: clamp(36px, 10vw, 54px);
     line-height: 1;
   }
 
@@ -161,5 +163,23 @@
 
   .service-block__skill {
     font-size: 16px;
+  }
+}
+
+/* ── xs phones (≤ 360px) ── */
+@media (max-width: 360px) {
+  .services {
+    border-radius: 24px;
+    margin-top: -40px;
+    margin-bottom: 40px;
+  }
+
+  .service-block {
+    padding-top: 28px;
+    padding-bottom: 28px;
+  }
+
+  .service-block__title {
+    font-size: clamp(30px, 9.5vw, 44px);
   }
 }

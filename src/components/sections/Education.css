@@ -99,14 +99,31 @@
 /* Timeline glowing node */
 .education__node {
   position: absolute;
-  top: 0px; 
+  top: 0px;
   width: 18px;
   height: 18px;
   background: var(--color-bg);
-  /* 🟡 10% ACCENT COLOR: Dark rings */
   border: 4px solid var(--color-text);
   border-radius: 50%;
   z-index: 3;
+  will-change: transform, opacity;
+}
+
+/* Pulse ring pseudo-element */
+.education__node::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 2px solid var(--color-text);
+  opacity: 0;
+  animation: nodePulse 2s ease-out infinite;
+}
+
+@keyframes nodePulse {
+  0%   { transform: scale(0.7); opacity: 0.6; }
+  70%  { transform: scale(1.8); opacity: 0; }
+  100% { transform: scale(1.8); opacity: 0; }
 }
 
 .education__item:nth-child(odd) .education__node {
@@ -163,14 +180,32 @@
 }
 
 /* Tablet & Mobile Responsiveness */
-@media (max-width: 900px) {
+
+/* ── sm + md phones + lg tablets (≤ 767px) ── */
+@media (max-width: 767px) {
+  .education {
+    padding: 80px 0;
+  }
+
+  .education__wrapper {
+    padding: 0 24px;
+  }
+
+  .education__header {
+    margin-bottom: 60px;
+  }
+
+  .education__timeline {
+    gap: 56px;
+  }
+
   .education__line {
     left: 20px;
   }
   
   .education__item {
     width: 100%;
-    padding: 0 0 0 60px !important;
+    padding: 0 0 0 56px !important;
     text-align: left !important;
     align-self: flex-start !important;
     align-items: flex-start !important;
@@ -183,5 +218,65 @@
   
   .education__content {
     max-width: 100%;
+  }
+}
+
+/* ── sm phones (≤ 430px) ── */
+@media (max-width: 430px) {
+  .education {
+    padding: 64px 0;
+  }
+
+  .education__wrapper {
+    padding: 0 16px;
+  }
+
+  .education__item {
+    padding: 0 0 0 48px !important;
+  }
+
+  .education__degree {
+    font-size: clamp(1.3rem, 5.5vw, 1.9rem);
+  }
+
+  .education__institution {
+    font-size: 1.1rem;
+  }
+
+  .education__description {
+    font-size: 1rem;
+  }
+
+  .education__header h2 {
+    font-size: clamp(2rem, 8vw, 3rem);
+  }
+
+  .education__header {
+    margin-bottom: 48px;
+  }
+}
+
+/* ── xs phones (≤ 360px) ── */
+@media (max-width: 360px) {
+  .education__line {
+    left: 14px;
+  }
+
+  .education__node {
+    width: 14px;
+    height: 14px;
+    left: 7px !important;
+  }
+
+  .education__item {
+    padding: 0 0 0 36px !important;
+  }
+
+  .education__timeline {
+    gap: 40px;
+  }
+
+  .education__degree {
+    font-size: clamp(1.2rem, 5vw, 1.7rem);
   }
 }

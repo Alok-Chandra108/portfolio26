@@ -134,12 +134,13 @@
   }
 }
 
-/* ── Responsive ──────────────────────────────────── */
-@media (max-width: 768px) {
+/* ── Responsive ───────────────────────────────── */
+
+/* ── sm + md phones (≤ 767px) ── */
+@media (max-width: 767px) {
   .hero {
     padding-top: 80px;
     padding-bottom: 60px;
-    /* Give some breathing room at the bottom */
   }
 
   .hero__heading {
@@ -172,14 +173,15 @@
   }
 }
 
-@media (max-width: 480px) {
+/* ── sm phones (≤ 430px): compact class ── */
+@media (max-width: 430px) {
   .hero {
-    padding-top: 60px;
+    padding-top: 64px;
   }
 
   .hero__heading {
-    font-size: clamp(34px, 12.5vw, 60px);
-    line-height: 1.1;
+    font-size: clamp(36px, 13vw, 60px);
+    line-height: 1.05;
   }
 
   .hero__heading-wrap {
@@ -187,14 +189,14 @@
   }
 
   .hero__subtitle {
-    font-size: 18px;
-    max-width: 280px;
+    font-size: 17px;
+    max-width: 300px;
   }
 
   .hero__marquee {
     margin-top: 32px;
     width: 100%;
-    padding: 16px 20px;
+    padding: 14px 18px;
     border-radius: 24px;
   }
 
@@ -205,6 +207,31 @@
   .hero__annotation {
     top: 20px;
     right: 16px;
+    font-size: 12px;
+  }
+}
+
+/* ── xs phones (≤ 360px): tightest view ── */
+@media (max-width: 360px) {
+  .hero {
+    padding-top: 56px;
+  }
+
+  .hero__heading {
+    font-size: clamp(32px, 12.5vw, 52px);
+  }
+
+  .hero__subtitle {
+    font-size: 15px;
+    max-width: 260px;
+  }
+
+  .hero__marquee {
+    padding: 12px 14px;
+    border-radius: 16px;
+  }
+
+  .hero__marquee-text {
     font-size: 12px;
   }
 }

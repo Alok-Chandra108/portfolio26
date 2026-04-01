@@ -52,8 +52,10 @@
   to { transform: translateX(-50%); }
 }
 
-/* ── Responsive ──────────────────────────────────── */
-@media (max-width: 768px) {
+/* ── Responsive ──────────────────────────────── */
+
+/* ── sm + md phones (≤ 767px) ── */
+@media (max-width: 767px) {
   .about__grid {
     grid-template-columns: 1fr;
     gap: 40px;
@@ -66,5 +68,29 @@
   .about__photo {
     min-width: 140px;
     height: 180px;
+  }
+}
+
+/* ── sm phones (≤ 430px): compact class ── */
+@media (max-width: 430px) {
+  .about__photo {
+    min-width: 120px;
+    height: 160px;
+  }
+
+  .about__grid {
+    gap: 28px;
+  }
+}
+
+/* ── xs phones (≤ 360px) ── */
+@media (max-width: 360px) {
+  .about__photo {
+    min-width: 100px;
+    height: 136px;
+  }
+
+  .about__photo-strip {
+    gap: 8px;
   }
 }
