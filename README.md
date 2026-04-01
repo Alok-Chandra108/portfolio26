@@ -8,25 +8,24 @@
 
 This portfolio is not just a collection of projects; it's a statement on digital craft. Inspired by the sleek, structural aesthetics of top-tier creative agencies, it prioritizes **fluid motion**, **sophisticated glassmorphism**, and **tactile interactions**.
 
-- **Motion as Meaning**: Animations aren't just decorative; they guide the user's focus and create a rhythmic narrative.
-- **Micro-Interactions**: Magnetic elements and custom cursors bridge the gap between user and interface.
+- **Motion as Meaning**: Animations aren't just decorative; they guide the user's focus and create a rhythmic narrative. This includes a recent **Motion Fidelity Audit** to ensure all transitions feel deliberate, smooth, and performant.
+- **Micro-Interactions**: Magnetic elements, custom cursors, and per-character hover effects bridge the gap between user and interface.
 - **Glassmorphic Depth**: Deep backdrop blurs and luminous glows create a sense of physical space in a digital medium.
 
 ---
 
 ## ✨ Key Features
 
-- **🚀 Cinematic Loader**: A full-screen entrance experience with GSAP-orchestrated counter animation that fires on every page refresh.
-- **🖱️ Magnetic Custom Cursor**: A persistent, reactive cursor that scales and responds to interactive elements for a premium feel.
-- **🌟 Dynamic Hero**: High-impact entry section with scroll-triggered GSAP reveals, a magnetic marquee, and per-character color animations on the name heading.
-- **🔢 Numbered Work Showcase**: A high-end, scroll-animated work experience section styled as a structured numbered list.
-- **🎓 Education Timeline**: A visually striking "Midnight" dark-mode timeline with neon green accents adhering to a 60-30-10 color rule.
-- **📚 Immersive "My Reads"**: A dynamic library system powered by Firebase Firestore, featuring advanced filtering, horizontal card strips on mobile, and an integrated status manager.
-- **📖 All Reads Page**: A dedicated `/all-reads` route with a full 2-column portrait card grid and status-based filtering.
-- **🔒 Secure Admin Dashboard**: An authenticated `/admin` portal (Firebase Auth) with management panels for Reads, Projects, Experience, and Skills.
-- **🛹 Inertial Scrolling**: Integrated with [Lenis](https://lenis.darkroom.engineering/) for that signature "heavy" and smooth scroll feel.
-- **📱 5-Tier Responsive System**: Meticulously crafted CSS with `xs`, `sm`, `md`, `lg`, and `xl` breakpoints ensuring flawless layout across all 2026 devices.
-- **🌀 Page Transitions**: GSAP-powered route transitions that maintain context and reduce cognitive load.
+- **🚀 Cinematic Loader**: A high-performance, visually engaging entrance experience with a GSAP-orchestrated counter animation that triggers on every page refresh to ensure brand consistency.
+- **🖱️ Magnetic Custom Cursor**: A persistent, reactive cursor that scales and responds to interactive elements with liquid-smooth lag-free movement.
+- **🌟 Dynamic Hero**: High-impact entry section featuring scroll-triggered GSAP reveals, a magnetic marquee, and a name heading with **per-character dynamic coloring** on hover (1% repetition chance).
+- **🔢 Numbered Work Showcase**: A premium, scroll-animated work archive styled as a structured numbered list, focusing on clean typography and rhythmic entry animations.
+- **🎓 Education Timeline**: A visually striking "Midnight" dark-mode timeline with neon green accents, strictly adhering to the **60-30-10 color rule** for max impact.
+- **📚 Immersive "My Reads"**: A real-time library powered by Firestore, featuring **mobile-optimized horizontal card strips** and sleek desktop grid transitions.
+- **📖 All Reads Page**: A dedicated `/all-reads` route with a refined 2-column portrait card grid and advanced status-based filtering.
+- **🛹 Inertial Scrolling**: Powered by [Lenis](https://lenis.darkroom.engineering/) for a signature "heavy" and premium tactile feel across all devices.
+- **📱 5-Tier Responsive System**: Precision-engineered CSS with `xs`, `sm`, `md`, `lg`, and `xl` breakpoints, utilizing `clamp()` for fluid typography and flawless layouts from 320px to 4K.
+- **🌀 Page Transitions**: GSAP Flip and backdrop-blur transitions that maintain visual continuity during navigation.
 
 ---
 
@@ -34,6 +33,8 @@ This portfolio is not just a collection of projects; it's a statement on digital
 
 - **✍️ Interactive Experience CMS**: Building out the Admin forms for managing the Work Experience section dynamically via Firestore.
 - **🖼️ Advanced Image Optimization**: Implementing lazy loading and automated WebP conversions for high-res project photography.
+- **📊 Performance Analytics**: Integrated monitoring for Core Web Vitals to maintain a consistent 100/100 Lighthouse score.
+- **🌐 Multilingual Support (i18n)**: Architecting for a global audience with localized content delivery.
 
 ---
 
@@ -132,7 +133,7 @@ prime-einstein/
 - **Routing**: [React Router 7](https://reactrouter.com/) (`^7.13.1`) — Dynamic paths, nested routes, and auth guards.
 - **Motion**: [GSAP 3.14](https://greensock.com/gsap/) (`^3.14.2`) + [@gsap/react](https://www.npmjs.com/package/@gsap/react) — Industry-standard, GPU-accelerated animations with `ScrollTrigger`.
 - **Scrolling**: [Lenis](https://lenis.darkroom.engineering/) (`^1.3.18`) — Buttery-soft inertial scrolling across all browsers.
-- **Styling**: **Vanilla Modern CSS** — CSS Variables, Clamp, and a custom 5-tier breakpoint system. Zero styling dependencies.
+- **Styling**: **Vanilla Modern CSS** — CSS Variables, `clamp()` fluid scaling, and a custom **5-tier breakpoint system** (xs, sm, md, lg, xl). Zero styling dependencies for maximum performant control.
 
 ### 🛡️ Backend & Security
 - **Auth**: [Firebase Authentication](https://firebase.google.com/products/auth) (`firebase ^12.11.0`) — Securing the `/admin` portal.
