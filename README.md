@@ -16,52 +16,95 @@ This portfolio is not just a collection of projects; it's a statement on digital
 
 ## ✨ Key Features
 
-- **🚀 Performance-First Hero**: A high-impact entry section with GSAP-orchestrated motion, a magnetic marquee, and smooth text reveals.
+- **🚀 Cinematic Loader**: A full-screen entrance experience with GSAP-orchestrated counter animation that fires on every page refresh.
 - **🖱️ Magnetic Custom Cursor**: A persistent, reactive cursor that scales and responds to interactive elements for a premium feel.
-- **📚 Immersive "My Reads"**: A dynamic library system powered by Firebase Firestore, featuring advanced filtering, interactive book cards, and an integrated status manager.
-- **🔒 Secure Admin Dashboard**: An authenticated `/admin` portal (Firebase Auth) allowing on-the-fly content management without touching the codebase.
+- **🌟 Dynamic Hero**: High-impact entry section with scroll-triggered GSAP reveals, a magnetic marquee, and per-character color animations on the name heading.
+- **🔢 Numbered Work Showcase**: A high-end, scroll-animated work experience section styled as a structured numbered list.
+- **🎓 Education Timeline**: A visually striking "Midnight" dark-mode timeline with neon green accents adhering to a 60-30-10 color rule.
+- **📚 Immersive "My Reads"**: A dynamic library system powered by Firebase Firestore, featuring advanced filtering, horizontal card strips on mobile, and an integrated status manager.
+- **📖 All Reads Page**: A dedicated `/all-reads` route with a full 2-column portrait card grid and status-based filtering.
+- **🔒 Secure Admin Dashboard**: An authenticated `/admin` portal (Firebase Auth) with management panels for Reads, Projects, Experience, and Skills.
 - **🛹 Inertial Scrolling**: Integrated with [Lenis](https://lenis.darkroom.engineering/) for that signature "heavy" and smooth scroll feel.
-- **📱 True Fluid Responsiveness**: Meticulously crafted with CSS Clamp and Flexbox/Grid to ensure a flawless experience from mobile to ultra-wide displays.
-- **🌀 Seamless Transitions**: Page-to-page motion that maintains context and reduces cognitive load.
+- **📱 5-Tier Responsive System**: Meticulously crafted CSS with `xs`, `sm`, `md`, `lg`, and `xl` breakpoints ensuring flawless layout across all 2026 devices.
+- **🌀 Page Transitions**: GSAP-powered route transitions that maintain context and reduce cognitive load.
 
 ---
 
 ## 🔮 Future Roadmap
 
-- **✍️ Interactive Experience Timeline**: Building out the CMS forms for managing the Work Experience section dynamically.
+- **✍️ Interactive Experience CMS**: Building out the Admin forms for managing the Work Experience section dynamically via Firestore.
 - **🖼️ Advanced Image Optimization**: Implementing lazy loading and automated WebP conversions for high-res project photography.
 
 ---
 
 ## 🏗️ Project Architecture
 
-A high-level overview of the repository's structural design:
+A complete overview of the repository's current structure:
 
 ```text
 prime-einstein/
-├── public/                 # Static assets (fonts, icons, etc.)
+├── public/                       # Static assets (favicon, fonts, etc.)
 ├── src/
-│   ├── assets/             # Global visual assets (SVGs, Lottie, etc.)
+│   ├── assets/                   # Global visual assets (SVGs, Lottie, images)
 │   ├── components/
-│   │   ├── admin/          # Management UI for CMS features
-│   │   ├── sections/       # Atomic page sections (Hero, Services, etc.)
-│   │   ├── ui/             # "Atoms" & "Molecules" (Buttons, Pills, Cards)
-│   │   ├── CustomCursor.jsx
-│   │   ├── Navbar.jsx
-│   │   ├── Loader.jsx      # Initial entrance experience
-│   │   └── ProtectedRoute.jsx # Auth-guarded navigation
-│   ├── context/            # Global state (AuthContext, ThemeContext)
-│   ├── data/               # Static/Local JSON data for mockups
-│   ├── firebase/           # Configuration & Firestore initialization
+│   │   ├── admin/                # (Reserved) Admin-specific sub-components
+│   │   ├── sections/             # Full-page section organisms
+│   │   │   ├── About.jsx / .css
+│   │   │   ├── CTASection.jsx / .css
+│   │   │   ├── Education.jsx / .css
+│   │   │   ├── Hero.jsx / .css
+│   │   │   ├── MyReads.jsx / .css
+│   │   │   ├── Services.jsx / .css
+│   │   │   └── Work.jsx / .css
+│   │   ├── ui/                   # Reusable atomic components
+│   │   │   ├── AnimatedButton.jsx / .css
+│   │   │   ├── BookCard.jsx / .css
+│   │   │   ├── DownloadCV.jsx / .css
+│   │   │   ├── PillTag.jsx / .css
+│   │   │   └── ProjectCard.jsx / .css
+│   │   ├── CustomCursor.jsx / .css
+│   │   ├── Footer.jsx / .css
+│   │   ├── Loader.jsx / .css     # Cinematic page-load experience
+│   │   ├── Marquee.jsx / .css
+│   │   ├── Navbar.jsx / .css
+│   │   ├── PageTransition.jsx    # GSAP route transition wrapper
+│   │   └── ProtectedRoute.jsx    # Auth-guarded navigation
+│   ├── context/
+│   │   └── AuthContext.jsx       # Firebase auth state provider
+│   ├── data/                     # Static local data for seeding/mockups
+│   │   ├── books.js
+│   │   ├── education.js
+│   │   └── projects.js
+│   ├── firebase/
+│   │   └── config.js             # Firestore & Auth initialization
 │   ├── pages/
-│   │   └── admin/          # Full-page administrative views
-│   ├── styles/
-│   │   └── sections/       # Modular CSS scoped to individual sections
-│   ├── utils/              # Animation helpers & mathematical utilities
-│   ├── App.jsx             # Root router & layout orchestration
-│   └── main.jsx            # Entry point for React 19
-├── vite.config.js          # Optimized build pipeline
-└── vercel.json             # Deployment & redirect configuration
+│   │   ├── admin/                # Full-page authenticated admin views
+│   │   │   ├── AdminExperience.jsx
+│   │   │   ├── AdminProjects.jsx
+│   │   │   ├── AdminReads.jsx
+│   │   │   └── AdminSkills.jsx
+│   │   ├── AboutPage.jsx / .css
+│   │   ├── AdminDashboard.jsx
+│   │   ├── AllReadsPage.jsx / .css
+│   │   ├── ContactPage.jsx / .css
+│   │   ├── Home.jsx
+│   │   ├── Login.jsx
+│   │   └── WorkPage.jsx / .css
+│   ├── styles/                   # Global stylesheets
+│   │   ├── admin.css             # Admin portal-specific styles
+│   │   ├── globals.css           # CSS variables, resets & design tokens
+│   │   └── typography.css        # Font imports & type scale
+│   ├── utils/
+│   │   ├── animationHelpers.js   # Reusable GSAP animation factories
+│   │   └── gsapPlugins.js        # GSAP plugin registration (ScrollTrigger, etc.)
+│   ├── App.jsx                   # Root router & layout orchestration
+│   └── main.jsx                  # React 19 entry point
+├── .env.local                    # Firebase credentials (not committed)
+├── eslint.config.js              # ESLint 9 flat config
+├── index.html                    # Vite HTML entry
+├── package.json
+├── vercel.json                   # SPA redirect rules for Vercel
+└── vite.config.js                # Vite build configuration
 ```
 
 ---
@@ -70,32 +113,35 @@ prime-einstein/
 
 | Directory | Purpose | Design Pattern |
 | :--- | :--- | :--- |
-| `src/components/sections` | Contains high-impact visual blocks like `Hero.jsx` and `Work.jsx`. | **Organisms**: Self-contained layout units with scoped CSS. |
-| `src/components/ui` | Reusable, stateless components like `AnimatedButton.jsx` or `PillTag.jsx`. | **Atoms/Molecules**: Highly reusable across different sections. |
-| `src/pages/admin` | Private views for managing projects and reads. | **Admin Portal**: Secured by Firebase Auth. |
-| `src/styles/sections` | One-to-one CSS mapping for every section in the app. | **Modular CSS**: Keeps styles maintainable and avoids global collisions. |
-| `src/context` | Centralized state management for authentication. | **Provider Pattern**: Injects auth state into the component tree. |
-| `src/firebase` | Central configuration hub for Firestore and Auth. | **Service Layer**: Abstracts database logic from UI. |
+| `src/components/sections` | High-impact visual blocks: `Hero`, `Work`, `Education`, `MyReads`, `Services`, `About`, `CTASection`. | **Organisms**: Self-contained layout units with co-located CSS. |
+| `src/components/ui` | Reusable, stateless components: `BookCard`, `ProjectCard`, `AnimatedButton`, `PillTag`, `DownloadCV`. | **Atoms/Molecules**: Highly composable across different sections. |
+| `src/pages` | Full route views: `Home`, `AboutPage`, `WorkPage`, `AllReadsPage`, `ContactPage`, `Login`, `AdminDashboard`. | **Pages**: Thin orchestration layers that compose sections. |
+| `src/pages/admin` | Private views for managing Reads, Projects, Experience, and Skills data. | **Admin Portal**: Protected by `ProtectedRoute` + Firebase Auth. |
+| `src/styles` | Global design tokens, resets, typography scale, and admin-specific styles. | **Design System**: CSS variables shared across all components. |
+| `src/context` | Centralized Firebase auth state via React Context. | **Provider Pattern**: Injects auth state into the component tree. |
+| `src/firebase` | Firebase App initialization, Firestore DB, and Auth export. | **Service Layer**: Decouples database logic from UI components. |
+| `src/utils` | GSAP plugin registration (`gsapPlugins.js`) and reusable animation factories (`animationHelpers.js`). | **Animation Layer**: Keeps motion logic DRY and centralized. |
+| `src/data` | Local JS data files for `books`, `education`, and `projects`. | **Static Seed Data**: Used as fallback/mockup before Firestore is live. |
 
 ---
 
 ## 🛠️ Tech Stack
 
 ### 🚀 Frontend
-- **Framework**: [React 19](https://react.dev/) — Leveraging the latest concurrent features and server-side improvements.
-- **Routing**: [React Router 7](https://reactrouter.com/) — Handling dynamic paths and administrative guards.
-- **Motion**: [GSAP 3.14](https://greensock.com/gsap/) — The industry standard for high-performance web animations.
-- **Scrolling**: [Lenis](https://lenis.darkroom.engineering/) — Providing smooth, buttery-soft inertial scrolling across all browsers.
-- **Styling**: **Vanilla Modern CSS** — Utilizing CSS Variables, `:has()` selectors, and Container Queries for a zero-dependency, ultra-fast design system.
+- **Framework**: [React 19](https://react.dev/) (`^19.2.4`) — Leveraging the latest concurrent features.
+- **Routing**: [React Router 7](https://reactrouter.com/) (`^7.13.1`) — Dynamic paths, nested routes, and auth guards.
+- **Motion**: [GSAP 3.14](https://greensock.com/gsap/) (`^3.14.2`) + [@gsap/react](https://www.npmjs.com/package/@gsap/react) — Industry-standard, GPU-accelerated animations with `ScrollTrigger`.
+- **Scrolling**: [Lenis](https://lenis.darkroom.engineering/) (`^1.3.18`) — Buttery-soft inertial scrolling across all browsers.
+- **Styling**: **Vanilla Modern CSS** — CSS Variables, Clamp, and a custom 5-tier breakpoint system. Zero styling dependencies.
 
 ### 🛡️ Backend & Security
-- **Auth**: [Firebase Authentication](https://firebase.google.com/products/auth) — Securing the `/admin` portal.
-- **Database**: [Cloud Firestore](https://firebase.google.com/products/firestore) — Real-time synchronization for projects, reads, and experience data.
+- **Auth**: [Firebase Authentication](https://firebase.google.com/products/auth) (`firebase ^12.11.0`) — Securing the `/admin` portal.
+- **Database**: [Cloud Firestore](https://firebase.google.com/products/firestore) — Real-time sync for reads, projects, and experience data.
 
 ### 🛠️ Tooling & DevOps
-- **Build**: [Vite 8](https://vitejs.dev/) — Next-generation frontend tooling for instant HMR.
-- **Deployment**: [Vercel](https://vercel.com/) — Optimized Edge Network hosting with automated CI/CD.
-- **Linting**: [ESLint 9](https://eslint.org/) — Enforcing modern coding standards with flat-config.
+- **Build**: [Vite 8](https://vitejs.dev/) (`^8.0.0`) — Next-generation frontend tooling with instant HMR.
+- **Deployment**: [Vercel](https://vercel.com/) — Edge Network hosting with automated CI/CD via `vercel.json`.
+- **Linting**: [ESLint 9](https://eslint.org/) (`^9.39.4`) — Modern flat-config with React Hooks rules enforced.
 
 ---
 
@@ -148,7 +194,8 @@ The project is pre-configured for **Vercel**. To deploy your own instance:
 
 1. Push your code to a GitHub/GitLab repository.
 2. Connect your repository to Vercel.
-3. The `vercel.json` and Vite configuration will handle the rest automatically.
+3. Add all `VITE_FIREBASE_*` keys as **Environment Variables** in the Vercel project settings.
+4. The `vercel.json` SPA redirect rules and Vite configuration handle the rest automatically.
 
 ---
 
