@@ -71,19 +71,19 @@
 }
 
 .work__row:hover .work__row-num,
-.work__row:hover .work__row-title,
-.work__row:hover .work__row-arrow {
+.work__row:hover .work__row-title {
   color: var(--color-bg);
 }
 
 .work__row:hover .work__row-tags .pill-tag {
-  border-color: rgba(255, 255, 255, 0.3);
-  color: rgba(232, 232, 223, 0.75);
+  border-color: rgba(232, 232, 223, 0.55);
+  color: rgba(232, 232, 223, 0.9);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 /* Dimmed state when another row is hovered */
 .work__row--dimmed {
-  opacity: 0.4;
+  opacity: 0.28;
 }
 
 /* Row elements */
@@ -138,10 +138,6 @@
 
 .work__row:hover .work__row-arrow {
   transform: translate(4px, -4px);
-  color: var(--color-accent);
-}
-
-.work__row:hover .work__row-arrow {
   color: var(--color-accent);
 }
 
