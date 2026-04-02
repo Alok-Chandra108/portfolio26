@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap, ScrollTrigger } from '../../utils/gsapPlugins.js';
 import AnimatedButton from '../ui/AnimatedButton.jsx';
 import PillTag from '../ui/PillTag.jsx';
-import projects from '../../data/projects.js';
+import { projectsService } from '../../firebase/projectsService';
 import './Work.css';
 
 export default function Work() {
@@ -11,10 +11,30 @@ export default function Work() {
   const rowsRef = useRef([]);
   const linesRef = useRef([]);
   const previewRef = useRef(null);
+  
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [hoveredId, setHoveredId] = useState(null);
+
+  /* ── Data Fetching ───────────────────────── */
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const data = await projectsService.getProjects();
+        setProjects(data.slice(0, 4)); // Only show top 4 on home section
+      } catch (error) {
+        console.error("Error fetching projects for Work section:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProjects();
+  }, []);
 
   /* ── Scroll entrance animations ───────────────────────── */
   useEffect(() => {
+    if (loading || projects.length === 0) return;
+
     const ctx = gsap.context(() => {
       // Heading wipe reveal
       if (headingRef.current) {
@@ -77,13 +97,19 @@ export default function Work() {
           }
         });
       });
+      
+      // Critical: Refresh ScrollTrigger after dynamic content renders
+      ScrollTrigger.refresh();
+
     }, sectionRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [loading, projects]);
 
   /* ── Floating preview follows cursor (desktop only) ──── */
   useEffect(() => {
+    if (loading) return;
+
     const preview = previewRef.current;
     if (!preview) return;
 
@@ -109,7 +135,7 @@ export default function Work() {
       section?.removeEventListener('mousemove', onMove);
       cancelAnimationFrame(raf);
     };
-  }, []);
+  }, [loading]);
 
   /* ── Preview show/hide on row hover ─────────────────── */
   const handleRowEnter = (project) => {
@@ -134,6 +160,14 @@ export default function Work() {
   };
 
   const hoveredProject = projects.find(p => p.id === hoveredId);
+
+  if (loading && projects.length === 0) {
+    return (
+      <section className="work section" style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p className="mono-label" style={{ opacity: 0.5 }}>Loading selected work...</p>
+      </section>
+    );
+  }
 
   return (
     <section className="work section" ref={sectionRef}>
@@ -195,7 +229,7 @@ export default function Work() {
         {/* Floating preview image (desktop hover) */}
         <div className="work__preview" ref={previewRef} aria-hidden="true">
           <img
-            src={hoveredProject?.image || projects[0].image}
+            src={hoveredProject?.image || projects[0]?.image}
             alt=""
             loading="eager"
           />

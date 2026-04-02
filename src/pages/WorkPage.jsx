@@ -1,13 +1,33 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap } from '../utils/gsapPlugins.js';
 import ProjectCard from '../components/ui/ProjectCard.jsx';
-import projects from '../data/projects.js';
+import { projectsService } from '../firebase/projectsService';
 import './WorkPage.css';
 
 export default function WorkPage() {
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
   const gridRef = useRef(null);
 
+  /* ── Data Fetching ───────────────────────── */
   useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const data = await projectsService.getProjects();
+        setProjects(data);
+      } catch (error) {
+        console.error("Error fetching projects for WorkPage:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProjects();
+  }, []);
+
+  /* ── Entrance Animation ──────────────────── */
+  useEffect(() => {
+    if (loading || projects.length === 0) return;
+
     const ctx = gsap.context(() => {
       const cards = gridRef.current?.children;
       if (cards?.length) {
@@ -22,7 +42,15 @@ export default function WorkPage() {
       }
     });
     return () => ctx.revert();
-  }, []);
+  }, [loading, projects]);
+
+  if (loading && projects.length === 0) {
+    return (
+      <div className="work-page" style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p className="mono-label" style={{ opacity: 0.5 }}>Syncing selected work...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="work-page">
