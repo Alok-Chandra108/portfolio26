@@ -8,7 +8,7 @@
 
 This portfolio is not just a collection of projects; it's a statement on digital craft. Inspired by the sleek, structural aesthetics of top-tier creative agencies, it prioritizes **fluid motion**, **sophisticated glassmorphism**, and **tactile interactions**.
 
-- **Motion as Meaning**: Animations aren't just decorative; they guide the user's focus and create a rhythmic narrative. This includes a recent **Motion Fidelity Audit** to ensure all transitions feel deliberate, smooth, and performant.
+- **Motion Architecture**: All animations are built on a systematic GSAP foundation using `@gsap/react`. This includes a recent **Motion Fidelity Audit** to ensure all transitions feel deliberate, smooth, and performant, utilizing `ScrollTrigger.batch` for efficient rendering.
 - **Micro-Interactions**: Magnetic elements, custom cursors, and per-character hover effects bridge the gap between user and interface.
 - **Glassmorphic Depth**: Deep backdrop blurs and luminous glows create a sense of physical space in a digital medium.
 
@@ -18,12 +18,12 @@ This portfolio is not just a collection of projects; it's a statement on digital
 
 - **🚀 Cinematic Loader**: A high-performance, visually engaging entrance experience with a GSAP-orchestrated counter animation that triggers on every page refresh to ensure brand consistency.
 - **🖱️ Magnetic Custom Cursor**: A persistent, reactive cursor that scales and responds to interactive elements with liquid-smooth lag-free movement.
-- **🌟 Dynamic Hero**: High-impact entry section featuring scroll-triggered GSAP reveals, a magnetic marquee, and a name heading with **per-character dynamic coloring** on hover (1% repetition chance).
+- **🌟 Dynamic Hero**: High-impact entry section featuring scroll-triggered GSAP reveals, a magnetic marquee, and a name heading with **per-character dynamic coloring** on hover.
 - **🔢 Numbered Work Showcase**: A premium, scroll-animated work archive styled as a structured numbered list, focusing on clean typography and rhythmic entry animations.
+- **🏗️ Interactive "Skills Lattice"**: A dual-row, infinite scrolling marquee with scroll-driven parallax shifts, showcasing core competencies with a high-end editorial feel.
 - **🎓 Education Timeline**: A visually striking "Midnight" dark-mode timeline with neon green accents, strictly adhering to the **60-30-10 color rule** for max impact.
 - **📚 Immersive "My Reads"**: A real-time library powered by Firestore, featuring **mobile-optimized horizontal card strips** and sleek desktop grid transitions.
 - **📖 All Reads Page**: A dedicated `/all-reads` route with a refined 2-column portrait card grid and advanced status-based filtering.
-- **🛹 Inertial Scrolling**: Powered by [Lenis](https://lenis.darkroom.engineering/) for a signature "heavy" and premium tactile feel across all devices.
 - **📱 5-Tier Responsive System**: Precision-engineered CSS with `xs`, `sm`, `md`, `lg`, and `xl` breakpoints, utilizing `clamp()` for fluid typography and flawless layouts from 320px to 4K.
 - **🌀 Page Transitions**: GSAP Flip and backdrop-blur transitions that maintain visual continuity during navigation.
 
@@ -56,6 +56,7 @@ prime-einstein/
 │   │   │   ├── Hero.jsx / .css
 │   │   │   ├── MyReads.jsx / .css
 │   │   │   ├── Services.jsx / .css
+│   │   │   ├── SkillsSection.jsx / .css
 │   │   │   └── Work.jsx / .css
 │   │   ├── ui/                   # Reusable atomic components
 │   │   │   ├── AnimatedButton.jsx / .css
@@ -77,7 +78,9 @@ prime-einstein/
 │   │   ├── education.js
 │   │   └── projects.js
 │   ├── firebase/
-│   │   └── config.js             # Firestore & Auth initialization
+│   │   ├── config.js             # Firestore & Auth initialization
+│   │   ├── projectsService.js    # Data fetching for projects
+│   │   └── skillsService.js      # Data fetching for skills
 │   ├── pages/
 │   │   ├── admin/                # Full-page authenticated admin views
 │   │   │   ├── AdminExperience.jsx
@@ -114,13 +117,13 @@ prime-einstein/
 
 | Directory | Purpose | Design Pattern |
 | :--- | :--- | :--- |
-| `src/components/sections` | High-impact visual blocks: `Hero`, `Work`, `Education`, `MyReads`, `Services`, `About`, `CTASection`. | **Organisms**: Self-contained layout units with co-located CSS. |
+| `src/components/sections` | High-impact visual blocks: `Hero`, `Work`, `SkillsSection`, `Education`, `MyReads`, `Services`, `About`. | **Organisms**: Self-contained layout units with co-located CSS. |
 | `src/components/ui` | Reusable, stateless components: `BookCard`, `ProjectCard`, `AnimatedButton`, `PillTag`, `DownloadCV`. | **Atoms/Molecules**: Highly composable across different sections. |
 | `src/pages` | Full route views: `Home`, `AboutPage`, `WorkPage`, `AllReadsPage`, `ContactPage`, `Login`, `AdminDashboard`. | **Pages**: Thin orchestration layers that compose sections. |
-| `src/pages/admin` | Private views for managing Reads, Projects, Experience, and Skills data. | **Admin Portal**: Protected by `ProtectedRoute` + Firebase Auth. |
+| `src/pages/admin` | Private views for managing Skills, Reads, Projects, and Experience data. | **Admin Portal**: Protected by `ProtectedRoute` + Firebase Auth. |
 | `src/styles` | Global design tokens, resets, typography scale, and admin-specific styles. | **Design System**: CSS variables shared across all components. |
 | `src/context` | Centralized Firebase auth state via React Context. | **Provider Pattern**: Injects auth state into the component tree. |
-| `src/firebase` | Firebase App initialization, Firestore DB, and Auth export. | **Service Layer**: Decouples database logic from UI components. |
+| `src/firebase` | Firebase initialization and specific service layers for Firestore data. | **Service Layer**: Decouples database logic from UI components. |
 | `src/utils` | GSAP plugin registration (`gsapPlugins.js`) and reusable animation factories (`animationHelpers.js`). | **Animation Layer**: Keeps motion logic DRY and centralized. |
 | `src/data` | Local JS data files for `books`, `education`, and `projects`. | **Static Seed Data**: Used as fallback/mockup before Firestore is live. |
 
@@ -132,12 +135,11 @@ prime-einstein/
 - **Framework**: [React 19](https://react.dev/) (`^19.2.4`) — Leveraging the latest concurrent features.
 - **Routing**: [React Router 7](https://reactrouter.com/) (`^7.13.1`) — Dynamic paths, nested routes, and auth guards.
 - **Motion**: [GSAP 3.14](https://greensock.com/gsap/) (`^3.14.2`) + [@gsap/react](https://www.npmjs.com/package/@gsap/react) — Industry-standard, GPU-accelerated animations with `ScrollTrigger`.
-- **Scrolling**: [Lenis](https://lenis.darkroom.engineering/) (`^1.3.18`) — Buttery-soft inertial scrolling across all browsers.
 - **Styling**: **Vanilla Modern CSS** — CSS Variables, `clamp()` fluid scaling, and a custom **5-tier breakpoint system** (xs, sm, md, lg, xl). Zero styling dependencies for maximum performant control.
 
 ### 🛡️ Backend & Security
 - **Auth**: [Firebase Authentication](https://firebase.google.com/products/auth) (`firebase ^12.11.0`) — Securing the `/admin` portal.
-- **Database**: [Cloud Firestore](https://firebase.google.com/products/firestore) — Real-time sync for reads, projects, and experience data.
+- **Database**: [Cloud Firestore](https://firebase.google.com/products/firestore) — Real-time sync for skills, reads, projects, and experience data.
 
 ### 🛠️ Tooling & DevOps
 - **Build**: [Vite 8](https://vitejs.dev/) (`^8.0.0`) — Next-generation frontend tooling with instant HMR.
@@ -195,7 +197,7 @@ The project is pre-configured for **Vercel**. To deploy your own instance:
 
 1. Push your code to a GitHub/GitLab repository.
 2. Connect your repository to Vercel.
-3. Add all `VITE_FIREBASE_*` keys as **Environment Variables** in the Vercel project settings.
+3. Add all `VITE_FIREBASE_*` keys as **Environment Variables** in Vercel project settings.
 4. The `vercel.json` SPA redirect rules and Vite configuration handle the rest automatically.
 
 ---
