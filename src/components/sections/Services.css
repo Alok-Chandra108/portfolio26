@@ -36,7 +36,7 @@
 
 .services__right .animated-btn {
   margin-top: clamp(32px, 5vh, 64px);
-  justify-content: center; /* Ensures text stays centered even when the button is fully stretched */
+  align-self: flex-start; /* Ensure left alignment inside the column */
 }
 
 .service-block {
