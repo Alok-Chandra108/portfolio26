@@ -52,9 +52,9 @@ export default function SkillsSection() {
     const ctx = gsap.context(() => {
       // --- ROW 1 (Moves Left) ---
       
-      // Auto-run (Slow baseline movement)
+      // Auto-run (Row 1: Left)
       gsap.to(row1AutoRef.current, {
-        x: "-33.33%",
+        x: "-50%",
         duration: 30,
         repeat: -1,
         ease: 'none',
@@ -75,7 +75,7 @@ export default function SkillsSection() {
       // --- ROW 2 (Moves Right) ---
       
       // Auto-run (Slow baseline movement - Starts from offset)
-      gsap.set(row2AutoRef.current, { x: "-33.33%" });
+      gsap.set(row2AutoRef.current, { x: "-50%" });
       gsap.to(row2AutoRef.current, {
         x: "0%",
         duration: 30,

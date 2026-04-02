@@ -5,14 +5,6 @@ import { skillsService } from "../../firebase/skillsService";
 import { gsap } from "../../utils/gsapPlugins";
 import "../../styles/admin.css";
 
-const DEFAULT_SKILLS = [
-  { name: 'AWS', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original.svg' },
-  { name: 'GCP', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/googlecloud/googlecloud-original.svg' },
-  { name: 'Terraform', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/terraform/terraform-original.svg' },
-  { name: 'Docker', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg' },
-  { name: 'Kubernetes', logo: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/kubernetes/kubernetes-plain.svg' },
-];
-
 const AdminSkills = () => {
   const { logout } = useAuth();
   const [skills, setSkills] = useState([]);
@@ -26,7 +18,8 @@ const AdminSkills = () => {
 
   const [formData, setFormData] = useState({
     name: "",
-    logoUrl: ""
+    logoUrl: "",
+    row: 1 // Default to Row 1
   });
 
   useEffect(() => {
@@ -47,11 +40,14 @@ const AdminSkills = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ 
+      ...prev, 
+      [name]: name === 'row' ? parseInt(value) : value 
+    }));
   };
 
   const resetForm = () => {
-    setFormData({ name: "", logoUrl: "" });
+    setFormData({ name: "", logoUrl: "", row: 1 });
     setIsEditing(false);
     setCurrentSkill(null);
     setFormError("");
@@ -97,7 +93,8 @@ const AdminSkills = () => {
     setCurrentSkill(skill);
     setFormData({
       name: skill.name,
-      logoUrl: skill.logoUrl
+      logoUrl: skill.logoUrl,
+      row: skill.row || 1
     });
     
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -136,22 +133,6 @@ const AdminSkills = () => {
     }
   };
 
-  const handleSeedData = async () => {
-    if (window.confirm("Seed default skills into Firestore?")) {
-      setLoading(true);
-      try {
-        for (const s of DEFAULT_SKILLS) {
-          await skillsService.addSkill({ name: s.name, logoUrl: s.logo });
-        }
-        fetchSkills();
-      } catch (error) {
-        alert("Seeding failed.");
-      } finally {
-        setLoading(false);
-      }
-    }
-  };
-
   return (
     <div className="admin-page">
       <div className="admin-dashboard">
@@ -161,7 +142,7 @@ const AdminSkills = () => {
               ← Back to Dashboard
             </Link>
             <h1 className="dashboard-title">{isEditing ? "Edit Skill" : "Skills Lattice"}</h1>
-            <p>Manage your technical capabilities and logos.</p>
+            <p>Manage your technical capabilities and assigned rows.</p>
           </div>
           <button onClick={logout} className="btn-logout">Logout</button>
         </header>
@@ -200,6 +181,32 @@ const AdminSkills = () => {
                 />
               </div>
 
+              <div className="form-group">
+                <label>Row Assignment *</label>
+                <div style={{ display: "flex", gap: "20px", marginTop: "10px" }}>
+                  <label style={{ display: "flex", alignItems: "center", gap: "8px", textTransform: "none", color: "var(--color-dark)", cursor: "pointer" }}>
+                    <input 
+                      type="radio" 
+                      name="row" 
+                      value="1" 
+                      checked={formData.row === 1} 
+                      onChange={handleInputChange} 
+                    />
+                    Row 1 (Leftward)
+                  </label>
+                  <label style={{ display: "flex", alignItems: "center", gap: "8px", textTransform: "none", color: "var(--color-dark)", cursor: "pointer" }}>
+                    <input 
+                      type="radio" 
+                      name="row" 
+                      value="2" 
+                      checked={formData.row === 2} 
+                      onChange={handleInputChange} 
+                    />
+                    Row 2 (Rightward)
+                  </label>
+                </div>
+              </div>
+
               <div style={{ display: "flex", gap: "10px", marginTop: "30px" }}>
                 <button type="submit" className="login-button" style={{ flex: 2 }}>
                   {isEditing ? "Apply Changes" : "Save Skill"}
@@ -223,11 +230,6 @@ const AdminSkills = () => {
                     Delete Selected ({selectedIds.length})
                   </button>
                 )}
-                {skills.length === 0 && !loading && (
-                  <button onClick={handleSeedData} className="btn-manage" style={{ background: "var(--color-dark)", color: "white" }}>
-                    Seed Defaults
-                  </button>
-                )}
               </div>
             </div>
 
@@ -236,7 +238,7 @@ const AdminSkills = () => {
                 <p style={{ textAlign: "center", padding: "40px", color: "var(--color-muted)" }}>Loading skills...</p>
               ) : skills.length === 0 ? (
                 <div style={{ textAlign: "center", padding: "60px", background: "white", borderRadius: "15px", border: "1px dashed rgba(0,0,0,0.1)" }}>
-                  <p style={{ color: "var(--color-muted)", marginBottom: "15px" }}>No skills found.</p>
+                  <p style={{ color: "var(--color-muted)", marginBottom: "15px" }}>No skills found. Add your first skill assigned to a row!</p>
                 </div>
               ) : (
                 skills.map((skill) => (
@@ -252,6 +254,9 @@ const AdminSkills = () => {
                     </div>
                     <div style={{ flexGrow: 1 }}>
                       <h4 style={{ margin: 0 }}>{skill.name}</h4>
+                      <span style={{ fontSize: "0.75rem", color: "var(--color-muted)", fontWeight: "600", background: "rgba(0,0,0,0.05)", padding: "2px 8px", borderRadius: "4px", marginTop: "4px", display: "inline-block" }}>
+                        Row {skill.row || 1}
+                      </span>
                     </div>
                     <div style={{ display: "flex", gap: "8px" }}>
                       <button onClick={() => handleEdit(skill)} className="btn-manage" style={{ padding: "6px 12px", fontSize: "0.75rem" }}>Edit</button>
