@@ -18,9 +18,15 @@ const DEFAULT_SKILLS = [
 
 export default function SkillsSection() {
   const sectionRef = useRef(null);
-  const row1Ref = useRef(null);
-  const row2Ref = useRef(null);
-  const itemsContainerRef = useRef(null);
+  
+  // Row 1 Refs
+  const row1ScrollRef = useRef(null);
+  const row1AutoRef = useRef(null);
+  
+  // Row 2 Refs
+  const row2ScrollRef = useRef(null);
+  const row2AutoRef = useRef(null);
+
   const [skills, setSkills] = useState([]);
 
   useEffect(() => {
@@ -44,27 +50,48 @@ export default function SkillsSection() {
     if (skills.length === 0) return;
 
     const ctx = gsap.context(() => {
-      // Row 1: Moves Left
-      gsap.to(row1Ref.current, {
+      // --- ROW 1 (Moves Left) ---
+      
+      // Auto-run (Slow baseline movement)
+      gsap.to(row1AutoRef.current, {
+        x: "-33.33%",
+        duration: 30,
+        repeat: -1,
+        ease: 'none',
+      });
+
+      // Scroll Parallax (Reacts to scroll speed/direction)
+      gsap.to(row1ScrollRef.current, {
         xPercent: -20,
         ease: 'none',
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top bottom',
           end: 'bottom top',
-          scrub: true,
+          scrub: 1,
         }
       });
 
-      // Row 2: Moves Right
-      gsap.to(row2Ref.current, {
+      // --- ROW 2 (Moves Right) ---
+      
+      // Auto-run (Slow baseline movement - Starts from offset)
+      gsap.set(row2AutoRef.current, { x: "-33.33%" });
+      gsap.to(row2AutoRef.current, {
+        x: "0%",
+        duration: 30,
+        repeat: -1,
+        ease: 'none',
+      });
+
+      // Scroll Parallax (Reacts to scroll speed/direction)
+      gsap.to(row2ScrollRef.current, {
         xPercent: 20,
         ease: 'none',
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top bottom',
           end: 'bottom top',
-          scrub: true,
+          scrub: 1,
         }
       });
     }, sectionRef);
@@ -72,10 +99,8 @@ export default function SkillsSection() {
     return () => ctx.revert();
   }, [skills]);
 
-  // Duplicate items for a seamless look 
-  // (though with scroll-triggered scrub, we don't necessarily need infinite loop, 
-  // but extra items help cover the screen width)
-  const paddedSkills = [...skills, ...skills, ...skills];
+  // Use 4x clones for absolute seamlessness (3x set width + overlap)
+  const paddedSkills = [...skills, ...skills, ...skills, ...skills];
 
   return (
     <section className="skills-section" ref={sectionRef}>
@@ -84,19 +109,23 @@ export default function SkillsSection() {
         <h2 className="skills-section__title">I keep good skills.</h2>
       </div>
 
-      <div className="skills-marquee-container" ref={itemsContainerRef}>
-        {/* TOP ROW */}
-        <div className="skills-marquee-row" ref={row1Ref}>
-          {paddedSkills.slice(0, Math.ceil(paddedSkills.length/2)).map((skill, i) => (
-            <SkillCard key={`row1-${i}`} skill={skill} index={i + 1} />
-          ))}
+      <div className="skills-marquee-container">
+        {/* ROW 1: MARQUEE LEFT */}
+        <div className="skills-marquee-row-wrapper" ref={row1ScrollRef}>
+          <div className="skills-marquee-row" ref={row1AutoRef}>
+            {paddedSkills.slice(0, Math.ceil(paddedSkills.length/2)).map((skill, i) => (
+              <SkillCard key={`row1-${i}`} skill={skill} index={i + 1} />
+            ))}
+          </div>
         </div>
 
-        {/* BOTTOM ROW */}
-        <div className="skills-marquee-row" ref={row2Ref} style={{ marginLeft: '-15%' }}>
-          {paddedSkills.slice(Math.ceil(paddedSkills.length/2)).map((skill, i) => (
-            <SkillCard key={`row2-${i}`} skill={skill} index={i + 1} />
-          ))}
+        {/* ROW 2: MARQUEE RIGHT */}
+        <div className="skills-marquee-row-wrapper" ref={row2ScrollRef} style={{ marginLeft: '-20%' }}>
+          <div className="skills-marquee-row" ref={row2AutoRef}>
+            {paddedSkills.slice(Math.ceil(paddedSkills.length/2)).map((skill, i) => (
+              <SkillCard key={`row2-${i}`} skill={skill} index={i + 1} />
+            ))}
+          </div>
         </div>
       </div>
     </section>
