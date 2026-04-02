@@ -1,0 +1,125 @@
+.skills-section {
+  padding: 140px 0;
+  background-color: var(--color-bg);
+  overflow: hidden;
+  position: relative;
+}
+
+.skills-section__header {
+  margin-bottom: 80px;
+  text-align: center;
+}
+
+.skills-section__title {
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 8vw, 7rem);
+  font-weight: 800;
+  line-height: 0.9;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  color: var(--color-dark);
+}
+
+.skills-section__subtitle {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  color: var(--color-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.skills-marquee-container {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+.skills-marquee-row {
+  display: flex;
+  gap: 30px;
+  white-space: nowrap;
+  padding: 10px 0;
+  will-change: transform;
+}
+
+.skill-card {
+  flex: 0 0 auto;
+  width: clamp(280px, 20vw, 360px);
+  height: clamp(200px, 15vw, 260px);
+  background: var(--color-card-bg);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  transition: border-color 0.4s var(--transition-base), transform 0.4s var(--transition-base);
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-card:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-5px);
+}
+
+.skill-card__logo {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  margin-bottom: 20px;
+  /* If original logos are colored, we keep them as is per request. 
+     If we wanted the Boring look, we'd add filter: grayscale(1) brightness(0); */
+}
+
+.skill-card__name {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-dark);
+  text-transform: uppercase;
+}
+
+.skill-card__bg-number {
+  position: absolute;
+  top: 10px;
+  left: 15px;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: rgba(0, 0, 0, 0.05);
+  font-weight: 600;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .skills-section {
+    padding: 80px 0;
+  }
+  
+  .skills-section__title {
+    font-size: clamp(2.5rem, 12vw, 4rem);
+  }
+  
+  .skills-marquee-container {
+    gap: 20px;
+  }
+  
+  .skill-card {
+    width: 220px;
+    height: 160px;
+    padding: 25px;
+  }
+  
+  .skill-card__logo {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 12px;
+  }
+}

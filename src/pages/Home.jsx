@@ -4,7 +4,7 @@ import Work from '../components/sections/Work.jsx';
 import About from '../components/sections/About.jsx';
 import Education from '../components/sections/Education.jsx';
 import MyReads from '../components/sections/MyReads.jsx';
-import Marquee from '../components/Marquee.jsx';
+import SkillsSection from '../components/sections/SkillsSection.jsx';
 import CTASection from '../components/sections/CTASection.jsx';
 
 export default function Home() {
@@ -16,7 +16,7 @@ export default function Home() {
       <About />
       <Education />
       <MyReads />
-      <Marquee />
+      <SkillsSection />
       <CTASection />
     </>
   );
