@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { gsap, ScrollTrigger } from '../../utils/gsapPlugins.js';
+import { gsap, ScrollTrigger, useGSAP } from '../../utils/gsapPlugins.js';
 import { skillsService } from '../../firebase/skillsService.js';
 import './SkillsSection.css';
 
@@ -30,47 +30,46 @@ export default function SkillsSection() {
   const row1Skills = skills.filter(s => (s.row || 1) === 1);
   const row2Skills = skills.filter(s => s.row === 2);
 
-  useEffect(() => {
+  useGSAP(() => {
     if (skills.length === 0) return;
 
-    const ctx = gsap.context(() => {
-      // Helper to create a robust marquee with scroll parallax
-      const createMarquee = (autoRef, scrollRef, direction = 1) => {
-        if (!autoRef.current || !scrollRef.current) return;
+    // Helper to create a robust marquee with scroll parallax
+    const createMarquee = (autoRef, scrollRef, direction = 1) => {
+      if (!autoRef.current || !scrollRef.current) return;
 
-        // 1. Auto-run base movement
-        gsap.to(autoRef.current, {
-          x: direction === 1 ? "-50%" : "0%",
-          duration: 40, // Slower base speed for more premium feel
-          repeat: -1,
-          ease: 'none',
-        });
+      // 1. Auto-run base movement
+      gsap.to(autoRef.current, {
+        x: direction === 1 ? "-50%" : "0%",
+        duration: 40, // Slower base speed for more premium feel
+        repeat: -1,
+        ease: 'none',
+      });
 
-        if (direction === -1) {
-          gsap.set(autoRef.current, { x: "-50%" });
+      if (direction === -1) {
+        gsap.set(autoRef.current, { x: "-50%" });
+      }
+
+      // 2. Scroll Parallax
+      gsap.to(scrollRef.current, {
+        xPercent: direction === 1 ? -25 : 25,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true,
+          invalidateOnRefresh: true,
         }
+      });
+    };
 
-        // 2. Scroll Parallax
-        // We use a larger xPercent to ensure the scroll direction is always dominant
-        gsap.to(scrollRef.current, {
-          xPercent: direction === 1 ? -25 : 25,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true, // Tighter scrub prevents the "stuck" feeling
-          }
-        });
-      };
+    if (row1Skills.length > 0) createMarquee(row1AutoRef, row1ScrollRef, 1);
+    if (row2Skills.length > 0) createMarquee(row2AutoRef, row2ScrollRef, -1);
 
-      if (row1Skills.length > 0) createMarquee(row1AutoRef, row1ScrollRef, 1);
-      if (row2Skills.length > 0) createMarquee(row2AutoRef, row2ScrollRef, -1);
+    // Refresh after dynamic render
+    ScrollTrigger.refresh();
 
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, [skills, row1Skills.length, row2Skills.length]);
+  }, { dependencies: [skills, row1Skills.length, row2Skills.length], scope: sectionRef });
 
   if (skills.length === 0) return null;
 

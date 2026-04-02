@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, createContext } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import Lenis from 'lenis';
 import { gsap, ScrollTrigger } from './utils/gsapPlugins.js';
 
 import Navbar from './components/Navbar.jsx';
@@ -25,7 +24,6 @@ import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 
 export const TransitionContext = createContext({});
-export const LenisContext = createContext(null);
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -38,47 +36,38 @@ function ScrollToTop() {
 function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [transitioning, setTransitioning] = useState(false);
-  const lenisRef = useRef(null);
 
+  // Global ScrollTrigger Refresh
   useEffect(() => {
-    const lenis = new Lenis({
-      lerp: 0.1,
-      duration: 1.2,
-      smoothWheel: true,
-    });
-    lenisRef.current = lenis;
+    const handleLoad = () => {
+      ScrollTrigger.refresh();
+    };
 
-    lenis.on('scroll', ScrollTrigger.update);
+    const handleResize = () => {
+      ScrollTrigger.refresh(true);
+    };
 
-    gsap.ticker.add((time) => {
-      lenis.raf(time * 1000);
-    });
+    window.addEventListener('load', handleLoad);
+    window.addEventListener('resize', handleResize);
 
-    gsap.ticker.lagSmoothing(0);
+    // Initial refresh after a small delay to ensure React has painted
+    const timeout = setTimeout(() => ScrollTrigger.refresh(), 500);
 
     return () => {
-      lenis.destroy();
+      window.removeEventListener('load', handleLoad);
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(timeout);
     };
   }, []);
 
-  // Pause scroll while loading
-  useEffect(() => {
-    if (lenisRef.current) {
-      if (isLoading) {
-        lenisRef.current.stop();
-      } else {
-        lenisRef.current.start();
-      }
-    }
-  }, [isLoading]);
-
   const handleLoadComplete = () => {
     setIsLoading(false);
+    // Refresh again after loader is gone and layout might have shifted
+    setTimeout(() => ScrollTrigger.refresh(), 100);
   };
 
   return (
-    <LenisContext.Provider value={lenisRef}>
-      <TransitionContext.Provider value={{ transitioning, setTransitioning }}>
+    <TransitionContext.Provider value={{ transitioning, setTransitioning }}>
         {isLoading && <Loader onComplete={handleLoadComplete} />}
         <CustomCursor />
         <Navbar />
@@ -135,8 +124,7 @@ function AppContent() {
           </Routes>
         </main>
         <Footer />
-      </TransitionContext.Provider>
-    </LenisContext.Provider>
+    </TransitionContext.Provider>
   );
 }
 

@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { gsap } from '../../utils/gsapPlugins.js';
+import { gsap, ScrollTrigger, useGSAP } from '../../utils/gsapPlugins.js';
 import AnimatedButton from '../ui/AnimatedButton.jsx';
 import './About.css';
 
@@ -18,93 +18,102 @@ export default function About() {
   const bodyRef = useRef(null);
   const stripRef = useRef(null);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const mm = gsap.matchMedia();
+  useGSAP(() => {
+    const mm = gsap.matchMedia();
 
-      mm.add({
-        isMobile: '(max-width: 639px)',
-        isTablet: '(min-width: 640px) and (max-width: 1023px)',
-        isDesktop: '(min-width: 1024px)',
-      }, (ctx) => {
-        const { isMobile, isDesktop } = ctx.conditions;
+    mm.add({
+      isMobile: '(max-width: 639px)',
+      isTablet: '(min-width: 640px) and (max-width: 1023px)',
+      isDesktop: '(min-width: 1024px)',
+    }, (ctx) => {
+      const { isMobile, isDesktop } = ctx.conditions;
 
-        /* ── Heading ─────────────────────── */
-        if (headingRef.current) {
-          gsap.from(headingRef.current, {
-            y: isMobile ? 28 : 70,
+      /* ── Heading ─────────────────────── */
+      if (headingRef.current) {
+        gsap.from(headingRef.current, {
+          y: isMobile ? 28 : 70,
+          opacity: 0,
+          duration: 1.2,
+          ease: 'expo.out',
+          scrollTrigger: {
+            trigger: headingRef.current,
+            start: 'top 90%',
+            toggleActions: 'play none none reverse',
+            invalidateOnRefresh: true,
+          },
+        });
+      }
+
+      /* ── Body paragraph fade-up ─────────── */
+      if (bodyRef.current) {
+        gsap.from(bodyRef.current, {
+          y: isMobile ? 20 : 48,
+          opacity: 0,
+          duration: 1.1,
+          ease: 'power3.out',
+          delay: 0.15,
+          scrollTrigger: {
+            trigger: bodyRef.current,
+            start: 'top 92%',
+            toggleActions: 'play none none reverse',
+            invalidateOnRefresh: true,
+          },
+        });
+      }
+
+      /* ── Photo strip ──────────────────────── */
+      if (stripRef.current) {
+        if (isMobile) {
+          // Mobile: simple fade-up, NO x-translate (prevents overflow)
+          gsap.from(stripRef.current, {
+            y: 20,
+            opacity: 0,
+            duration: 0.8,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 85%',
+              toggleActions: 'play none none reverse',
+              invalidateOnRefresh: true,
+            },
+          });
+        } else {
+          // Tablet / Desktop: slide in from right on enter
+          gsap.from(stripRef.current, {
+            x: isDesktop ? 140 : 70,
             opacity: 0,
             duration: 1.2,
-            ease: 'expo.out',
-            scrollTrigger: {
-              trigger: headingRef.current,
-              start: 'top 85%',
-            },
-          });
-        }
-
-        /* ── Body paragraph fade-up ─────────── */
-        if (bodyRef.current) {
-          gsap.from(bodyRef.current, {
-            y: isMobile ? 20 : 48,
-            opacity: 0,
-            duration: 1.1,
             ease: 'power3.out',
-            delay: 0.15,
             scrollTrigger: {
-              trigger: headingRef.current,
-              start: 'top 82%',
+              trigger: sectionRef.current,
+              start: 'top 75%',
+              toggleActions: 'play none none reverse',
+              invalidateOnRefresh: true,
             },
           });
         }
 
-        /* ── Photo strip ──────────────────────── */
-        if (stripRef.current) {
-          if (isMobile) {
-            // Mobile: simple fade-up, NO x-translate (prevents overflow)
-            gsap.from(stripRef.current, {
-              y: 20,
-              opacity: 0,
-              duration: 0.8,
-              ease: 'power3.out',
-              scrollTrigger: {
-                trigger: sectionRef.current,
-                start: 'top 80%',
-              },
-            });
-          } else {
-            // Tablet / Desktop: slide in from right on enter
-            gsap.from(stripRef.current, {
-              x: isDesktop ? 140 : 70,
-              opacity: 0,
-              duration: 1.2,
-              ease: 'power3.out',
-              scrollTrigger: {
-                trigger: sectionRef.current,
-                start: 'top 63%',
-              },
-            });
-          }
-
-          // Desktop-only scrubbed parallax
-          if (isDesktop) {
-            gsap.to(stripRef.current, {
-              y: 60,
-              ease: 'none',
-              scrollTrigger: {
-                trigger: sectionRef.current,
-                start: 'top bottom',
-                end: 'bottom top',
-                scrub: 1.5,
-              },
-            });
-          }
+        // Desktop-only scrubbed parallax
+        if (isDesktop) {
+          gsap.to(stripRef.current, {
+            y: 60,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 1.5,
+              invalidateOnRefresh: true,
+            },
+          });
         }
-      });
-    }, sectionRef);
+      }
+    });
 
-    return () => ctx.revert();
-  }, []);
+    // Final refresh
+    ScrollTrigger.refresh();
+
+  }, { scope: sectionRef });
 
   return (
     <section className="about section" ref={sectionRef}>

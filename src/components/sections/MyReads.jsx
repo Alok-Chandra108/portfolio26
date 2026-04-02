@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { gsap } from '../../utils/gsapPlugins.js';
+import { gsap, ScrollTrigger, useGSAP } from '../../utils/gsapPlugins.js';
 import BookCard from '../ui/BookCard.jsx';
 import AnimatedButton from '../ui/AnimatedButton.jsx';
 import books from '../../data/books.js';
@@ -28,102 +28,110 @@ export default function MyReads() {
     });
   }, []);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const mm = gsap.matchMedia();
+  useGSAP(() => {
+    const mm = gsap.matchMedia();
 
-      mm.add({
-        isMobile: '(max-width: 767px)',
-        isDesktop: '(min-width: 768px)',
-      }, (ctx) => {
-        const { isMobile } = ctx.conditions;
+    mm.add({
+      isMobile: '(max-width: 767px)',
+      isDesktop: '(min-width: 768px)',
+    }, (ctx) => {
+      const { isMobile } = ctx.conditions;
 
-        /* ── Heading entrance ─────────────────── */
-        if (headingRef.current) {
-          gsap.from(headingRef.current, {
-            y: isMobile ? 30 : 140,
-            opacity: 0,
-            duration: isMobile ? 0.9 : 1.2,
-            ease: isMobile ? 'power3.out' : 'expo.out',
+      /* ── Heading entrance ─────────────────── */
+      if (headingRef.current) {
+        gsap.from(headingRef.current, {
+          y: isMobile ? 30 : 140,
+          opacity: 0,
+          duration: isMobile ? 0.9 : 1.2,
+          ease: isMobile ? 'power3.out' : 'expo.out',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: isMobile ? 'top 85%' : 'top 75%',
+            toggleActions: 'play none none reverse',
+            invalidateOnRefresh: true,
+          },
+        });
+      }
+
+      /* ── Title letter-spacing collapse (desktop) */
+      if (!isMobile && headingRef.current) {
+        gsap.fromTo(
+          headingRef.current,
+          { letterSpacing: '0.32em' },
+          {
+            letterSpacing: '0.04em',
+            duration: 1.3,
+            ease: 'expo.out',
             scrollTrigger: {
               trigger: sectionRef.current,
-              start: isMobile ? 'top 83%' : 'top 68%',
+              start: 'top 75%',
+              toggleActions: 'play none none reverse',
+              invalidateOnRefresh: true,
             },
-          });
-        }
-
-        /* ── Title letter-spacing collapse (desktop) */
-        if (!isMobile && headingRef.current) {
-          gsap.fromTo(
-            headingRef.current,
-            { letterSpacing: '0.32em' },
-            {
-              letterSpacing: '0.04em',
-              duration: 1.3,
-              ease: 'expo.out',
-              scrollTrigger: {
-                trigger: sectionRef.current,
-                start: 'top 68%',
-              },
-            }
-          );
-        }
-
-        /* ── Cards fan-in entrance ───────────── */
-        cardRefs.current.forEach((card, i) => {
-          if (!card) return;
-
-          gsap.from(card, {
-            y: isMobile ? 24 : 100,
-            rotation: 0,
-            opacity: 0,
-            duration: isMobile ? 0.75 : 1.05,
-            delay: i * (isMobile ? 0.1 : 0.16),
-            ease: 'power3.out',
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: isMobile ? 'top 83%' : 'top 63%',
-            },
-          });
-
-          /* Only fan-rotate on desktop; grid layout on mobile stays flat */
-          if (!isMobile) {
-            gsap.to(card, {
-              rotation: rotations[i],
-              duration: 0.75,
-              delay: 1.2 + i * 0.13,
-              ease: 'power2.inOut',
-              scrollTrigger: {
-                trigger: sectionRef.current,
-                start: 'top 63%',
-              },
-            });
           }
+        );
+      }
+
+      /* ── Cards fan-in entrance ───────────── */
+      cardRefs.current.forEach((card, i) => {
+        if (!card) return;
+
+        gsap.from(card, {
+          y: isMobile ? 24 : 100,
+          rotation: 0,
+          opacity: 0,
+          duration: isMobile ? 0.75 : 1.05,
+          delay: i * (isMobile ? 0.1 : 0.16),
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: isMobile ? 'top 85%' : 'top 70%',
+            toggleActions: 'play none none reverse',
+            invalidateOnRefresh: true,
+          },
         });
 
-        /* ── Fan depth parallax (desktop only) ── */
+        /* Only fan-rotate on desktop; grid layout on mobile stays flat */
         if (!isMobile) {
-          cardRefs.current.forEach((card, i) => {
-            if (!card) return;
-            // Each card scrolls at slightly different y rate — creates 3D depth
-            const depthOffset = [30, 50, 20, 60][i] || 40;
-            gsap.to(card, {
-              y: `-=${depthOffset}`,
-              ease: 'none',
-              scrollTrigger: {
-                trigger: sectionRef.current,
-                start: 'top bottom',
-                end: 'bottom top',
-                scrub: 1.5 + i * 0.2,
-              },
-            });
+          gsap.to(card, {
+            rotation: rotations[i],
+            duration: 0.75,
+            delay: 1.2 + i * 0.13,
+            ease: 'power2.inOut',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top 70%',
+              toggleActions: 'play none none reverse',
+              invalidateOnRefresh: true,
+            },
           });
         }
       });
-    }, sectionRef);
 
-    return () => ctx.revert();
-  }, []);
+      /* ── Fan depth parallax (desktop only) ── */
+      if (!isMobile) {
+        cardRefs.current.forEach((card, i) => {
+          if (!card) return;
+          // Each card scrolls at slightly different y rate — creates 3D depth
+          const depthOffset = [30, 50, 20, 60][i] || 40;
+          gsap.to(card, {
+            y: `-=${depthOffset}`,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: 1.5 + i * 0.2,
+              invalidateOnRefresh: true,
+            },
+          });
+        });
+      }
+    });
+
+    ScrollTrigger.refresh();
+
+  }, { scope: sectionRef });
 
   return (
     <section className="my-reads section" ref={sectionRef}>

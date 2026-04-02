@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { gsap } from '../../utils/gsapPlugins.js';
+import { gsap, ScrollTrigger, useGSAP } from '../../utils/gsapPlugins.js';
 import educationData from '../../data/education.js';
 import './Education.css';
 
@@ -10,102 +10,112 @@ export default function Education() {
   const itemsRef = useRef([]);
   const nodesRef = useRef([]);
 
-  useEffect(() => {
+  // Use useGSAP for cleanup and scoping
+  useGSAP(() => {
+    // Re-initialize arrays for refs to ensure they match current DOM across hot reloads
     itemsRef.current = [];
     nodesRef.current = [];
-  });
+  }, { dependencies: [], scope: sectionRef });
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const mm = gsap.matchMedia();
+  useGSAP(() => {
+    const mm = gsap.matchMedia();
 
-      /* ── Timeline progress line ─────────────── */
-      if (lineRef.current) {
+    /* ── Timeline progress line ─────────────── */
+    if (lineRef.current) {
+      gsap.fromTo(
+        lineRef.current,
+        { scaleY: 0 },
+        {
+          scaleY: 1,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top 50%',
+            end: 'bottom 88%',
+            scrub: 1,
+            invalidateOnRefresh: true,
+          },
+        }
+      );
+    }
+
+    /* ── Heading ─────────────────────── */
+    if (headingRef.current) {
+      gsap.from(headingRef.current, {
+        y: 40,
+        opacity: 0,
+        duration: 1.1,
+        ease: 'expo.out',
+        scrollTrigger: { 
+          trigger: headingRef.current, 
+          start: 'top 90%',
+          toggleActions: 'play none none reverse',
+          invalidateOnRefresh: true,
+        },
+      });
+    }
+
+    /* ── Device-aware item animations ────────── */
+    mm.add({
+      isMobile: '(max-width: 899px)',
+      isDesktop: '(min-width: 900px)',
+    }, (ctx) => {
+      const { isMobile } = ctx.conditions;
+
+      itemsRef.current.forEach((item, i) => {
+        if (!item) return;
+
+        const isOdd = i % 2 === 0;
         gsap.fromTo(
-          lineRef.current,
-          { scaleY: 0 },
+          item,
           {
-            scaleY: 1,
-            ease: 'none',
+            x: isMobile ? 0 : isOdd ? -50 : 50,
+            y: isMobile ? 28 : 0,
+            opacity: 0,
+            scale: 0.96,
+          },
+          {
+            x: 0,
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: isMobile ? 0.85 : 1.3,
+            ease: 'power3.out',
             scrollTrigger: {
-              trigger: sectionRef.current,
-              start: 'top 50%',
-              end: 'bottom 88%', // constrained so it doesn't over-run on short mobile screens
-              scrub: 1,
+              trigger: item,
+              start: 'top 92%',
+              toggleActions: 'play none none reverse',
+              invalidateOnRefresh: true,
             },
           }
         );
-      }
-
-      /* ── Heading ─────────────────────── */
-      if (headingRef.current) {
-        gsap.from(headingRef.current, {
-          y: 40,
-          opacity: 0,
-          duration: 1.1,
-          ease: 'expo.out',
-          scrollTrigger: { trigger: headingRef.current, start: 'top 82%' },
-        });
-      }
-
-      /* ── Device-aware item animations ────────── */
-      mm.add({
-        isMobile: '(max-width: 899px)',
-        isDesktop: '(min-width: 900px)',
-      }, (ctx) => {
-        const { isMobile } = ctx.conditions;
-
-        itemsRef.current.forEach((item, i) => {
-          if (!item) return;
-
-          // Mobile: y-only fade. Desktop: alternating x-slide.
-          const isOdd = i % 2 === 0;
-          gsap.fromTo(
-            item,
-            {
-              x: isMobile ? 0 : isOdd ? -50 : 50,
-              y: isMobile ? 28 : 0,
-              opacity: 0,
-              scale: 0.96,
-            },
-            {
-              x: 0,
-              y: 0,
-              opacity: 1,
-              scale: 1,
-              duration: isMobile ? 0.85 : 1.3,
-              ease: 'power3.out',
-              scrollTrigger: {
-                trigger: item,
-                start: 'top 86%',
-              },
-            }
-          );
-        });
-
-        /* ── Node pulse ring (all screens) ──── */
-        nodesRef.current.forEach((node) => {
-          if (!node) return;
-          gsap.fromTo(
-            node,
-            { scale: 0.3, opacity: 0 },
-            {
-              scale: 1,
-              opacity: 1,
-              duration: 0.7,
-              ease: 'back.out(1.4)',
-              scrollTrigger: {
-                trigger: node,
-                start: 'top 88%',
-              },
-            }
-          );
-        });
       });
-    }, sectionRef);
 
-    return () => ctx.revert();
-  }, []);
+      /* ── Node pulse ring (all screens) ──── */
+      nodesRef.current.forEach((node) => {
+        if (!node) return;
+        gsap.fromTo(
+          node,
+          { scale: 0.3, opacity: 0 },
+          {
+            scale: 1,
+            opacity: 1,
+            duration: 0.7,
+            ease: 'back.out(1.4)',
+            scrollTrigger: {
+              trigger: node,
+              start: 'top 95%',
+              toggleActions: 'play none none reverse',
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+      });
+    });
+
+    ScrollTrigger.refresh();
+
+  }, { scope: sectionRef });
 
   const addItem = (el) => {
     if (el && !itemsRef.current.includes(el)) itemsRef.current.push(el);

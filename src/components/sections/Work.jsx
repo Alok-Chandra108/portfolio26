@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { gsap, ScrollTrigger } from '../../utils/gsapPlugins.js';
+import { gsap, ScrollTrigger, useGSAP } from '../../utils/gsapPlugins.js';
 import AnimatedButton from '../ui/AnimatedButton.jsx';
 import PillTag from '../ui/PillTag.jsx';
 import { projectsService } from '../../firebase/projectsService';
@@ -32,79 +32,74 @@ export default function Work() {
   }, []);
 
   /* ── Scroll entrance animations ───────────────────────── */
-  useEffect(() => {
+  useGSAP(() => {
     if (loading || projects.length === 0) return;
 
-    const ctx = gsap.context(() => {
-      // Heading wipe reveal
-      if (headingRef.current) {
-        gsap.fromTo(
-          headingRef.current,
-          { clipPath: 'inset(0 100% 0 0)', opacity: 1 },
-          {
-            clipPath: 'inset(0 0% 0 0)',
-            duration: 1.5,
-            ease: 'expo.out',
-            scrollTrigger: { trigger: headingRef.current, start: 'top 80%' },
-          }
-        );
-      }
+    // Heading wipe reveal
+    if (headingRef.current) {
+      gsap.fromTo(
+        headingRef.current,
+        { clipPath: 'inset(0 100% 0 0)', opacity: 1 },
+        {
+          clipPath: 'inset(0 0% 0 0)',
+          duration: 1.5,
+          ease: 'expo.out',
+          scrollTrigger: { 
+            trigger: headingRef.current, 
+            start: 'top 88%',
+            invalidateOnRefresh: true,
+          },
+        }
+      );
+    }
 
-      // Ruling lines draw in
-      linesRef.current.forEach((line, i) => {
-        if (!line) return;
-        gsap.from(line, {
-          scaleX: 0,
-          transformOrigin: 'left',
-          duration: 1.1,
-          ease: 'expo.inOut',
-          scrollTrigger: { trigger: line, start: 'top 88%' },
-        });
+    // Ruling lines draw in
+    linesRef.current.forEach((line, i) => {
+      if (!line) return;
+      gsap.from(line, {
+        scaleX: 0,
+        transformOrigin: 'left',
+        duration: 1.1,
+        ease: 'expo.inOut',
+        scrollTrigger: { 
+          trigger: line, 
+          start: () => 'top 92%',
+          invalidateOnRefresh: true,
+        },
       });
+    });
 
-      // Row clip-path wipe with stagger on desktop, simple fade on mobile
-      const mm = gsap.matchMedia();
-      mm.add({
-        isMobile: '(max-width: 639px)',
-        isTablet: '(min-width: 640px) and (max-width: 1023px)',
-        isDesktop: '(min-width: 1024px)',
-      }, (ctx) => {
-        const { isMobile } = ctx.conditions;
-
-        rowsRef.current.forEach((row, i) => {
-          if (!row) return;
-          if (isMobile) {
-            gsap.from(row, {
-              y: 30,
-              opacity: 0,
-              duration: 0.9,
-              delay: i * 0.1,
-              ease: 'power3.out',
-              scrollTrigger: { trigger: row, start: 'top 88%' },
-            });
-          } else {
-            gsap.fromTo(
-              row,
-              { clipPath: 'inset(0 100% 0 0)', opacity: 1 },
-              {
-                clipPath: 'inset(0 0% 0 0)',
-                duration: 1.1,
-                delay: i * 0.14,
-                ease: 'expo.out',
-                scrollTrigger: { trigger: sectionRef.current, start: 'top 68%' },
-              }
-            );
-          }
-        });
-      });
+    // Row animations - Trigger Each Individually
+    rowsRef.current.forEach((row, i) => {
+      if (!row) return;
       
-      // Critical: Refresh ScrollTrigger after dynamic content renders
-      ScrollTrigger.refresh();
+      gsap.fromTo(
+        row,
+        { 
+          clipPath: window.innerWidth < 640 ? 'none' : 'inset(0 100% 0 0)', 
+          y: window.innerWidth < 640 ? 30 : 0,
+          opacity: window.innerWidth < 640 ? 0 : 1 
+        },
+        {
+          clipPath: 'inset(0 0% 0 0)',
+          y: 0,
+          opacity: 1,
+          duration: 1.1,
+          ease: 'expo.out',
+          scrollTrigger: {
+            trigger: row,
+            start: () => 'top 88%',
+            invalidateOnRefresh: true,
+            toggleActions: 'play none none none',
+          },
+        }
+      );
+    });
+    
+    // Critical: Refresh ScrollTrigger after dynamic content renders
+    ScrollTrigger.refresh();
 
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, [loading, projects]);
+  }, { dependencies: [loading, projects], scope: sectionRef });
 
   /* ── Floating preview follows cursor (desktop only) ──── */
   useEffect(() => {
