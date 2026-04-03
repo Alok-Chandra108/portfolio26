@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLenis } from 'lenis/react';
-import { gsap } from '../utils/gsapPlugins.js';
+import { gsap, useGSAP } from '../utils/gsapPlugins.js';
 import './Navbar.css';
 
 export default function Navbar() {
@@ -19,13 +19,13 @@ export default function Navbar() {
     setScrolled(scroll > 80);
   });
 
-  useEffect(() => {
+  useGSAP(() => {
     // Set initial position for C container
     gsap.set(charCInnerRef.current, { yPercent: -50 });
-  }, []);
+  }, { scope: navRef });
 
   // Menu open/close animation
-  useEffect(() => {
+  useGSAP(() => {
     if (!menuOverlayRef.current) return;
 
     if (menuOpen) {
@@ -53,9 +53,11 @@ export default function Navbar() {
         }
       });
     }
-  }, [menuOpen]);
+  }, { dependencies: [menuOpen] });
 
-  const handleLogoHover = () => {
+  const { contextSafe } = useGSAP({ scope: navRef });
+
+  const handleLogoHover = contextSafe(() => {
     // Rotate background
     gsap.to(logoBgRef.current, {
       rotation: 180,
@@ -74,9 +76,9 @@ export default function Navbar() {
       duration: 0.8,
       ease: 'power3.out',
     });
-  };
+  });
 
-  const handleLogoLeave = () => {
+  const handleLogoLeave = contextSafe(() => {
     // Reverse background
     gsap.to(logoBgRef.current, {
       rotation: 0,
@@ -95,7 +97,7 @@ export default function Navbar() {
       duration: 0.8,
       ease: 'power3.out',
     });
-  };
+  });
 
   const handleNavClick = (path) => {
     setMenuOpen(false);

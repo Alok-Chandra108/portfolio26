@@ -102,38 +102,38 @@ export default function Work() {
   }, { dependencies: [loading, projects], scope: sectionRef });
 
   /* ── Floating preview follows cursor (desktop only) ──── */
-  useEffect(() => {
+  useGSAP(() => {
     if (loading) return;
 
     const preview = previewRef.current;
     if (!preview) return;
 
-    let raf;
     const xS = gsap.quickSetter(preview, 'x', 'px');
     const yS = gsap.quickSetter(preview, 'y', 'px');
 
-    const onMove = (e) => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const rect = sectionRef.current?.getBoundingClientRect();
-        if (!rect) return;
-        xS(e.clientX - rect.left + 24);
-        yS(e.clientY - rect.top - 80);
-      });
-    };
+    const onMove = contextSafe((e) => {
+      const rect = sectionRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      xS(e.clientX - rect.left + 24);
+      yS(e.clientY - rect.top - 80);
+    });
 
     const section = sectionRef.current;
     const mq = window.matchMedia('(min-width: 1024px)');
-    if (mq.matches) section?.addEventListener('mousemove', onMove);
+    
+    if (mq.matches) {
+      section?.addEventListener('mousemove', onMove);
+    }
 
     return () => {
       section?.removeEventListener('mousemove', onMove);
-      cancelAnimationFrame(raf);
     };
-  }, [loading]);
+  }, { dependencies: [loading], scope: sectionRef });
+
+  const { contextSafe } = useGSAP({ scope: sectionRef });
 
   /* ── Preview show/hide on row hover ─────────────────── */
-  const handleRowEnter = (project) => {
+  const handleRowEnter = contextSafe((project) => {
     setHoveredId(project.id);
     if (window.innerWidth < 1024) return;
     gsap.to(previewRef.current, {
@@ -142,9 +142,9 @@ export default function Work() {
       duration: 0.4,
       ease: 'power3.out',
     });
-  };
+  });
 
-  const handleRowLeave = () => {
+  const handleRowLeave = contextSafe(() => {
     setHoveredId(null);
     gsap.to(previewRef.current, {
       opacity: 0,
@@ -152,7 +152,7 @@ export default function Work() {
       duration: 0.3,
       ease: 'power3.in',
     });
-  };
+  });
 
   const hoveredProject = projects.find(p => p.id === hoveredId);
 

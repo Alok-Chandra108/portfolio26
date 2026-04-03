@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { gsap } from '../utils/gsapPlugins.js';
+import { gsap, useGSAP } from '../utils/gsapPlugins.js';
 import ProjectCard from '../components/ui/ProjectCard.jsx';
 import { projectsService } from '../firebase/projectsService';
 import './WorkPage.css';
@@ -25,24 +25,21 @@ export default function WorkPage() {
   }, []);
 
   /* ── Entrance Animation ──────────────────── */
-  useEffect(() => {
+  useGSAP(() => {
     if (loading || projects.length === 0) return;
 
-    const ctx = gsap.context(() => {
-      const cards = gridRef.current?.children;
-      if (cards?.length) {
-        gsap.from(cards, {
-          y: 80,
-          opacity: 0,
-          duration: 0.8,
-          stagger: 0.12,
-          ease: 'power3.out',
-          delay: 0.3,
-        });
-      }
-    });
-    return () => ctx.revert();
-  }, [loading, projects]);
+    const cards = gridRef.current?.children;
+    if (cards?.length) {
+      gsap.from(cards, {
+        y: 80,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.12,
+        ease: 'power3.out',
+        delay: 0.3,
+      });
+    }
+  }, { dependencies: [loading, projects], scope: gridRef });
 
   if (loading && projects.length === 0) {
     return (

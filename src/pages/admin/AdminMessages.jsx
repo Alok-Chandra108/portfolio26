@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { messagesService } from "../../firebase/messagesService";
-import { gsap } from "../../utils/gsapPlugins";
+import { gsap, useGSAP } from "../../utils/gsapPlugins";
 import "../../styles/admin.css";
 
 const AdminMessages = () => {
@@ -19,22 +19,25 @@ const AdminMessages = () => {
     try {
       const data = await messagesService.getMessages();
       setMessages(data);
-      
-      // Animate items once loaded
-      gsap.from(".message-item", {
-        y: 20,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: "power2.out",
-        delay: 0.2
-      });
     } catch (error) {
       console.error("Error fetching messages:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  useGSAP(() => {
+    if (loading || messages.length === 0) return;
+    
+    gsap.from(".message-item", {
+      y: 20,
+      opacity: 0,
+      duration: 0.6,
+      stagger: 0.1,
+      ease: "power2.out",
+      delay: 0.2
+    });
+  }, { dependencies: [loading, messages] });
 
   const handleMarkAsRead = async (id) => {
     try {

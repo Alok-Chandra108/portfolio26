@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { gsap } from '../utils/gsapPlugins.js';
+import { gsap, useGSAP } from '../utils/gsapPlugins.js';
 import AnimatedButton from '../components/ui/AnimatedButton.jsx';
 import { messagesService } from '../firebase/messagesService';
 import './ContactPage.css';
@@ -16,35 +16,32 @@ export default function ContactPage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      if (!isSuccess) {
-        gsap.from(headingRef.current, {
-          y: 80,
-          opacity: 0,
-          duration: 1,
-          ease: 'expo.out',
-          delay: 0.3,
-        });
-        gsap.from(formRef.current, {
-          y: 40,
-          opacity: 0,
-          duration: 0.8,
-          ease: 'power3.out',
-          delay: 0.6,
-        });
-      } else {
-        gsap.from(successRef.current.children, {
-          y: 30,
-          opacity: 0,
-          duration: 0.8,
-          stagger: 0.1,
-          ease: 'back.out(1.7)',
-        });
-      }
-    });
-    return () => ctx.revert();
-  }, [isSuccess]);
+  useGSAP(() => {
+    if (!isSuccess) {
+      gsap.from(headingRef.current, {
+        y: 80,
+        opacity: 0,
+        duration: 1,
+        ease: 'expo.out',
+        delay: 0.3,
+      });
+      gsap.from(formRef.current, {
+        y: 40,
+        opacity: 0,
+        duration: 0.8,
+        ease: 'power3.out',
+        delay: 0.6,
+      });
+    } else {
+      gsap.from(successRef.current.children, {
+        y: 30,
+        opacity: 0,
+        duration: 0.8,
+        stagger: 0.1,
+        ease: 'back.out(1.7)',
+      });
+    }
+  }, { dependencies: [isSuccess] });
 
   const validateForm = () => {
     if (!formData.name.trim()) return "Name is required";

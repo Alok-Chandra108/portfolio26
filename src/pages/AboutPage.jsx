@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { gsap } from '../utils/gsapPlugins.js';
+import { gsap, useGSAP } from '../utils/gsapPlugins.js';
 import AnimatedButton from '../components/ui/AnimatedButton.jsx';
 import './AboutPage.css';
 
@@ -7,25 +7,22 @@ export default function AboutPage() {
   const headingRef = useRef(null);
   const contentRef = useRef(null);
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(headingRef.current, {
-        y: 80,
-        opacity: 0,
-        duration: 1,
-        ease: 'expo.out',
-        delay: 0.3,
-      });
-      gsap.from(contentRef.current, {
-        y: 40,
-        opacity: 0,
-        duration: 0.8,
-        ease: 'power3.out',
-        delay: 0.6,
-      });
+  useGSAP(() => {
+    gsap.from(headingRef.current, {
+      y: 80,
+      opacity: 0,
+      duration: 1,
+      ease: 'expo.out',
+      delay: 0.3,
     });
-    return () => ctx.revert();
-  }, []);
+    gsap.from(contentRef.current, {
+      y: 40,
+      opacity: 0,
+      duration: 0.8,
+      ease: 'power3.out',
+      delay: 0.6,
+    });
+  });
 
   return (
     <div className="about-page">

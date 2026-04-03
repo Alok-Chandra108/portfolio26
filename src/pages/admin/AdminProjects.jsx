@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { projectsService } from "../../firebase/projectsService";
 import projectsData from "../../data/projects"; // Static data for seeding
-import { gsap } from "../../utils/gsapPlugins";
+import { gsap, useGSAP } from "../../utils/gsapPlugins";
 import "../../styles/admin.css";
 
 // DND Kit Imports
@@ -72,6 +72,8 @@ const AdminProjects = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const { contextSafe } = useGSAP({ scope: formRef });
+
   const resetForm = () => {
     setFormData({
       title: "",
@@ -116,10 +118,13 @@ const AdminProjects = () => {
       fetchProjects();
       
       // Animation for success
-      gsap.fromTo(".success-banner", 
-        { y: -20, opacity: 0 }, 
-        { y: 0, opacity: 1, duration: 0.5, ease: "back.out" }
-      );
+      const animateSuccess = contextSafe(() => {
+        gsap.fromTo(".success-banner", 
+          { y: -20, opacity: 0 }, 
+          { y: 0, opacity: 1, duration: 0.5, ease: "back.out" }
+        );
+      });
+      animateSuccess();
 
       setTimeout(() => {
         resetForm();
@@ -144,10 +149,13 @@ const AdminProjects = () => {
     
     window.scrollTo({ top: 0, behavior: "smooth" });
     
-    gsap.from(formRef.current, {
-      backgroundColor: "rgba(184, 255, 0, 0.1)",
-      duration: 0.8
+    const animateEdit = contextSafe(() => {
+      gsap.from(formRef.current, {
+        backgroundColor: "rgba(184, 255, 0, 0.1)",
+        duration: 0.8
+      });
     });
+    animateEdit();
   };
 
   const handleDelete = async (id) => {

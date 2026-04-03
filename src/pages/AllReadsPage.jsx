@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { gsap, Flip, ScrollTrigger } from '../utils/gsapPlugins.js';
+import { gsap, useGSAP, Flip, ScrollTrigger } from '../utils/gsapPlugins.js';
 import BookCard from '../components/ui/BookCard.jsx';
 import { db } from '../firebase/config';
 import { collection, getDocs } from 'firebase/firestore';
@@ -63,22 +63,21 @@ export default function AllReadsPage() {
   };
 
   // Entrance animation
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const cards = gridRef.current?.children;
-      if (cards?.length) {
-        gsap.from(cards, {
-          y: 60,
-          opacity: 0,
-          duration: 0.7,
-          stagger: 0.08,
-          ease: 'power3.out',
-          delay: 0.3,
-        });
-      }
-    });
-    return () => ctx.revert();
-  }, []);
+  useGSAP(() => {
+    if (loading || books.length === 0) return;
+    
+    const cards = gridRef.current?.children;
+    if (cards?.length) {
+      gsap.from(cards, {
+        y: 60,
+        opacity: 0,
+        duration: 0.7,
+        stagger: 0.08,
+        ease: 'power3.out',
+        delay: 0.3,
+      });
+    }
+  }, { dependencies: [loading, books] });
 
   return (
     <div className="reads-page">
