@@ -133,4 +133,13 @@
     grid-template-columns: 1fr;
     gap: 60px;
   }
+
+  .contact-page__form {
+    gap: 32px;
+  }
+
+  .contact-page__field input,
+  .contact-page__field textarea {
+    min-height: 48px;
+  }
 }

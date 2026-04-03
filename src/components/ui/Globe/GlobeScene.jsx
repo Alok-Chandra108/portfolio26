@@ -9,16 +9,19 @@ import { GlobeArcs } from "./GlobeArcs";
 import "./Globe.css";
 
 export default function GlobeScene() {
+  const isMobile = typeof window !== 'undefined' && window.innerWidth <= 768;
+
   return (
     <div className="globe-canvas-container">
       <Canvas
-        gl={{ antialias: true, alpha: true }}
+        dpr={isMobile ? [1, 1.25] : [1, 2]}
+        gl={{ antialias: !isMobile, alpha: true }}
         camera={{ position: [0, 0, 3], fov: 45 }}
       >
         <Suspense fallback={null}>
           <OrbitControls
             enablePan={false}
-            enableZoom={true}
+            enableZoom={false}
             minDistance={2}
             maxDistance={5}
             autoRotate={true}
@@ -43,7 +46,7 @@ export default function GlobeScene() {
           <Stars 
             radius={150} 
             depth={50} 
-            count={3500} 
+            count={isMobile ? 1500 : 3500} 
             factor={8} 
             saturation={0.5} 
             fade={true} 
