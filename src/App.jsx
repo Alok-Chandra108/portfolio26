@@ -17,25 +17,32 @@ function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [transitioning, setTransitioning] = useState(false);
 
-  // Global ScrollTrigger Refresh
+  // Global ScrollTrigger Refresh & Layout Monitoring
   useEffect(() => {
-    const handleLoad = () => {
-      ScrollTrigger.refresh();
-    };
-
-    const handleResize = () => {
-      ScrollTrigger.refresh(true);
-    };
-
+    // 1. Static Listeners
+    const handleLoad = () => ScrollTrigger.refresh();
     window.addEventListener('load', handleLoad);
-    window.addEventListener('resize', handleResize);
 
-    // Initial refresh after a small delay to ensure React has painted
+    // 2. Dynamic Layout Monitoring (ResizeObserver)
+    // This catches internal layout shifts that window 'resize' misses
+    let resizeTimeout;
+    const observer = new ResizeObserver(() => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 150); // Debounce to prevent layout thrashing
+    });
+
+    const rootElement = document.getElementById('root');
+    if (rootElement) observer.observe(rootElement);
+
+    // 3. Initial refresh sequence
     const timeout = setTimeout(() => ScrollTrigger.refresh(), 500);
 
     return () => {
       window.removeEventListener('load', handleLoad);
-      window.removeEventListener('resize', handleResize);
+      observer.disconnect();
+      clearTimeout(resizeTimeout);
       clearTimeout(timeout);
     };
   }, []);

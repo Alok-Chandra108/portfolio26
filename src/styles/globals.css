@@ -174,8 +174,9 @@ body::before {
 }
 
 /* ── Lenis Recommended Styles ──────────────────────── */
-html.lenis, html.lenis body {
-  height: auto;
+html.lenis, 
+html.lenis body {
+  height: auto !important;
 }
 
 .lenis.lenis-smooth {
@@ -190,13 +191,16 @@ html.lenis, html.lenis body {
   overflow: hidden;
 }
 
-.lenis.lenis-smooth iframe {
+.lenis.lenis-scrolling iframe {
   pointer-events: none;
 }
 
 /* ── GPU Compositing Utility ────────────────────────────────────────── */
-.will-animate {
+.will-animate,
+.page-wrapper {
   will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translateZ(0); /* Force layer creation */
 }
 
 /* ── Prefers Reduced Motion ─────────────────────────────────────────── */

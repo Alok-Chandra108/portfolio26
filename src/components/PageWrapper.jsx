@@ -29,7 +29,7 @@ export default function PageWrapper({ children }) {
   const lenis = useLenis();
 
   useEffect(() => {
-    // Immediate scroll to top when page enters
+    // Immediate scroll reset when component mounts
     if (lenis) {
       lenis.scrollTo(0, { immediate: true });
     } else {
@@ -37,12 +37,21 @@ export default function PageWrapper({ children }) {
     }
   }, [lenis]);
 
+  const handleAnimationComplete = () => {
+    // Crucial: Refresh ScrollTrigger once the page entrance is DONE
+    // This ensures trigger depths are calculated against the Final layout
+    setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 50);
+  };
+
   return (
     <motion.div
       variants={pageVariants}
       initial="initial"
       animate="animate"
       exit="exit"
+      onAnimationComplete={handleAnimationComplete}
       className="page-wrapper"
     >
       {children}
