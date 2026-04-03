@@ -11,8 +11,6 @@ import AnimatedRoutes from './components/AnimatedRoutes.jsx';
 import { AuthProvider } from './context/AuthContext';
 
 
-export const TransitionContext = createContext({});
-
 function AppContent() {
   const [isLoading, setIsLoading] = useState(true);
   const [transitioning, setTransitioning] = useState(false);
@@ -54,17 +52,17 @@ function AppContent() {
   };
 
   return (
-    <TransitionContext.Provider value={{ transitioning, setTransitioning }}>
+    <>
         {isLoading && <Loader onComplete={handleLoadComplete} />}
+        <CustomCursor />
         <SmoothScroll>
-          <CustomCursor />
           <Navbar />
           <main>
             <AnimatedRoutes />
           </main>
           <Footer />
         </SmoothScroll>
-    </TransitionContext.Provider>
+    </>
   );
 }
 

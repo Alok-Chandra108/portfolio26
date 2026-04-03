@@ -22,7 +22,7 @@ export default function CustomCursor() {
     if (!dot || !ring) return;
 
     // Set initial state
-    gsap.set([dot, ring], { opacity: 0, scale: 0 });
+    gsap.set([dot, ring], { opacity: 0, scale: 0, xPercent: -50, yPercent: -50 });
 
     // Optimized movement with GSAP quickTo
     const dotXTo = gsap.quickTo(dot, "x", { duration: 0.1, ease: "power3.out" });

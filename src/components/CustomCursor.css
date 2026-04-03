@@ -9,7 +9,6 @@
   pointer-events: none;
   z-index: 99999;
   mix-blend-mode: difference;
-  transform: translate(-50%, -50%);
   will-change: transform;
 }
 
@@ -25,7 +24,6 @@
   z-index: 99998;
   background: transparent;
   mix-blend-mode: difference;
-  transform: translate(-50%, -50%);
   will-change: transform;
   display: flex;
   align-items: center;

@@ -15,20 +15,6 @@ export default function DownloadCV() {
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
 
-      // Magnetic effect - move the button slightly towards the cursor
-      // Calculating distance from the center
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      const moveX = (x - centerX) * 0.2;
-      const moveY = (y - centerY) * 0.2;
-
-      gsap.to(button, {
-        x: moveX,
-        y: moveY,
-        duration: 0.6,
-        ease: 'power2.out',
-      });
-
       // Glow effect - move the glow element to the cursor position
       gsap.to(glow, {
         left: x,
@@ -38,22 +24,10 @@ export default function DownloadCV() {
       });
     };
 
-    const handleMouseLeave = () => {
-      // Reset button position
-      gsap.to(button, {
-        x: 0,
-        y: 0,
-        duration: 0.8,
-        ease: 'elastic.out(1, 0.4)',
-      });
-    };
-
     button.addEventListener('mousemove', handleMouseMove);
-    button.addEventListener('mouseleave', handleMouseLeave);
 
     return () => {
       button.removeEventListener('mousemove', handleMouseMove);
-      button.removeEventListener('mouseleave', handleMouseLeave);
     };
   }, []);
 

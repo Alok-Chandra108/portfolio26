@@ -149,7 +149,9 @@ export default function Services() {
               </ul>
             </div>
           ))}
-          <AnimatedButton to="/contact" variant="lime">tell me more</AnimatedButton>
+          <div className="services__cta-wrap will-animate" ref={el => blocksRef.current[services.length] = el}>
+            <AnimatedButton to="/contact" variant="lime">tell me more</AnimatedButton>
+          </div>
         </div>
       </div>
     </section>
