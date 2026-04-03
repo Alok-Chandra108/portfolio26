@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useLenis } from 'lenis/react';
 import { gsap } from '../utils/gsapPlugins.js';
 import './Navbar.css';
 
@@ -14,17 +15,13 @@ export default function Navbar() {
   const charCInnerRef = useRef(null);
   const navigate = useNavigate();
 
-  // Scroll-triggered navbar style
+  const lenis = useLenis(({ scroll }) => {
+    setScrolled(scroll > 80);
+  });
+
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 80);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    
     // Set initial position for C container
     gsap.set(charCInnerRef.current, { yPercent: -50 });
-    
-    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   // Menu open/close animation
