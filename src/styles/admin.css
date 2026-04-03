@@ -165,3 +165,81 @@
   font-weight: 700;
   font-size: 0.85rem;
 }
+.btn-manage:hover {
+  background: var(--color-dark);
+  color: white;
+}
+
+/* Inbox / Messages Styles */
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+}
+
+.message-item {
+  position: relative;
+  border-left: 4px solid transparent;
+}
+
+.message-item--unread {
+  border-left-color: var(--color-accent);
+  background: rgba(184, 255, 0, 0.03);
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.message-sender {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.message-date {
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
+.message-body {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  white-space: pre-wrap;
+}
+
+.message-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+}
+
+.btn-action {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-action--read {
+  background: #f0f0f0;
+  color: var(--color-muted);
+}
+
+.btn-action--delete {
+  background: rgba(255, 0, 0, 0.05);
+  color: #ff4d4d;
+}
+
+.btn-action:hover {
+  filter: brightness(0.9);
+}

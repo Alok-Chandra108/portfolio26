@@ -52,6 +52,12 @@ const AdminDashboard = () => {
             <p>Add, edit, or remove books and update reading status.</p>
             <Link to="/admin/reads" className="btn-manage" style={{ textDecoration: 'none' }}>Manage Books</Link>
           </div>
+
+          <div className="admin-card">
+            <h3>Inbox</h3>
+            <p>View and manage messages from your contact form.</p>
+            <Link to="/admin/messages" className="btn-manage" style={{ textDecoration: 'none' }}>View Messages</Link>
+          </div>
         </div>
       </div>
     </div>

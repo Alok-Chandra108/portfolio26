@@ -14,6 +14,7 @@ import AdminProjects from '../pages/admin/AdminProjects.jsx';
 import AdminExperience from '../pages/admin/AdminExperience.jsx';
 import AdminSkills from '../pages/admin/AdminSkills.jsx';
 import AdminReads from '../pages/admin/AdminReads.jsx';
+import AdminMessages from '../pages/admin/AdminMessages.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 
 export default function AnimatedRoutes() {
@@ -65,6 +66,14 @@ export default function AnimatedRoutes() {
           element={
             <ProtectedRoute>
               <PageWrapper><AdminReads /></PageWrapper>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/messages" 
+          element={
+            <ProtectedRoute>
+              <PageWrapper><AdminMessages /></PageWrapper>
             </ProtectedRoute>
           } 
         />
