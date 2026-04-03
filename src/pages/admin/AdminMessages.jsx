@@ -73,8 +73,8 @@ const AdminMessages = () => {
       <div className="admin-dashboard">
         <header className="dashboard-header">
           <div>
-            <Link to="/admin" style={{ color: "var(--color-muted)", fontSize: "0.9rem", textDecoration: "none", marginBottom: "10px", display: "inline-block" }}>
-              ← Back to Dashboard
+            <Link to="/admin" className="btn-back">
+              <span>←</span> Back to Dashboard
             </Link>
             <h1 className="dashboard-title">Inbox</h1>
             <p>Read and manage messages from your contact form.</p>

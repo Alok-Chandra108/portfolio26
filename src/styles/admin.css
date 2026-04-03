@@ -7,6 +7,46 @@
   background-color: var(--color-bg);
 }
 
+/* Redesigned Back Button */
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 24px;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius-pill);
+  color: var(--color-dark);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+  margin-bottom: 30px;
+  transition: all 0.5s var(--transition-base);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.btn-back span {
+  display: inline-block;
+  transition: transform 0.5s var(--transition-base);
+}
+
+.btn-back:hover {
+  background: var(--color-accent);
+  color: var(--color-darker);
+  border-color: transparent;
+  transform: translateY(-3px);
+  box-shadow: 0 15px 30px rgba(184, 255, 0, 0.2);
+}
+
+.btn-back:hover span {
+  transform: translateX(-6px);
+}
+
 .login-card {
   width: 100%;
   max-width: 400px;

@@ -99,8 +99,8 @@ const AdminReads = () => {
       <div className="admin-dashboard">
         <header className="dashboard-header">
           <div>
-            <Link to="/admin" style={{ color: "var(--color-muted)", fontSize: "0.9rem", textDecoration: "none", display: "inline-block", marginBottom: "10px" }}>
-              ← Back to Dashboard
+            <Link to="/admin" className="btn-back">
+              <span>←</span> Back to Dashboard
             </Link>
             <h1 className="dashboard-title">Manage Books</h1>
             <p>Add, edit, or remove books and update reading status.</p>
