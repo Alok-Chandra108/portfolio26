@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLenis } from 'lenis/react';
 import { gsap } from '../utils/gsapPlugins.js';
+import Magnetic from './ui/Magnetic.jsx';
 import './Navbar.css';
 
 export default function Navbar() {
@@ -117,48 +118,54 @@ export default function Navbar() {
   return (
     <>
       <nav ref={navRef} className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
-        <Link 
-          to="/" 
-          className="navbar__logo" 
-          onMouseEnter={handleLogoHover}
-          onMouseLeave={handleLogoLeave}
-        >
-          <div className="navbar__logo-square">
-            <div className="navbar__logo-bg" ref={logoBgRef}></div>
-            
-            <div className="navbar__logo-char-wrap">
-              <div ref={charAInnerRef} style={{ display: 'flex', flexDirection: 'column' }}>
-                <span className="navbar__logo-char">A</span>
-                <span className="navbar__logo-char">A</span>
+        <Magnetic>
+          <Link 
+            to="/" 
+            className="navbar__logo" 
+            onMouseEnter={handleLogoHover}
+            onMouseLeave={handleLogoLeave}
+          >
+            <div className="navbar__logo-square">
+              <div className="navbar__logo-bg" ref={logoBgRef}></div>
+              
+              <div className="navbar__logo-char-wrap">
+                <div ref={charAInnerRef} style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span className="navbar__logo-char">A</span>
+                  <span className="navbar__logo-char">A</span>
+                </div>
               </div>
-            </div>
 
-            <div className="navbar__logo-char-wrap">
-              <div ref={charCInnerRef} style={{ display: 'flex', flexDirection: 'column' }}>
-                <span className="navbar__logo-char">C</span>
-                <span className="navbar__logo-char">C</span>
+              <div className="navbar__logo-char-wrap">
+                <div ref={charCInnerRef} style={{ display: 'flex', flexDirection: 'column' }}>
+                  <span className="navbar__logo-char">C</span>
+                  <span className="navbar__logo-char">C</span>
+                </div>
               </div>
+              
             </div>
-            
-          </div>
-        </Link>
+          </Link>
+        </Magnetic>
 
         <div className="navbar__right">
-          <Link to="/contact" className="navbar__cta-btn">
-            <span>LET'S TALK</span>
-            <span className="navbar__cta-arrow">→</span>
-          </Link>
-          <button
-            className="navbar__menu-btn"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            <span>{menuOpen ? 'CLOSE' : 'MENU'}</span>
-            <div className={`navbar__hamburger ${menuOpen ? 'navbar__hamburger--open' : ''}`}>
-              <span />
-              <span />
-              <span />
-            </div>
-          </button>
+          <Magnetic strength={0.3}>
+            <Link to="/contact" className="navbar__cta-btn">
+              <span>LET'S TALK</span>
+              <span className="navbar__cta-arrow">→</span>
+            </Link>
+          </Magnetic>
+          <Magnetic strength={0.3}>
+            <button
+              className="navbar__menu-btn"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              <span>{menuOpen ? 'CLOSE' : 'MENU'}</span>
+              <div className={`navbar__hamburger ${menuOpen ? 'navbar__hamburger--open' : ''}`}>
+                <span />
+                <span />
+                <span />
+              </div>
+            </button>
+          </Magnetic>
         </div>
       </nav>
 
@@ -167,14 +174,15 @@ export default function Navbar() {
         <div className="menu-overlay__content">
           <div className="menu-overlay__links">
             {navLinks.map((link, i) => (
-              <button
-                key={link.path}
-                ref={el => menuLinksRef.current[i] = el}
-                className="menu-overlay__link"
-                onClick={() => handleNavClick(link.path)}
-              >
-                {link.label}
-              </button>
+              <Magnetic key={link.path} strength={0.15}>
+                <button
+                  ref={el => menuLinksRef.current[i] = el}
+                  className="menu-overlay__link"
+                  onClick={() => handleNavClick(link.path)}
+                >
+                  {link.label}
+                </button>
+              </Magnetic>
             ))}
           </div>
           <div className="menu-overlay__sidebar">
