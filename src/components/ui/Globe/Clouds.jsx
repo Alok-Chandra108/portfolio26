@@ -14,7 +14,7 @@ export function Clouds() {
   });
 
   return (
-    <mesh ref={cloudsRef} scale={[1.02, 1.02, 1.02]}>
+    <mesh ref={cloudsRef} scale={[1.03, 1.03, 1.03]}>
       <sphereGeometry args={[1, 64, 64]} />
       <meshPhongMaterial
         map={cloudMap}

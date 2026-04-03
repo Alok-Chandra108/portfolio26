@@ -175,7 +175,7 @@ export default function ContactPage() {
               <p className="contact-page__info-link">India</p>
             </div>
 
-            <div className="contact-page__globe-wrapper" style={{ height: '450px', width: '100%', marginTop: '40px', borderRadius: '16px', overflow: 'hidden' }}>
+            <div className="contact-page__globe-wrapper" style={{ height: '400px', width: '100%', marginTop: '40px', borderRadius: '24px', overflow: 'hidden', background: '#050505', border: '1px solid rgba(255,255,255,0.05)', boxShadow: '0 20px 40px rgba(0,0,0,0.15)' }}>
               <Suspense fallback={<div style={{ textAlign: 'center', color: 'var(--color-muted)', padding: '50px' }}>Loading Globe...</div>}>
                 <GlobeScene />
               </Suspense>

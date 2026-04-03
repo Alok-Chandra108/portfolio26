@@ -23,15 +23,14 @@ export function Earth() {
   return (
     <mesh ref={earthRef} castShadow receiveShadow>
       <sphereGeometry args={[1, 64, 64]} />
-      <meshPhongMaterial
+      <meshStandardMaterial
         map={dayMap}
         normalMap={normalMap}
-        specularMap={specularMap}
-        specular={new THREE.Color("grey")}
-        shininess={5}
+        roughness={1.0}
+        metalness={0.0}
         emissiveMap={nightMap}
-        emissive={new THREE.Color(0xffff88)}
-        emissiveIntensity={1.5}
+        emissive={new THREE.Color(0xffccaa)}
+        emissiveIntensity={3}
       />
     </mesh>
   );

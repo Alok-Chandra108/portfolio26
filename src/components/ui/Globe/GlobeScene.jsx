@@ -1,6 +1,7 @@
 import React, { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Stars, PerspectiveCamera } from "@react-three/drei";
+import { EffectComposer, Bloom } from "@react-three/postprocessing";
 import { Earth } from "./Earth";
 import { Clouds } from "./Clouds";
 import { Atmosphere } from "./Atmosphere";
@@ -10,9 +11,11 @@ import "./Globe.css";
 export default function GlobeScene() {
   return (
     <div className="globe-canvas-container">
-      <Canvas shadows>
+      <Canvas
+        gl={{ antialias: true, alpha: true }}
+        camera={{ position: [0, 0, 3], fov: 45 }}
+      >
         <Suspense fallback={null}>
-          <PerspectiveCamera makeDefault position={[0, 0, 3]} fov={45} />
           <OrbitControls
             enablePan={false}
             enableZoom={true}
@@ -22,16 +25,11 @@ export default function GlobeScene() {
             autoRotateSpeed={0.5}
           />
 
-          {/* Lighting */}
-          <ambientLight intensity={0.2} />
-          <pointLight position={[10, 10, 10]} intensity={1.5} color="#ffffff" castShadow />
-          <spotLight
-            position={[-10, 10, 10]}
-            angle={0.15}
-            penumbra={1}
-            intensity={1}
-            castShadow
-          />
+          {/* High-impact lighting for stability */}
+          <ambientLight intensity={0.9} />
+          <directionalLight position={[10, 10, 10]} intensity={2.0} color="#ffffff" />
+          <directionalLight position={[-10, 5, -10]} intensity={1.0} color="#ffffff" />
+          <pointLight position={[0, 0, 5]} intensity={0.5} color="#0088ff" />
 
           {/* Globe Layers */}
           <group rotation={[0, 0, 0.4]}>
@@ -41,24 +39,18 @@ export default function GlobeScene() {
             <GlobeArcs />
           </group>
 
-          {/* Background */}
-          <Stars radius={300} depth={60} count={20000} factor={7} saturation={0} fade={true} />
+          {/* Cinematic star field - larger, brighter stars with a closer radius */}
+          <Stars 
+            radius={150} 
+            depth={50} 
+            count={3500} 
+            factor={8} 
+            saturation={0.5} 
+            fade={true} 
+            speed={1}
+          />
         </Suspense>
       </Canvas>
-
-      {/* UI Overlay */}
-      <div className="globe-overlay">
-        <div className="globe-stats">
-          <div className="stat-item">
-            <span className="stat-label">ACTIVE CONNECTIONS</span>
-            <span className="stat-value">2,841</span>
-          </div>
-          <div className="stat-item">
-            <span className="stat-label">NODES ONLINE</span>
-            <span className="stat-value">148</span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

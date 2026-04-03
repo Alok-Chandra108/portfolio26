@@ -1,7 +1,7 @@
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useState } from "react";
 import { useFrame } from "@react-three/fiber";
+import { Html } from "@react-three/drei";
 import * as THREE from "three";
-import { Line } from "@react-three/drei";
 
 // Utility to convert lat/lng to 3D spherical coordinates
 function getPosFromLatLng(lat, lng, radius = 1.01) {
@@ -15,74 +15,82 @@ function getPosFromLatLng(lat, lng, radius = 1.01) {
   return new THREE.Vector3(x, y, z);
 }
 
-// Generate a curved path between two points on a sphere
-function getCurve(p1, p2) {
-  const distance = p1.distanceTo(p2);
-  const midPoint = p1.clone().lerp(p2, 0.5);
-  // Elevate the midpoint based on distance
-  midPoint.normalize().multiplyScalar(1.01 + distance * 0.25);
-  return new THREE.QuadraticBezierCurve3(p1, midPoint, p2);
-}
-
-const ARC_DATA = [
-  { startLat: 40.7128, startLng: -74.0060, endLat: 28.6139, endLng: 77.2090, color: "#1de9b6" }, // NYC to Delhi
-  { startLat: 51.5074, startLng: -0.1278, endLat: 28.6139, endLng: 77.2090, color: "#b8ff00" },  // London to Delhi
-  { startLat: 35.6762, startLng: 139.6503, endLat: 28.6139, endLng: 77.2090, color: "#1de9b6" }, // Tokyo to Delhi
-  { startLat: 1.3521, startLng: 103.8198, endLat: 28.6139, endLng: 77.2090, color: "#b8ff00" },  // Singapore to Delhi
-  { startLat: -33.8688, startLng: 151.2093, endLat: 28.6139, endLng: 77.2090, color: "#1de9b6" }, // Sydney to Delhi
-  { startLat: 37.7749, startLng: -122.4194, endLat: 28.6139, endLng: 77.2090, color: "#b8ff00" } // SF to Delhi
-];
+const MANGALORE_COORDS = { lat: 12.9141, lng: 74.8560 };
 
 export function GlobeArcs() {
-  const arcs = useMemo(() => {
-    return ARC_DATA.map((arc) => {
-      const start = getPosFromLatLng(arc.startLat, arc.startLng);
-      const end = getPosFromLatLng(arc.endLat, arc.endLng);
-      const curve = getCurve(start, end);
-      return { ...arc, points: curve.getPoints(50) };
-    });
-  }, []);
-
+  const [hovered, setHovered] = useState(false);
+  const mangalorePos = useMemo(() => getPosFromLatLng(MANGALORE_COORDS.lat, MANGALORE_COORDS.lng), []);
   const groupRef = useRef();
+  const pulseRef = useRef();
+  const innerRef = useRef();
 
   useFrame((state) => {
     const time = state.clock.getElapsedTime();
     if (groupRef.current) {
-      // Subtle rotation matching the Earth, if Earth rotation is handled cleanly.
-      // Note: Earth rotates at 0.05, we will rotate this group at 0.05 as well.
+      // Sync rotation with Earth (0.05)
       groupRef.current.rotation.y = time * 0.05;
+    }
+    
+    // Pulse animation for the pinpoint
+    if (pulseRef.current) {
+      const s = (hovered ? 1.4 : 1) + Math.sin(time * 3) * 0.3;
+      pulseRef.current.scale.set(s, s, s);
+      pulseRef.current.material.opacity = (hovered ? 0.4 : 0.2) - (Math.sin(time * 3) * 0.1);
+    }
+    
+    if (innerRef.current) {
+       innerRef.current.scale.setScalar(hovered ? 1.2 : 1);
     }
   });
 
   return (
     <group ref={groupRef}>
-      {arcs.map((arc, i) => (
-        <Line
-          key={i}
-          points={arc.points}
-          color={arc.color}
-          opacity={0.6}
-          transparent
-          lineWidth={2}
-          dashed={true}
-          dashSize={0.1}
-          gapSize={0.05}
-        // We can animate dashes with useFrame on individual materials if needed
-        />
-      ))}
-
-      {/* City Markers */}
-      {arcs.map((arc, i) => (
-        <mesh key={`start-${i}`} position={arc.points[0]}>
-          <sphereGeometry args={[0.015, 8, 8]} />
-          <meshBasicMaterial color={arc.color} />
+      {/* Mangalore Marker */}
+      <group 
+        position={mangalorePos}
+        onPointerOver={() => setHovered(true)}
+        onPointerOut={() => setHovered(false)}
+      >
+        {/* Core Dot - Pearl White */}
+        <mesh ref={innerRef}>
+          <sphereGeometry args={[0.012, 16, 16]} />
+          <meshBasicMaterial color="#ffffff" />
         </mesh>
-      ))}
-      {/* Delhi Marker */}
-      <mesh position={arcs[0].points[arcs[0].points.length - 1]}>
-        <sphereGeometry args={[0.02, 16, 16]} />
-        <meshBasicMaterial color="#ffffff" />
-      </mesh>
+        
+        {/* Animated Pulse Ring - Emerald Green (Dimmed) */}
+        <mesh ref={pulseRef}>
+          <sphereGeometry args={[0.04, 32, 32]} />
+          <meshBasicMaterial 
+            color={hovered ? "#00ff88" : "#00aa55"} 
+            transparent={true} 
+            opacity={0.2} 
+            side={THREE.DoubleSide}
+          />
+        </mesh>
+        
+        {/* Subtle Glow Light (Dimmed) */}
+        <pointLight intensity={hovered ? 0.3 : 0.1} distance={0.5} color="#00ff88" />
+
+        {/* Interactive Hover Label */}
+        {hovered && (
+          <Html 
+            distanceFactor={3} 
+            position={[0, 0.05, 0]}
+            center
+            className="globe-label-wrapper"
+          >
+            <div className="globe-label">
+              <span className="globe-label-icon">
+                <svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+              </span>
+              <span className="globe-label-text">I'm Here</span>
+            </div>
+          </Html>
+        )}
+      </group>
     </group>
   );
 }
