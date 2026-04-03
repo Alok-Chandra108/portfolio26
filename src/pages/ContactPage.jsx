@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap, useGSAP } from '../utils/gsapPlugins.js';
 import AnimatedButton from '../components/ui/AnimatedButton.jsx';
 import { messagesService } from '../firebase/messagesService';
+import React, { Suspense, lazy } from 'react';
 import './ContactPage.css';
+
+const GlobeScene = lazy(() => import('../components/ui/Globe/GlobeScene.jsx'));
 
 export default function ContactPage() {
   const formRef = useRef(null);
@@ -170,6 +173,12 @@ export default function ContactPage() {
             <div className="contact-page__info-block">
               <h4 className="sub-label">(Location)</h4>
               <p className="contact-page__info-link">India</p>
+            </div>
+
+            <div className="contact-page__globe-wrapper" style={{ height: '450px', width: '100%', marginTop: '40px', borderRadius: '16px', overflow: 'hidden' }}>
+              <Suspense fallback={<div style={{ textAlign: 'center', color: 'var(--color-muted)', padding: '50px' }}>Loading Globe...</div>}>
+                <GlobeScene />
+              </Suspense>
             </div>
           </div>
         </div>

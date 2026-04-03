@@ -1,0 +1,28 @@
+import { useRef } from "react";
+import { useFrame, useLoader } from "@react-three/fiber";
+import * as THREE from "three";
+
+export function Clouds() {
+  const cloudsRef = useRef();
+  const cloudMap = useLoader(THREE.TextureLoader, "/textures/planets/earth_clouds_2048.png");
+
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime();
+    if (cloudsRef.current) {
+        cloudsRef.current.rotation.y = time * 0.08; // Slower than Earth
+    }
+  });
+
+  return (
+    <mesh ref={cloudsRef} scale={[1.02, 1.02, 1.02]}>
+      <sphereGeometry args={[1, 64, 64]} />
+      <meshPhongMaterial
+        map={cloudMap}
+        transparent={true}
+        opacity={0.4}
+        depthWrite={false}
+        side={THREE.DoubleSide}
+      />
+    </mesh>
+  );
+}
