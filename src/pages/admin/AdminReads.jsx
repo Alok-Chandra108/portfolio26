@@ -9,7 +9,7 @@ const AdminReads = () => {
   const { logout } = useAuth();
   const [books, setBooks] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Form State
   const [isEditing, setIsEditing] = useState(false);
   const [currentBookId, setCurrentBookId] = useState(null);
@@ -123,7 +123,7 @@ const AdminReads = () => {
                   <input type="text" className="form-input" name="author" value={formData.author} onChange={handleChange} required placeholder="e.g. Jeff Keller" />
                 </div>
               </div>
-              
+
               <div className="admin-grid">
                 <div className="form-group">
                   <label>Category</label>
@@ -176,7 +176,7 @@ const AdminReads = () => {
                       <p style={{ margin: "5px 0 0 0", color: "var(--color-muted)", fontSize: "0.9rem" }}>by {book.author}</p>
                     </div>
                   </div>
-                  
+
                   <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
                     <div style={{ textAlign: "right", marginRight: "20px" }}>
                       <span style={{ display: "block", fontSize: "0.8rem", fontWeight: "bold", color: "var(--color-accent-dark)", textTransform: "uppercase" }}>{book.status}</span>

@@ -1,0 +1,122 @@
+.not-found {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background-color: var(--color-bg);
+  padding: 100px 20px;
+}
+
+.not-found__background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  opacity: 0.05;
+  pointer-events: none;
+  font-family: var(--font-display);
+  font-size: 30vw;
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1;
+}
+
+.not-found__bg-text {
+  display: block;
+  text-align: center;
+}
+
+.not-found__content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+.not-found__header {
+  position: relative;
+  display: inline-block;
+}
+
+.not-found__title {
+  font-family: var(--font-display);
+  font-size: clamp(120px, 15vw, 240px);
+  font-weight: 800;
+  color: var(--color-text);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  margin: 0;
+  font-style: italic;
+}
+
+.not-found__glitch-line {
+  position: absolute;
+  top: 50%;
+  left: -10%;
+  width: 120%;
+  height: 2px;
+  background: var(--color-accent);
+  transform: translateY(-50%);
+  box-shadow: 0 0 20px var(--color-accent);
+}
+
+.not-found__body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 500px;
+}
+
+.not-found__subtitle {
+  font-family: var(--font-display);
+  font-size: clamp(24px, 4vw, 42px);
+  font-weight: 700;
+  color: var(--color-text);
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.not-found__description {
+  font-family: var(--font-body);
+  font-size: clamp(16px, 2vw, 20px);
+  color: var(--color-muted);
+  line-height: 1.5;
+}
+
+.not-found__footer {
+  margin-top: 20px;
+}
+
+/* Dark Mode support */
+[data-theme='dark'] .not-found {
+  background-color: var(--color-darker);
+}
+
+[data-theme='dark'] .not-found__title {
+  color: #fff;
+}
+
+[data-theme='dark'] .not-found__subtitle {
+  color: #fff;
+}
+
+[data-theme='dark'] .not-found__background {
+  opacity: 0.03;
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .not-found {
+    padding-top: 140px;
+  }
+}

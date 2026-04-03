@@ -1,5 +1,5 @@
 import { useEffect, useState, createContext } from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, useLocation } from 'react-router-dom';
 import { gsap, ScrollTrigger } from './utils/gsapPlugins.js';
 
 import Navbar from './components/Navbar.jsx';
@@ -9,10 +9,29 @@ import Footer from './components/Footer.jsx';
 import SmoothScroll from './components/SmoothScroll.jsx';
 import AnimatedRoutes from './components/AnimatedRoutes.jsx';
 import { AuthProvider } from './context/AuthContext';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
 
+
+// List of known routes to check against
+const VALID_ROUTES = [
+  '/', 
+  '/work', 
+  '/about', 
+  '/reads', 
+  '/contact', 
+  '/login', 
+  '/admin', 
+  '/admin/projects', 
+  '/admin/experience', 
+  '/admin/skills', 
+  '/admin/reads', 
+  '/admin/messages'
+];
 
 function AppContent() {
-  const [isLoading, setIsLoading] = useState(true);
+  const location = useLocation();
+  const is404 = !VALID_ROUTES.includes(location.pathname);
+  const [isLoading, setIsLoading] = useState(!is404);
   const [transitioning, setTransitioning] = useState(false);
 
   // Global ScrollTrigger Refresh & Layout Monitoring
@@ -55,13 +74,15 @@ function AppContent() {
     <>
         {isLoading && <Loader onComplete={handleLoadComplete} />}
         <CustomCursor />
-        <SmoothScroll>
-          <Navbar />
-          <main>
-            <AnimatedRoutes />
-          </main>
-          <Footer />
-        </SmoothScroll>
+        <ErrorBoundary>
+          <SmoothScroll>
+            <Navbar />
+            <main>
+              <AnimatedRoutes />
+            </main>
+            <Footer />
+          </SmoothScroll>
+        </ErrorBoundary>
     </>
   );
 }

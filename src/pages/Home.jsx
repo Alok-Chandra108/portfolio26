@@ -15,8 +15,8 @@ export default function Home() {
       <Work />
       <About />
       <Education />
-      <MyReads />
       <SkillsSection />
+      <MyReads />
       <CTASection />
     </>
   );

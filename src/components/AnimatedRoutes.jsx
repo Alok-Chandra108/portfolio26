@@ -16,6 +16,7 @@ import AdminSkills from '../pages/admin/AdminSkills.jsx';
 import AdminReads from '../pages/admin/AdminReads.jsx';
 import AdminMessages from '../pages/admin/AdminMessages.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
+import NotFound from '../pages/NotFound.jsx';
 
 export default function AnimatedRoutes() {
   const location = useLocation();
@@ -77,6 +78,7 @@ export default function AnimatedRoutes() {
             </ProtectedRoute>
           } 
         />
+        <Route path="*" element={<PageWrapper><NotFound /></PageWrapper>} />
       </Routes>
     </AnimatePresence>
   );
