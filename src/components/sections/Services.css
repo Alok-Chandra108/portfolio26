@@ -32,27 +32,36 @@
   display: flex;
   flex-direction: column;
   gap: 0;
+  position: relative;
+  /* Add bottom padding to ensure hovered cards don't hit the section bottom */
+  padding-bottom: 20px;
 }
 
 .services__right .animated-btn {
-  margin-top: clamp(32px, 5vh, 64px);
-  align-self: flex-start; /* Ensure left alignment inside the column */
+  margin-top: clamp(60px, 8vh, 120px);
+  align-self: flex-start;
+  position: relative;
+  z-index: 5; /* Keep below hovered blocks if needed, or above depending on context */
 }
 
 .service-block {
   padding: 32px 0;
-  transition: background 0.3s ease, transform 0.3s ease;
-  border-radius: 8px;
-  padding-left: 16px;
-  padding-right: 16px;
-  margin-left: -16px;
-  margin-right: -16px;
+  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  border-radius: 20px; /* Slightly smoother corners */
+  padding-left: 24px;
+  padding-right: 24px;
+  margin-left: -24px;
+  margin-right: -24px;
+  position: relative;
+  z-index: 1;
 }
 
 .service-block:hover {
   background: var(--color-bg);
   color: var(--color-text);
   transform: scale(1.02);
+  z-index: 10; /* Bring to front on hover */
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
 }
 
 .service-block__line {
@@ -72,7 +81,7 @@
   display: flex;
   align-items: baseline;
   gap: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
 .service-block__num {
@@ -80,6 +89,7 @@
   font-size: 13px;
   font-weight: 500;
   transition: color 0.3s ease;
+  min-width: 32px; /* Lock the width for consistent alignment */
 }
 
 /* Force text change on hover for maximum impact */
@@ -101,8 +111,8 @@
 .service-block__skills {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 16px;
-  padding-left: 29px;
+  gap: 8px 12px;
+  padding-left: 48px; /* Perfectly aligned with the start of the title (32px num + 16px gap) */
 }
 
 .service-block__skill {
