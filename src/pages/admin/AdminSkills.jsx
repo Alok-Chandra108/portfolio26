@@ -5,6 +5,24 @@ import { skillsService } from "../../firebase/skillsService";
 import { gsap } from "../../utils/gsapPlugins";
 import "../../styles/admin.css";
 
+// DND Kit Imports
+import {
+  DndContext, 
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import { SortableItem, DragHandleIcon } from "../../components/admin/SortableItem";
+
 const AdminSkills = () => {
   const { logout } = useAuth();
   const [skills, setSkills] = useState([]);
@@ -15,6 +33,14 @@ const AdminSkills = () => {
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
   const formRef = useRef(null);
+
+  // Setup sensors for DND
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const [formData, setFormData] = useState({
     name: "",
@@ -68,7 +94,8 @@ const AdminSkills = () => {
         await skillsService.updateSkill(currentSkill.id, formData);
         setFormSuccess("Skill updated successfully!");
       } else {
-        await skillsService.addSkill(formData);
+        // Pass skills length to assign correct sortOrder
+        await skillsService.addSkill(formData, skills.length);
         setFormSuccess("Skill added successfully!");
       }
       
@@ -115,6 +142,29 @@ const AdminSkills = () => {
     }
   };
 
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+
+    if (active && over && active.id !== over.id) {
+      const oldIndex = skills.findIndex((s) => s.id === active.id);
+      const newIndex = skills.findIndex((s) => s.id === over.id);
+
+      const newOrder = arrayMove(skills, oldIndex, newIndex);
+      
+      // Optimistic UI update
+      setSkills(newOrder);
+
+      try {
+        // Persist to Firestore
+        await skillsService.updateSkillsOrder(newOrder);
+        console.log("Order updated successfully in Firestore.");
+      } catch (error) {
+        alert("Failed to save the new order. Reverting...");
+        fetchSkills();
+      }
+    }
+  };
+
   const toggleSelect = (id) => {
     setSelectedIds(prev => 
       prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
@@ -132,6 +182,8 @@ const AdminSkills = () => {
       }
     }
   };
+
+  const skillsByRow = (rowNum) => skills.filter(s => (s.row || 1) === rowNum);
 
   return (
     <div className="admin-page">
@@ -233,7 +285,7 @@ const AdminSkills = () => {
               </div>
             </div>
 
-            <div className="projects-list-wrapper" style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+            <div className="projects-list-wrapper">
               {loading ? (
                 <p style={{ textAlign: "center", padding: "40px", color: "var(--color-muted)" }}>Loading skills...</p>
               ) : skills.length === 0 ? (
@@ -241,29 +293,70 @@ const AdminSkills = () => {
                   <p style={{ color: "var(--color-muted)", marginBottom: "15px" }}>No skills found. Add your first skill assigned to a row!</p>
                 </div>
               ) : (
-                skills.map((skill) => (
-                  <div key={skill.id} className="admin-card" style={{ padding: "15px", display: "flex", gap: "15px", alignItems: "center", border: selectedIds.includes(skill.id) ? "1px solid var(--color-accent)" : "1px solid rgba(0,0,0,0.05)" }}>
-                    <input 
-                      type="checkbox" 
-                      onClick={(e) => e.stopPropagation()} 
-                      onChange={() => toggleSelect(skill.id)}
-                      checked={selectedIds.includes(skill.id)}
-                    />
-                    <div style={{ width: "50px", height: "50px", display: "flex", alignItems: "center", justifyContent: "center", background: "#f9f9f9", borderRadius: "8px", flexShrink: 0 }}>
-                      <img src={skill.logoUrl} alt="" style={{ maxWidth: "70%", maxHeight: "70%", objectFit: "contain" }} />
-                    </div>
-                    <div style={{ flexGrow: 1 }}>
-                      <h4 style={{ margin: 0 }}>{skill.name}</h4>
-                      <span style={{ fontSize: "0.75rem", color: "var(--color-muted)", fontWeight: "600", background: "rgba(0,0,0,0.05)", padding: "2px 8px", borderRadius: "4px", marginTop: "4px", display: "inline-block" }}>
-                        Row {skill.row || 1}
-                      </span>
-                    </div>
-                    <div style={{ display: "flex", gap: "8px" }}>
-                      <button onClick={() => handleEdit(skill)} className="btn-manage" style={{ padding: "6px 12px", fontSize: "0.75rem" }}>Edit</button>
-                      <button onClick={() => handleDelete(skill.id)} className="btn-logout" style={{ padding: "6px 12px", fontSize: "0.75rem", border: "1px solid #ff4d4d", color: "#ff4d4d", background: "transparent" }}>Del</button>
-                    </div>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                  modifiers={[restrictToVerticalAxis]}
+                >
+                  <div style={{ display: "flex", flexDirection: "column", gap: "30px" }}>
+                    {[1, 2].map(rowNum => (
+                      <div key={`row-${rowNum}`}>
+                        <h4 style={{ fontSize: "0.8rem", color: "var(--color-muted)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "15px", borderBottom: "1px solid rgba(0,0,0,0.05)", paddingBottom: "8px" }}>
+                          Row {rowNum}
+                        </h4>
+                        <SortableContext
+                          items={skillsByRow(rowNum).map(s => s.id)}
+                          strategy={verticalListSortingStrategy}
+                        >
+                          <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                            {skillsByRow(rowNum).map((skill) => (
+                              <SortableItem key={skill.id} id={skill.id}>
+                                {({ attributes, listeners, handleStyle, isDragging }) => (
+                                  <div 
+                                    className="admin-card" 
+                                    style={{ 
+                                      padding: "12px", 
+                                      display: "flex", 
+                                      gap: "15px", 
+                                      alignItems: "center", 
+                                      opacity: isDragging ? 0.4 : 1,
+                                      boxShadow: isDragging ? "0 8px 30px rgba(0,0,0,0.12)" : "none",
+                                      border: selectedIds.includes(skill.id) ? "1px solid var(--color-accent)" : (isDragging ? "1px solid var(--color-accent)" : "1px solid rgba(0,0,0,0.05)") 
+                                    }}
+                                  >
+                                    <div {...attributes} {...listeners} style={handleStyle}>
+                                      <DragHandleIcon />
+                                    </div>
+                                    <input 
+                                      type="checkbox" 
+                                      onClick={(e) => e.stopPropagation()} 
+                                      onChange={() => toggleSelect(skill.id)}
+                                      checked={selectedIds.includes(skill.id)}
+                                    />
+                                    <div style={{ width: "40px", height: "40px", display: "flex", alignItems: "center", justifyContent: "center", background: "#f9f9f9", borderRadius: "8px", flexShrink: 0 }}>
+                                      <img src={skill.logoUrl} alt="" style={{ maxWidth: "70%", maxHeight: "70%", objectFit: "contain" }} />
+                                    </div>
+                                    <div style={{ flexGrow: 1 }}>
+                                      <h4 style={{ margin: 0, fontSize: "0.95rem" }}>{skill.name}</h4>
+                                    </div>
+                                    <div style={{ display: "flex", gap: "8px" }}>
+                                      <button onClick={() => handleEdit(skill)} className="btn-manage" style={{ padding: "5px 10px", fontSize: "0.7rem" }}>Edit</button>
+                                      <button onClick={() => handleDelete(skill.id)} className="btn-logout" style={{ padding: "5px 10px", fontSize: "0.7rem", border: "1px solid #ff4d4d", color: "#ff4d4d", background: "transparent" }}>Del</button>
+                                    </div>
+                                  </div>
+                                )}
+                              </SortableItem>
+                            ))}
+                            {skillsByRow(rowNum).length === 0 && (
+                              <p style={{ fontSize: "0.8rem", color: "var(--color-muted)", fontStyle: "italic", padding: "10px" }}>No skills in this row.</p>
+                            )}
+                          </div>
+                        </SortableContext>
+                      </div>
+                    ))}
                   </div>
-                ))
+                </DndContext>
               )}
             </div>
           </div>

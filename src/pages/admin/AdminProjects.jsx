@@ -6,6 +6,24 @@ import projectsData from "../../data/projects"; // Static data for seeding
 import { gsap } from "../../utils/gsapPlugins";
 import "../../styles/admin.css";
 
+// DND Kit Imports
+import {
+  DndContext, 
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import { SortableItem, DragHandleIcon } from "../../components/admin/SortableItem";
+
 const AdminProjects = () => {
   const { logout } = useAuth();
   const [projects, setProjects] = useState([]);
@@ -15,6 +33,14 @@ const AdminProjects = () => {
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
   const formRef = useRef(null);
+
+  // Setup sensors for DND
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const [formData, setFormData] = useState({
     title: "",
@@ -82,7 +108,8 @@ const AdminProjects = () => {
         await projectsService.updateProject(currentProject.id, projectPayload);
         setFormSuccess("Project updated successfully!");
       } else {
-        await projectsService.addProject(projectPayload);
+        // Pass project count to assign correct sortOrder
+        await projectsService.addProject(projectPayload, projects.length);
         setFormSuccess("Project added successfully!");
       }
       
@@ -134,13 +161,37 @@ const AdminProjects = () => {
     }
   };
 
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+
+    if (active.id !== over.id) {
+      const oldIndex = projects.findIndex((p) => p.id === active.id);
+      const newIndex = projects.findIndex((p) => p.id === over.id);
+
+      const newOrder = arrayMove(projects, oldIndex, newIndex);
+      
+      // Optimistic UI update
+      setProjects(newOrder);
+
+      try {
+        // Persist to Firestore
+        await projectsService.updateProjectsOrder(newOrder);
+        console.log("Order updated successfully in Firestore.");
+      } catch (error) {
+        alert("Failed to save the new order. Reverting...");
+        fetchProjects(); // Revert to database state
+      }
+    }
+  };
+
   const handleSeedData = async () => {
     if (window.confirm("This will import the 4 default projects from static data into Firestore. Continue?")) {
       setLoading(true);
       try {
-        for (const p of projectsData) {
-          const { id, ...data } = p;
-          await projectsService.addProject(data);
+        for (let i = 0; i < projectsData.length; i++) {
+          const { id, ...data } = projectsData[i];
+          // Assign sortOrder during seeding
+          await projectsService.addProject(data, i);
         }
         alert("Data seeded successfully!");
         fetchProjects();
@@ -275,7 +326,7 @@ const AdminProjects = () => {
               )}
             </div>
 
-            <div className="projects-list-wrapper" style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+            <div className="projects-list-wrapper">
               {loading ? (
                 <p style={{ textAlign: "center", padding: "40px", color: "var(--color-muted)" }}>Loading projects...</p>
               ) : projects.length === 0 ? (
@@ -283,23 +334,55 @@ const AdminProjects = () => {
                   <p style={{ color: "var(--color-muted)", marginBottom: "15px" }}>No projects found in Firestore.</p>
                 </div>
               ) : (
-                projects.map((project) => (
-                  <div key={project.id} className="admin-card" style={{ padding: "15px", display: "flex", gap: "20px", alignItems: "center" }}>
-                    <div style={{ width: "80px", height: "80px", borderRadius: "8px", overflow: "hidden", flexShrink: 0 }}>
-                      <img src={project.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                  modifiers={[restrictToVerticalAxis]}
+                >
+                  <SortableContext
+                    items={projects.map(p => p.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+                      {projects.map((project) => (
+                        <SortableItem key={project.id} id={project.id}>
+                          {({ attributes, listeners, handleStyle, isDragging }) => (
+                            <div 
+                              className="admin-card" 
+                              style={{ 
+                                padding: "15px", 
+                                display: "flex", 
+                                gap: "20px", 
+                                alignItems: "center",
+                                opacity: isDragging ? 0.4 : 1,
+                                boxShadow: isDragging ? "0 8px 30px rgba(0,0,0,0.12)" : "none",
+                                border: isDragging ? "1px solid var(--color-accent)" : "1px solid rgba(0,0,0,0.05)"
+                              }}
+                            >
+                              <div {...attributes} {...listeners} style={handleStyle}>
+                                <DragHandleIcon />
+                              </div>
+                              <div style={{ width: "80px", height: "80px", borderRadius: "8px", overflow: "hidden", flexShrink: 0 }}>
+                                <img src={project.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                              </div>
+                              <div style={{ flexGrow: 1 }}>
+                                <h4 style={{ margin: "0 0 5px 0" }}>{project.title}</h4>
+                                <p style={{ margin: 0, fontSize: "0.8rem", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}>
+                                  {project.description}
+                                </p>
+                              </div>
+                              <div style={{ display: "flex", gap: "8px" }}>
+                                <button onClick={() => handleEdit(project)} className="btn-manage" style={{ padding: "6px 12px", fontSize: "0.75rem" }}>Edit</button>
+                                <button onClick={() => handleDelete(project.id)} className="btn-logout" style={{ padding: "6px 12px", fontSize: "0.75rem", border: "1px solid #ff4d4d", color: "#ff4d4d", background: "transparent" }}>Del</button>
+                              </div>
+                            </div>
+                          )}
+                        </SortableItem>
+                      ))}
                     </div>
-                    <div style={{ flexGrow: 1 }}>
-                      <h4 style={{ margin: "0 0 5px 0" }}>{project.title}</h4>
-                      <p style={{ margin: 0, fontSize: "0.8rem", overflow: "hidden", textOverflow: "ellipsis", display: "-webkit-box", WebkitLineClamp: 1, WebkitBoxOrient: "vertical" }}>
-                        {project.description}
-                      </p>
-                    </div>
-                    <div style={{ display: "flex", gap: "8px" }}>
-                      <button onClick={() => handleEdit(project)} className="btn-manage" style={{ padding: "6px 12px", fontSize: "0.75rem" }}>Edit</button>
-                      <button onClick={() => handleDelete(project.id)} className="btn-logout" style={{ padding: "6px 12px", fontSize: "0.75rem", border: "1px solid #ff4d4d", color: "#ff4d4d", background: "transparent" }}>Del</button>
-                    </div>
-                  </div>
-                ))
+                  </SortableContext>
+                </DndContext>
               )}
             </div>
           </div>
