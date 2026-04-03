@@ -8,7 +8,7 @@
 
 This portfolio is not just a collection of projects; it's a statement on digital craft. Inspired by the sleek, structural aesthetics of top-tier creative agencies, it prioritizes **fluid motion**, **sophisticated glassmorphism**, and **tactile interactions**.
 
-- **Motion Architecture**: All animations are built on a systematic GSAP foundation using `@gsap/react`. This includes a recent **Motion Fidelity Audit** to ensure all transitions feel deliberate, smooth, and performant, utilizing `ScrollTrigger.batch` for efficient rendering.
+- **Motion Architecture**: All animations are built on a systematic foundation using **GSAP** (`@gsap/react`), **Lenis** for smooth momentum-based scrolling, and **Framer Motion** for layout orchestration. This unified stack ensures all transitions feel deliberate, smooth, and performant.
 - **Micro-Interactions**: Magnetic elements, custom cursors, and per-character hover effects bridge the gap between user and interface.
 - **Glassmorphic Depth**: Deep backdrop blurs and luminous glows create a sense of physical space in a digital medium.
 
@@ -19,13 +19,14 @@ This portfolio is not just a collection of projects; it's a statement on digital
 - **🚀 Cinematic Loader**: A high-performance, visually engaging entrance experience with a GSAP-orchestrated counter animation that triggers on every page refresh to ensure brand consistency.
 - **🖱️ Magnetic Custom Cursor**: A persistent, reactive cursor that scales and responds to interactive elements with liquid-smooth lag-free movement.
 - **🌟 Dynamic Hero**: High-impact entry section featuring scroll-triggered GSAP reveals, a magnetic marquee, and a name heading with **per-character dynamic coloring** on hover.
-- **🔢 Numbered Work Showcase**: A premium, scroll-animated work archive styled as a structured numbered list, focusing on clean typography and rhythmic entry animations.
 - **🏗️ Interactive "Skills Lattice"**: A dual-row, infinite scrolling marquee with scroll-driven parallax shifts, showcasing core competencies with a high-end editorial feel.
+- **☁️ Cloud & DevOps Services**: A structured services section highlighting expertise in **Infrastructure (AWS/GCP)**, **CI/CD (GitHub Actions)**, and **Monitoring (Prometheus/Grafana)** with GSAP-animated entry reveals.
 - **🎓 Education Timeline**: A visually striking "Midnight" dark-mode timeline with neon green accents, strictly adhering to the **60-30-10 color rule** for max impact.
 - **📚 Immersive "My Reads"**: A real-time library powered by Firestore, featuring **mobile-optimized horizontal card strips** and sleek desktop grid transitions.
-- **📖 All Reads Page**: A dedicated `/all-reads` route with a refined 2-column portrait card grid and advanced status-based filtering.
+- **📖 All Reads Page**: A dedicated `/reads` route with a refined 2-column portrait card grid and advanced status-based filtering.
+- **🎯 Interactive CTAs**: Premium "Ready to Scale" call-to-action sections with cursor-following background effects and letter-spacing animations.
+- **🌊 Smooth Scroll & Transitions**: Integrated **Lenis** for premium scroll physics and **Framer Motion** `AnimatePresence` for seamless page transitions.
 - **📱 5-Tier Responsive System**: Precision-engineered CSS with `xs`, `sm`, `md`, `lg`, and `xl` breakpoints, utilizing `clamp()` for fluid typography and flawless layouts from 320px to 4K.
-- **🌀 Page Transitions**: GSAP Flip and backdrop-blur transitions that maintain visual continuity during navigation.
 
 ---
 
@@ -64,13 +65,15 @@ prime-einstein/
 │   │   │   ├── DownloadCV.jsx / .css
 │   │   │   ├── PillTag.jsx / .css
 │   │   │   └── ProjectCard.jsx / .css
+│   │   ├── AnimatedRoutes.jsx    # Framer Motion route orchestrator
 │   │   ├── CustomCursor.jsx / .css
 │   │   ├── Footer.jsx / .css
 │   │   ├── Loader.jsx / .css     # Cinematic page-load experience
 │   │   ├── Marquee.jsx / .css
 │   │   ├── Navbar.jsx / .css
-│   │   ├── PageTransition.jsx    # GSAP route transition wrapper
-│   │   └── ProtectedRoute.jsx    # Auth-guarded navigation
+│   │   ├── PageWrapper.jsx       # Framer Motion page transition wrapper
+│   │   ├── ProtectedRoute.jsx    # Auth-guarded navigation
+│   │   └── SmoothScroll.jsx      # Lenis smooth scroll implementation
 │   ├── context/
 │   │   └── AuthContext.jsx       # Firebase auth state provider
 │   ├── data/                     # Static local data for seeding/mockups
@@ -117,14 +120,15 @@ prime-einstein/
 
 | Directory | Purpose | Design Pattern |
 | :--- | :--- | :--- |
-| `src/components/sections` | High-impact visual blocks: `Hero`, `Work`, `SkillsSection`, `Education`, `MyReads`, `Services`, `About`. | **Organisms**: Self-contained layout units with co-located CSS. |
+| `src/components/sections` | High-impact visual blocks: `Hero`, `Work`, `SkillsSection`, `Education`, `MyReads`, `Services`, `About`, `CTASection`. | **Organisms**: Self-contained layout units with co-located CSS. |
+| `src/components` | Layout and orchestration: `AnimatedRoutes`, `PageWrapper`, `SmoothScroll`, `Navbar`, `Footer`, `Loader`. | **Orchestration**: Manages routing, smooth scroll, and global UI state. |
 | `src/components/ui` | Reusable, stateless components: `BookCard`, `ProjectCard`, `AnimatedButton`, `PillTag`, `DownloadCV`. | **Atoms/Molecules**: Highly composable across different sections. |
 | `src/pages` | Full route views: `Home`, `AboutPage`, `WorkPage`, `AllReadsPage`, `ContactPage`, `Login`, `AdminDashboard`. | **Pages**: Thin orchestration layers that compose sections. |
 | `src/pages/admin` | Private views for managing Skills, Reads, Projects, and Experience data. | **Admin Portal**: Protected by `ProtectedRoute` + Firebase Auth. |
 | `src/styles` | Global design tokens, resets, typography scale, and admin-specific styles. | **Design System**: CSS variables shared across all components. |
 | `src/context` | Centralized Firebase auth state via React Context. | **Provider Pattern**: Injects auth state into the component tree. |
 | `src/firebase` | Firebase initialization and specific service layers for Firestore data. | **Service Layer**: Decouples database logic from UI components. |
-| `src/utils` | GSAP plugin registration (`gsapPlugins.js`) and reusable animation factories (`animationHelpers.js`). | **Animation Layer**: Keeps motion logic DRY and centralized. |
+| `src/utils` | GSAP plugin registration (`gsapPlugins.js`) and reusable animation helpers. | **Animation Layer**: Keeps motion logic DRY and centralized. |
 | `src/data` | Local JS data files for `books`, `education`, and `projects`. | **Static Seed Data**: Used as fallback/mockup before Firestore is live. |
 
 ---
@@ -134,7 +138,7 @@ prime-einstein/
 ### 🚀 Frontend
 - **Framework**: [React 19](https://react.dev/) (`^19.2.4`) — Leveraging the latest concurrent features.
 - **Routing**: [React Router 7](https://reactrouter.com/) (`^7.13.1`) — Dynamic paths, nested routes, and auth guards.
-- **Motion**: [GSAP 3.14](https://greensock.com/gsap/) (`^3.14.2`) + [@gsap/react](https://www.npmjs.com/package/@gsap/react) — Industry-standard, GPU-accelerated animations with `ScrollTrigger`.
+- **Motion**: [GSAP 3.14](https://greensock.com/gsap/) (`^3.14.2`), [Framer Motion](https://www.framer.com/motion/) (`^12.38.0`), and [Lenis](https://lenis.darkroom.engineering/) (`^1.3.21`).
 - **Styling**: **Vanilla Modern CSS** — CSS Variables, `clamp()` fluid scaling, and a custom **5-tier breakpoint system** (xs, sm, md, lg, xl). Zero styling dependencies for maximum performant control.
 
 ### 🛡️ Backend & Security
