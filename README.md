@@ -26,8 +26,10 @@ This portfolio is not just a collection of projects; it's a statement on digital
 - **📚 Immersive "My Reads"**: A real-time library powered by Firestore, featuring **mobile-optimized horizontal card strips** and sleek desktop grid transitions.
 - **📖 All Reads Page**: A dedicated `/reads` route with a refined 2-column portrait card grid and advanced status-based filtering.
 - **🎯 Interactive CTAs**: Premium "Ready to Scale" call-to-action sections with cursor-following background effects and letter-spacing animations.
+- **🟢 Real-time Availability Pulse**: A live-synced status indicator ("Open for Work" vs "Busy") integrated into the navigation/footer, reflecting Firestore updates instantly.
 - **🌍 Photorealistic 3D Globe**: A high-end, interactive Earth visualization on the Contact page, featuring **multi-layer GLSL shaders** for atmospheric scattering, cloud layers, and real-time day/night cycles.
-- **🌊 Premium Green Page Transitions**: A cinematic **clip-path "Green Sweep"** animation that orchestrates page switches with fluid logic, ensuring 100% brand consistency through an upward-motion sweep.
+- **🌊 Premium Green Page Transitions**: A cinematic **clip-path "Green Sweep"** animation that orchestrates page switches with fluid logic, ensuring 100% brand consistency throughout the journey.
+- **🛠️ Unified Experience CMS**: A powerful, authenticated admin interface for managing both Professional Work history and Academic Education within a single, streamlined dashboard.
 - **📱 5-Tier Responsive System**: Precision-engineered CSS with `xs`, `sm`, `md`, `lg`, and `xl` breakpoints, utilizing `clamp()` for fluid typography and flawless layouts from 320px to 4K.
 
 ---
@@ -35,7 +37,7 @@ This portfolio is not just a collection of projects; it's a statement on digital
 ## 🔮 Future Roadmap
 
 - **🔒 Firestore Security Rules**: Fully locking down the new Firebase Admin datasets (Experience, Education, Projects) strictly to authenticated user UUIDs to guarantee enterprise-level security.
-- **🖼️ Advanced Image Optimization**: Implementing lazy loading and automated WebP conversions for high-res project photography.
+- **🎞️ Case Study Overlays**: Implementing detailed portfolio project drill-downs with smooth layout transitions and high-res photography.
 - **🌐 Global Traffic Visualization**: Expanding the 3D globe to include real-time project hit visualizations and animated data arcs.
 
 ---
@@ -89,11 +91,15 @@ prime-einstein/
 │   │   └── projects.js
 │   ├── firebase/
 │   │   ├── config.js             # Firestore & Auth initialization
+│   │   ├── experienceService.js  # Unified Experience data layer
+│   │   ├── messagesService.js    # Contact form logic
 │   │   ├── projectsService.js    # Data fetching for projects
-│   │   └── skillsService.js      # Data fetching for skills
+│   │   ├── skillsService.js      # Data fetching for skills
+│   │   └── statusService.js      # Real-time Availability Pulse logic
 │   ├── pages/
 │   │   ├── admin/                # Full-page authenticated admin views
 │   │   │   ├── AdminExperience.jsx  # Unified Work & Education CMS logic
+│   │   │   ├── AdminMessages.jsx    # Contact form inquiry management
 │   │   │   ├── AdminProjects.jsx
 │   │   │   ├── AdminReads.jsx
 │   │   │   └── AdminSkills.jsx
@@ -132,7 +138,7 @@ prime-einstein/
 | `src/components/ui` | Reusable, stateless components: `BookCard`, `ProjectCard`, `AnimatedButton`, `PillTag`, `DownloadCV`. | **Atoms/Molecules**: Highly composable across different sections. |
 | `src/components/ui/Globe` | Multi-layered 3D Earth visualization using R3F and three-globe. | **Three.js Layer**: Decoupled 3D logic with custom GLSL shaders. |
 | `src/pages` | Full route views: `Home`, `AboutPage`, `WorkPage`, `AllReadsPage`, `ContactPage`, `Login`, `AdminDashboard`, and `ExperiencePage`. | **Pages**: Thin orchestration layers that compose sections. |
-| `src/pages/admin` | Private views for managing Skills, Reads, Projects, Work Experience, and Education data dynamically. | **Admin Portal**: Protected by `ProtectedRoute` + Firebase Auth. |
+| `src/pages/admin` | Private views for managing Skills, Reads, Projects, Experience, and Contact Messages. | **Admin Portal**: Protected by `ProtectedRoute` + Firebase Auth. |
 | `src/styles` | Global design tokens, resets, typography scale, and admin-specific styles. | **Design System**: CSS variables shared across all components. |
 | `src/context` | Centralized Firebase auth state via React Context. | **Provider Pattern**: Injects auth state into the component tree. |
 | `src/firebase` | Firebase initialization and specific service layers for Firestore data. | **Service Layer**: Decouples database logic from UI components. |
