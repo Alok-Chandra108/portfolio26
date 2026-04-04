@@ -204,38 +204,47 @@
 }
 
 .menu-overlay__sidebar {
+  position: absolute;
+  right: clamp(20px, 4vw, 60px);
+  bottom: clamp(20px, 4vw, 60px);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 60px;
-  padding-top: 20px;
+  align-items: flex-end;
+  text-align: right;
+  gap: 40px;
 }
 
 .menu-overlay__socials {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  align-items: flex-end;
+  gap: 16px;
 }
 
 .menu-overlay__social {
   font-family: var(--font-mono);
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.5);
-  transition: color 0.3s ease;
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color 0.3s ease, transform 0.3s ease;
 }
 
 .menu-overlay__social:hover {
   color: var(--color-accent);
+  transform: translateX(-4px);
 }
 
 .menu-overlay__info {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  align-items: flex-end;
+  gap: 8px;
 }
 
 .menu-overlay__info .mono-label {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
 }
 
 .menu-overlay__status-mobile {
@@ -277,12 +286,15 @@
   }
 
   .menu-overlay__link {
-    font-size: clamp(24px, 7vw, 56px);
+    font-size: clamp(32px, 9vw, 56px); /* bumped base size for smaller screens slightly since it's the main focus */
   }
 
   .menu-overlay__sidebar {
-    flex-direction: row;
-    flex-wrap: wrap;
+    /* Keep it right bottom even on mobile, just scale the gap */
+    gap: 24px;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-end;
   }
 }
 
