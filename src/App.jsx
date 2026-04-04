@@ -32,7 +32,6 @@ function AppContent() {
   const location = useLocation();
   const is404 = !VALID_ROUTES.includes(location.pathname);
   const [isLoading, setIsLoading] = useState(!is404);
-  const [transitioning, setTransitioning] = useState(false);
 
   // Global ScrollTrigger Refresh & Layout Monitoring
   useEffect(() => {

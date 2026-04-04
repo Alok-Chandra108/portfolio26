@@ -161,8 +161,6 @@ body::before {
   height: 100%;
   background: var(--color-accent);
   z-index: 10000;
-  transform-origin: bottom;
-  transform: scaleY(0);
   pointer-events: none;
 }
 
