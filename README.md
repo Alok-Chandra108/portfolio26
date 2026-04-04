@@ -25,7 +25,8 @@ This portfolio is not just a collection of projects; it's a statement on digital
 - **📚 Immersive "My Reads"**: A real-time library powered by Firestore, featuring **mobile-optimized horizontal card strips** and sleek desktop grid transitions.
 - **📖 All Reads Page**: A dedicated `/reads` route with a refined 2-column portrait card grid and advanced status-based filtering.
 - **🎯 Interactive CTAs**: Premium "Ready to Scale" call-to-action sections with cursor-following background effects and letter-spacing animations.
-- **🌊 Smooth Scroll & Transitions**: Integrated **Lenis** for premium scroll physics and **Framer Motion** `AnimatePresence` for seamless page transitions.
+- **🌍 Photorealistic 3D Globe**: A high-end, interactive Earth visualization on the Contact page, featuring **multi-layer GLSL shaders** for atmospheric scattering, cloud layers, and real-time day/night cycles.
+- **🌊 Premium Green Page Transitions**: A cinematic **clip-path "Green Sweep"** animation that orchestrates page switches with fluid logic, ensuring 100% brand consistency through an upward-motion sweep.
 - **📱 5-Tier Responsive System**: Precision-engineered CSS with `xs`, `sm`, `md`, `lg`, and `xl` breakpoints, utilizing `clamp()` for fluid typography and flawless layouts from 320px to 4K.
 
 ---
@@ -34,8 +35,7 @@ This portfolio is not just a collection of projects; it's a statement on digital
 
 - **✍️ Interactive Experience CMS**: Building out the Admin forms for managing the Work Experience section dynamically via Firestore.
 - **🖼️ Advanced Image Optimization**: Implementing lazy loading and automated WebP conversions for high-res project photography.
-- **📊 Performance Analytics**: Integrated monitoring for Core Web Vitals to maintain a consistent 100/100 Lighthouse score.
-- **🌐 Multilingual Support (i18n)**: Architecting for a global audience with localized content delivery.
+- **🌐 Global Traffic Visualization**: Expanding the 3D globe to include real-time project hit visualizations and animated data arcs.
 
 ---
 
@@ -60,6 +60,12 @@ prime-einstein/
 │   │   │   ├── SkillsSection.jsx / .css
 │   │   │   └── Work.jsx / .css
 │   │   ├── ui/                   # Reusable atomic components
+│   │   │   ├── Globe/            # Cinematic 3D Visualization system
+│   │   │   │   ├── Atmosphere.jsx
+│   │   │   │   ├── Clouds.jsx
+│   │   │   │   ├── Earth.jsx
+│   │   │   │   ├── GlobeScene.jsx
+│   │   │   │   └── GlobeShaders.js
 │   │   │   ├── AnimatedButton.jsx / .css
 │   │   │   ├── BookCard.jsx / .css
 │   │   │   ├── DownloadCV.jsx / .css
@@ -123,6 +129,7 @@ prime-einstein/
 | `src/components/sections` | High-impact visual blocks: `Hero`, `Work`, `SkillsSection`, `Education`, `MyReads`, `Services`, `About`, `CTASection`. | **Organisms**: Self-contained layout units with co-located CSS. |
 | `src/components` | Layout and orchestration: `AnimatedRoutes`, `PageWrapper`, `SmoothScroll`, `Navbar`, `Footer`, `Loader`. | **Orchestration**: Manages routing, smooth scroll, and global UI state. |
 | `src/components/ui` | Reusable, stateless components: `BookCard`, `ProjectCard`, `AnimatedButton`, `PillTag`, `DownloadCV`. | **Atoms/Molecules**: Highly composable across different sections. |
+| `src/components/ui/Globe` | Multi-layered 3D Earth visualization using R3F and three-globe. | **Three.js Layer**: Decoupled 3D logic with custom GLSL shaders. |
 | `src/pages` | Full route views: `Home`, `AboutPage`, `WorkPage`, `AllReadsPage`, `ContactPage`, `Login`, `AdminDashboard`. | **Pages**: Thin orchestration layers that compose sections. |
 | `src/pages/admin` | Private views for managing Skills, Reads, Projects, and Experience data. | **Admin Portal**: Protected by `ProtectedRoute` + Firebase Auth. |
 | `src/styles` | Global design tokens, resets, typography scale, and admin-specific styles. | **Design System**: CSS variables shared across all components. |
