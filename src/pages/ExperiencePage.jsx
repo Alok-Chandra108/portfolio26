@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 import { gsap, useGSAP } from '../utils/gsapPlugins.js';
 import Experience from '../components/sections/Experience.jsx';
-import CTASection from '../components/sections/CTASection.jsx';
 import './ExperiencePage.css';
 
 export default function ExperiencePage() {
@@ -27,7 +26,6 @@ export default function ExperiencePage() {
       </div>
       {/* Full Experience section — not in preview mode */}
       <Experience preview={false} />
-      <CTASection />
     </div>
   );
 }
