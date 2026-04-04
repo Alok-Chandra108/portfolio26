@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useLenis } from 'lenis/react';
 import { ScrollTrigger } from '../utils/gsapPlugins.js';
@@ -60,12 +60,11 @@ const contentVariants = {
 export default function PageWrapper({ children }) {
   const lenis = useLenis();
 
-  // Scroll to top on navigation — Lenis driven
-  useEffect(() => {
+  // Scroll to top on navigation — Lenis driven, layout effect to avoid visual pops
+  useLayoutEffect(() => {
+    window.scrollTo(0, 0);
     if (lenis) {
-      lenis.scrollTo(0, { immediate: true });
-    } else {
-      window.scrollTo(0, 0);
+      lenis.scrollTo(0, { immediate: true, force: true });
     }
   }, [lenis]);
 

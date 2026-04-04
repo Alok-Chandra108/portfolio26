@@ -25,7 +25,8 @@ const VALID_ROUTES = [
   '/admin/experience', 
   '/admin/skills', 
   '/admin/reads', 
-  '/admin/messages'
+  '/admin/messages',
+  '/experience'
 ];
 
 function AppContent() {

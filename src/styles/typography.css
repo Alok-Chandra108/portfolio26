@@ -7,6 +7,9 @@
   text-transform: uppercase;
   letter-spacing: -0.04em;
   line-height: 0.9;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 .heading-section {
