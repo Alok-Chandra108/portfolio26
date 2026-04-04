@@ -1,10 +1,21 @@
 import { useAuth } from "../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { subscribeToStatus, updateStatus } from "../firebase/statusService";
 import "../styles/admin.css";
 
 const AdminDashboard = () => {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
+  const [status, setStatus] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = subscribeToStatus((data) => {
+      setStatus(data);
+    });
+    return () => unsubscribe();
+  }, []);
 
   async function handleLogout() {
     try {
@@ -57,6 +68,43 @@ const AdminDashboard = () => {
             <h3>Inbox</h3>
             <p>View and manage messages from your contact form.</p>
             <Link to="/admin/messages" className="btn-manage" style={{ textDecoration: 'none' }}>View Messages</Link>
+          </div>
+
+          <div className="admin-card status-card">
+            <h3>Live Availability</h3>
+            <p>Show visitors if you are open for new projects or currently deep in work.</p>
+            
+            <div className="status-toggle-wrap">
+              <div className={`status-indicator ${status?.state}`}></div>
+              <span className="status-text">
+                Current: <strong>{status?.state === 'open' ? 'Open for Work' : 'Busy with Project'}</strong>
+              </span>
+            </div>
+
+            <div className="admin-actions">
+              <button 
+                disabled={loading}
+                onClick={async () => {
+                  setLoading(true);
+                  await updateStatus('open');
+                  setLoading(false);
+                }}
+                className={`btn-status open ${status?.state === 'open' ? 'active' : ''}`}
+              >
+                Set Open
+              </button>
+              <button 
+                disabled={loading}
+                onClick={async () => {
+                  setLoading(true);
+                  await updateStatus('busy');
+                  setLoading(false);
+                }}
+                className={`btn-status busy ${status?.state === 'busy' ? 'active' : ''}`}
+              >
+                Set Busy
+              </button>
+            </div>
           </div>
         </div>
       </div>

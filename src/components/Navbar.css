@@ -150,6 +150,10 @@
   transform: translateY(-6px) rotate(-45deg);
 }
 
+.navbar__status-wrap {
+  margin-left: 8px;
+}
+
 /* ── Fullscreen Menu Overlay ─────────────────────── */
 .menu-overlay {
   position: fixed;
@@ -230,6 +234,10 @@
 
 .menu-overlay__info .mono-label {
   color: rgba(255, 255, 255, 0.4);
+}
+
+.menu-overlay__status-mobile {
+  margin-bottom: 12px;
 }
 
 /* ── Responsive ────────────────────────────────── */

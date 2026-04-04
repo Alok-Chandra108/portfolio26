@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLenis } from 'lenis/react';
 import { gsap, useGSAP } from '../utils/gsapPlugins.js';
+import StatusPulse from './StatusPulse';
 import './Navbar.css';
 
 export default function Navbar() {
@@ -151,6 +152,11 @@ export default function Navbar() {
             <span>LET'S TALK</span>
             <span className="navbar__cta-arrow">→</span>
           </Link>
+          
+          <div className="navbar__status-wrap desktop-only">
+            <StatusPulse />
+          </div>
+
           <button
             className="navbar__menu-btn"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -189,6 +195,9 @@ export default function Navbar() {
               ))}
             </div>
             <div className="menu-overlay__info">
+              <div className="menu-overlay__status-mobile mobile-only">
+                <StatusPulse />
+              </div>
               <p className="mono-label">alokchandra2611@gmail.com</p>
               <p className="mono-label">
                 {new Date().toLocaleTimeString('en-US', {
