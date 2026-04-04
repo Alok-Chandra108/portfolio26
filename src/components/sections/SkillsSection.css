@@ -102,21 +102,21 @@
   .skills-section {
     padding: 80px 0;
   }
-  
+
   .skills-section__title {
     font-size: clamp(2.5rem, 12vw, 4rem);
   }
-  
+
   .skills-marquee-container {
     gap: 20px;
   }
-  
+
   .skill-card {
     width: 220px;
     height: 160px;
     padding: 25px;
   }
-  
+
   .skill-card__logo {
     width: 60px;
     height: 60px;

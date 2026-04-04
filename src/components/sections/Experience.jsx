@@ -162,9 +162,9 @@ export default function Experience({ preview = false }) {
             </div>
           </div>
 
-          {/* Right — Detail Panel */}
+          {/* Right — Detail Panel — Roulette Viewport */}
           <div className="experience__panel">
-            <ExperiencePanel data={active} />
+            <ExperiencePanel experiences={displayData} activeIndex={activeIndex} />
           </div>
         </div>
 
@@ -180,71 +180,80 @@ export default function Experience({ preview = false }) {
   );
 }
 
-/* ── Detail Panel — animates on data change ─────────── */
-function ExperiencePanel({ data }) {
-  const panelRef = useRef(null);
-  const [displayData, setDisplayData] = useState(data);
-  const tlRef = useRef(null);
+/* ── Detail Panel — Vertical Roulette Reel ──────────── */
+function ExperiencePanel({ experiences, activeIndex }) {
+  const reelRef = useRef(null);
+  const containerRef = useRef(null);
+  const prevIndex = useRef(activeIndex);
 
   useGSAP(() => {
-    if (!panelRef.current) return;
+    if (!reelRef.current) return;
 
-    if (data.id !== displayData.id) {
-      if (tlRef.current) tlRef.current.kill();
-      tlRef.current = gsap.timeline();
+    // Calculate direction: 1 for down (next), -1 for up (prev)
+    const direction = activeIndex > prevIndex.current ? 1 : -1;
+    prevIndex.current = activeIndex;
 
-      // Exit: Top edge drops down to the bottom (flowing down)
-      tlRef.current.to(panelRef.current, {
-        clipPath: 'inset(100% 0% 0% 0%)',
-        duration: 0.7,
-        ease: 'power4.inOut',
-        onComplete: () => setDisplayData(data)
-      });
-    } else {
-      if (tlRef.current) tlRef.current.kill();
-      tlRef.current = gsap.timeline();
+    // Animate the reel to the active index
+    // Using yPercent for clean percentage-based movement
+    gsap.to(reelRef.current, {
+      y: -(activeIndex * 100) + '%',
+      duration: 0.75,
+      ease: 'expo.out', // Smooth "roulette" deceleration
+      overwrite: true
+    });
 
-      // Enter: Bottom edge drops down from the top
-      tlRef.current.fromTo(panelRef.current,
-        { clipPath: 'inset(0% 0% 100% 0%)' },
-        { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.85, ease: 'power4.inOut' }
-      );
-    }
-  }, { dependencies: [data, displayData], scope: panelRef });
+    // Subtle parallax shift for internal content to enhance the "spin" feel
+    const innerContent = reelRef.current.querySelectorAll('.experience__panel-card');
+    innerContent.forEach((card, i) => {
+      if (i === activeIndex) {
+        gsap.fromTo(card.querySelectorAll('.experience__panel-role, .experience__panel-desc'),
+          { y: direction * 20, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.6, delay: 0.1, stagger: 0.05, ease: 'power2.out' }
+        );
+      }
+    });
+
+  }, { dependencies: [activeIndex], scope: containerRef });
 
   return (
-    <div className="experience__panel-inner" ref={panelRef}>
-      {/* Company + Period */}
-      <div className="experience__panel-top">
-        <div>
-          <p className="experience__panel-company">{displayData.company}</p>
-          <p className="experience__panel-period mono-label">
-            {displayData.startDate} — {displayData.isCurrent ? 'Present' : displayData.endDate}
-            {displayData.location && ` · ${displayData.location}`}
-          </p>
-        </div>
-        {displayData.isCurrent && (
-          <span className="experience__panel-badge">Current</span>
-        )}
-      </div>
+    <div className="experience__panel-viewport" ref={containerRef}>
+      <div className="experience__panel-reel" ref={reelRef}>
+        {experiences.map((exp, i) => (
+          <div key={exp.id} className="experience__panel-card">
+            {/* Company + Period */}
+            <div className="experience__panel-top">
+              <div>
+                <p className="experience__panel-company">{exp.company}</p>
+                <p className="experience__panel-period mono-label">
+                  {exp.startDate} — {exp.isCurrent ? 'Present' : exp.endDate}
+                  {exp.location && ` · ${exp.location}`}
+                </p>
+              </div>
+              {exp.isCurrent && (
+                <span className="experience__panel-badge">Current</span>
+              )}
+            </div>
 
-      {/* Role */}
-      <h3 className="experience__panel-role">{displayData.role}</h3>
+            {/* Role */}
+            <h3 className="experience__panel-role">{exp.role}</h3>
 
-      {/* Divider */}
-      <div className="experience__panel-divider" />
+            {/* Divider */}
+            <div className="experience__panel-divider" />
 
-      {/* Description */}
-      {displayData.description && (
-        <p className="experience__panel-desc body-text">{displayData.description}</p>
-      )}
+            {/* Description */}
+            {exp.description && (
+              <p className="experience__panel-desc body-text">{exp.description}</p>
+            )}
 
-      {/* Corner accent */}
-      <div className="experience__panel-accent" aria-hidden="true">
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M0 100 L100 0" stroke="var(--color-accent)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-          <path d="M20 100 L100 20" stroke="var(--color-accent)" strokeWidth="0.5" opacity="0.5" vectorEffect="non-scaling-stroke" />
-        </svg>
+            {/* Corner accent */}
+            <div className="experience__panel-accent" aria-hidden="true">
+              <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 100 L100 0" stroke="var(--color-accent)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+                <path d="M20 100 L100 20" stroke="var(--color-accent)" strokeWidth="0.5" opacity="0.5" vectorEffect="non-scaling-stroke" />
+              </svg>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
