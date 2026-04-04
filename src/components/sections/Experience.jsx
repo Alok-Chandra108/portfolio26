@@ -31,7 +31,8 @@ export default function Experience({ preview = false }) {
   useEffect(() => {
     experienceService.getExperience()
       .then(data => {
-        setExperiences(data.length > 0 ? data : placeholderData);
+        const workData = data.filter(exp => exp.type !== 'education');
+        setExperiences(workData.length > 0 ? workData : placeholderData);
       })
       .catch(() => setExperiences(placeholderData))
       .finally(() => setLoading(false));

@@ -42,6 +42,7 @@ const AdminExperience = () => {
   );
 
   const [formData, setFormData] = useState({
+    type: "work", // "work" or "education"
     company: "",
     role: "",
     location: "",
@@ -79,6 +80,7 @@ const AdminExperience = () => {
 
   const resetForm = () => {
     setFormData({
+      type: "work",
       company: "",
       role: "",
       location: "",
@@ -134,10 +136,11 @@ const AdminExperience = () => {
     setIsEditing(true);
     setCurrentId(exp.id);
     setFormData({
-      company: exp.company,
-      role: exp.role,
+      type: exp.type || "work",
+      company: exp.company || exp.institution || "",
+      role: exp.role || exp.degree || "",
       location: exp.location || "",
-      startDate: exp.startDate,
+      startDate: exp.startDate || exp.year || "",
       endDate: exp.endDate || "",
       description: exp.description || "",
       isCurrent: exp.isCurrent || false
@@ -212,27 +215,40 @@ const AdminExperience = () => {
             {formSuccess && <div className="success-banner" style={{ background: "rgba(184, 255, 0, 0.1)", borderLeft: "4px solid var(--color-accent)", padding: "12px", marginBottom: "20px", color: "var(--color-dark)", fontSize: "0.9rem", fontWeight: "600", borderRadius: "4px" }}>{formSuccess}</div>}
 
             <form onSubmit={handleSubmit}>
+              <div className="form-group" style={{ marginBottom: "15px" }}>
+                <label>Entry Type</label>
+                <select 
+                  name="type" 
+                  className="form-input" 
+                  value={formData.type} 
+                  onChange={handleInputChange} 
+                >
+                  <option value="work">Work Experience</option>
+                  <option value="education">Education</option>
+                </select>
+              </div>
+
               <div className="form-group" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
                 <div>
-                  <label>Company *</label>
+                  <label>{formData.type === 'education' ? 'Institution *' : 'Company *'}</label>
                   <input 
                     type="text" 
                     name="company" 
                     className="form-input" 
                     value={formData.company} 
                     onChange={handleInputChange} 
-                    placeholder="e.g. Google"
+                    placeholder={formData.type === 'education' ? "e.g. University of Example" : "e.g. Google"}
                   />
                 </div>
                 <div>
-                  <label>Role *</label>
+                  <label>{formData.type === 'education' ? 'Degree/Major *' : 'Role *'}</label>
                   <input 
                     type="text" 
                     name="role" 
                     className="form-input" 
                     value={formData.role} 
                     onChange={handleInputChange} 
-                    placeholder="e.g. Senior DevOps"
+                    placeholder={formData.type === 'education' ? "e.g. BS Computer Science" : "e.g. Senior DevOps"}
                   />
                 </div>
               </div>
@@ -356,9 +372,13 @@ const AdminExperience = () => {
                                   <DragHandleIcon />
                                 </div>
                                 <div>
-                                  <h4 style={{ margin: "0 0 5px 0" }}>{exp.role} @ {exp.company}</h4>
+                                  <h4 style={{ margin: "0 0 5px 0" }}>
+                                    {exp.type === "education" && <span style={{ fontSize: "0.7rem", textTransform: "uppercase", marginRight: "6px", backgroundColor: "var(--color-accent)", color: "var(--color-dark)", padding: "2px 6px", borderRadius: "10px" }}>EDU</span>}
+                                    {exp.type !== "education" && <span style={{ fontSize: "0.7rem", textTransform: "uppercase", marginRight: "6px", backgroundColor: "#e2e8f0", color: "#475569", padding: "2px 6px", borderRadius: "10px" }}>WORK</span>}
+                                    {exp.role || exp.degree} {exp.company || exp.institution ? `@ ${exp.company || exp.institution}` : ''}
+                                  </h4>
                                   <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--color-muted)" }}>
-                                    {exp.startDate} — {exp.isCurrent ? "Present" : exp.endDate} | {exp.location}
+                                    {exp.startDate || exp.year} — {exp.isCurrent ? "Present" : exp.endDate} {exp.location ? `| ${exp.location}` : ''}
                                   </p>
                                 </div>
                               </div>

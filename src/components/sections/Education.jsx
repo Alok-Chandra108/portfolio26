@@ -1,21 +1,35 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { gsap, ScrollTrigger, useGSAP } from '../../utils/gsapPlugins.js';
-import educationData from '../../data/education.js';
+import { experienceService } from '../../firebase/experienceService.js';
+import staticEducationData from '../../data/education.js';
 import './Education.css';
 
 export default function Education() {
+  const [educationData, setEducationData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
   const sectionRef = useRef(null);
   const lineRef = useRef(null);
   const headingRef = useRef(null);
   const itemsRef = useRef([]);
   const nodesRef = useRef([]);
 
+  useEffect(() => {
+    experienceService.getExperience()
+      .then(data => {
+        const eduData = data.filter(exp => exp.type === 'education');
+        setEducationData(eduData.length > 0 ? eduData : staticEducationData);
+      })
+      .catch(() => setEducationData(staticEducationData))
+      .finally(() => setLoading(false));
+  }, []);
+
   // Use useGSAP for cleanup and scoping
   useGSAP(() => {
     // Re-initialize arrays for refs to ensure they match current DOM across hot reloads
     itemsRef.current = [];
     nodesRef.current = [];
-  }, { dependencies: [], scope: sectionRef });
+  }, { dependencies: [educationData], scope: sectionRef });
 
   useGSAP(() => {
     const mm = gsap.matchMedia();
@@ -115,7 +129,7 @@ export default function Education() {
 
     ScrollTrigger.refresh();
 
-  }, { scope: sectionRef });
+  }, { dependencies: [educationData, loading], scope: sectionRef });
 
   const addItem = (el) => {
     if (el && !itemsRef.current.includes(el)) itemsRef.current.push(el);
@@ -143,9 +157,9 @@ export default function Education() {
             <div className="education__item" key={item.id}>
               <div className="education__node will-animate" ref={addNode} />
               <div className="education__content will-animate" ref={addItem}>
-                <span className="education__year">{item.year}</span>
-                <h3 className="education__degree">{item.degree}</h3>
-                <h4 className="education__institution">{item.institution}</h4>
+                <span className="education__year">{item.startDate || item.year}</span>
+                <h3 className="education__degree">{item.role || item.degree}</h3>
+                <h4 className="education__institution">{item.company || item.institution}</h4>
                 <p className="education__description">{item.description}</p>
               </div>
             </div>
