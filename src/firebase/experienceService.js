@@ -7,42 +7,57 @@ import {
   getDocs, 
   query, 
   orderBy,
-  serverTimestamp
+  serverTimestamp,
+  writeBatch
 } from "firebase/firestore";
 import { db } from "./config";
 
 const COLLECTION_NAME = "experience";
 
 export const experienceService = {
-  // Fetch all experience entries ordered by date or sortOrder
+  // Fetch all experience entries ordered by sortOrder
   async getExperience() {
     try {
       const q = query(
         collection(db, COLLECTION_NAME), 
-        orderBy("startDate", "desc")
+        orderBy("sortOrder", "asc")
       );
       const querySnapshot = await getDocs(q);
       
+      // If none have sortOrder, fallback to date ordering
+      if (querySnapshot.empty) {
+        const qFallback = query(
+          collection(db, COLLECTION_NAME), 
+          orderBy("startDate", "desc")
+        );
+        const fbSnapshot = await getDocs(qFallback);
+        return fbSnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+      }
+
       return querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
     } catch (error) {
       console.error("Error fetching experience:", error);
-      // Fallback to simple fetch if index is missing
+      // Fallback if index for sortOrder is missing yet
       const querySnapshot = await getDocs(collection(db, COLLECTION_NAME));
       return querySnapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
-      }));
+      })).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
     }
   },
 
   // Add a new experience entry
-  async addExperience(experienceData) {
+  async addExperience(experienceData, currentLength = 0) {
     try {
       const docRef = await addDoc(collection(db, COLLECTION_NAME), {
         ...experienceData,
+        sortOrder: currentLength,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
@@ -63,6 +78,21 @@ export const experienceService = {
       });
     } catch (error) {
       console.error("Error updating experience:", error);
+      throw error;
+    }
+  },
+
+  // Update order for multiple experiences
+  async updateExperienceOrder(newOrder) {
+    try {
+      const batch = writeBatch(db);
+      newOrder.forEach((item, index) => {
+        const docRef = doc(db, COLLECTION_NAME, item.id);
+        batch.update(docRef, { sortOrder: index });
+      });
+      await batch.commit();
+    } catch (error) {
+      console.error("Error updating experience order:", error);
       throw error;
     }
   },

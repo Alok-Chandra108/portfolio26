@@ -5,6 +5,24 @@ import { experienceService } from "../../firebase/experienceService";
 import { gsap, useGSAP } from "../../utils/gsapPlugins";
 import "../../styles/admin.css";
 
+// DND Kit Imports
+import {
+  DndContext, 
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { restrictToVerticalAxis } from '@dnd-kit/modifiers';
+import { SortableItem, DragHandleIcon } from "../../components/admin/SortableItem";
+
 const AdminExperience = () => {
   const { logout } = useAuth();
   const [experiences, setExperiences] = useState([]);
@@ -14,6 +32,14 @@ const AdminExperience = () => {
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
   const formRef = useRef(null);
+
+  // Setup sensors for DND
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const [formData, setFormData] = useState({
     company: "",
@@ -81,7 +107,7 @@ const AdminExperience = () => {
         await experienceService.updateExperience(currentId, formData);
         setFormSuccess("Experience updated successfully!");
       } else {
-        await experienceService.addExperience(formData);
+        await experienceService.addExperience(formData, experiences.length);
         setFormSuccess("Experience added successfully!");
       }
       
@@ -135,6 +161,29 @@ const AdminExperience = () => {
         fetchExperience();
       } catch (error) {
         alert("Failed to delete experience.");
+      }
+    }
+  };
+
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+
+    if (active && over && active.id !== over.id) {
+      const oldIndex = experiences.findIndex((e) => e.id === active.id);
+      const newIndex = experiences.findIndex((e) => e.id === over.id);
+
+      const newOrder = arrayMove(experiences, oldIndex, newIndex);
+      
+      // Optimistic UI update
+      setExperiences(newOrder);
+
+      try {
+        // Persist to Firestore
+        await experienceService.updateExperienceOrder(newOrder);
+        console.log("Timeline order updated successfully.");
+      } catch (error) {
+        alert("Failed to save the new order. Reverting...");
+        fetchExperience();
       }
     }
   };
@@ -275,22 +324,55 @@ const AdminExperience = () => {
                   <p style={{ color: "var(--color-muted)" }}>No experience data yet. Start by adding your first role.</p>
                 </div>
               ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
-                  {experiences.map((exp) => (
-                    <div key={exp.id} className="admin-card" style={{ padding: "15px", display: "flex", justifyContent: "space-between", alignItems: "center", border: "1px solid rgba(0,0,0,0.05)" }}>
-                      <div>
-                        <h4 style={{ margin: "0 0 5px 0" }}>{exp.role} @ {exp.company}</h4>
-                        <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--color-muted)" }}>
-                          {exp.startDate} — {exp.isCurrent ? "Present" : exp.endDate} | {exp.location}
-                        </p>
-                      </div>
-                      <div style={{ display: "flex", gap: "8px" }}>
-                        <button onClick={() => handleEdit(exp)} className="btn-manage" style={{ padding: "6px 12px", fontSize: "0.75rem" }}>Edit</button>
-                        <button onClick={() => handleDelete(exp.id)} className="btn-logout" style={{ padding: "6px 12px", fontSize: "0.75rem", border: "1px solid #ff4d4d", color: "#ff4d4d", background: "transparent" }}>Del</button>
-                      </div>
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                  modifiers={[restrictToVerticalAxis]}
+                >
+                  <SortableContext
+                    items={experiences.map(e => e.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+                      {experiences.map((exp) => (
+                        <SortableItem key={exp.id} id={exp.id}>
+                          {({ attributes, listeners, handleStyle, isDragging }) => (
+                            <div 
+                              className="admin-card" 
+                              style={{ 
+                                padding: "15px", 
+                                display: "flex", 
+                                justifyContent: "space-between", 
+                                alignItems: "center", 
+                                border: isDragging ? "1px solid var(--color-accent)" : "1px solid rgba(0,0,0,0.05)",
+                                boxShadow: isDragging ? "0 8px 30px rgba(0,0,0,0.1)" : "none",
+                                opacity: isDragging ? 0.5 : 1,
+                                transition: "all 0.2s ease"
+                              }}
+                            >
+                              <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
+                                <div {...attributes} {...listeners} style={handleStyle}>
+                                  <DragHandleIcon />
+                                </div>
+                                <div>
+                                  <h4 style={{ margin: "0 0 5px 0" }}>{exp.role} @ {exp.company}</h4>
+                                  <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--color-muted)" }}>
+                                    {exp.startDate} — {exp.isCurrent ? "Present" : exp.endDate} | {exp.location}
+                                  </p>
+                                </div>
+                              </div>
+                              <div style={{ display: "flex", gap: "8px" }}>
+                                <button onClick={() => handleEdit(exp)} className="btn-manage" style={{ padding: "6px 12px", fontSize: "0.75rem" }}>Edit</button>
+                                <button onClick={() => handleDelete(exp.id)} className="btn-logout" style={{ padding: "6px 12px", fontSize: "0.75rem", border: "1px solid #ff4d4d", color: "#ff4d4d", background: "transparent" }}>Del</button>
+                              </div>
+                            </div>
+                          )}
+                        </SortableItem>
+                      ))}
                     </div>
-                  ))}
-                </div>
+                  </SortableContext>
+                </DndContext>
               )}
             </div>
           </div>
