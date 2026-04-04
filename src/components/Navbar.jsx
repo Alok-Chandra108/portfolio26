@@ -106,6 +106,7 @@ export default function Navbar() {
 
   const navLinks = [
     { label: 'Work', path: '/work' },
+    { label: 'Experience', path: '/experience' },
     { label: 'About', path: '/about' },
     { label: 'My Reads', path: '/reads' },
     { label: 'Contact', path: '/contact' },

@@ -124,22 +124,84 @@
   color: var(--color-accent);
 }
 
-@media (max-width: 768px) {
+/* ── lg tablets (768–1023px) ── */
+@media (max-width: 1023px) {
+  .contact-page__grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+  }
+}
+
+/* ── md phones (431–767px) ── */
+@media (max-width: 767px) {
   .contact-page {
     padding-top: 100px;
+    padding-bottom: 60px;
+  }
+
+  .contact-page__header {
+    margin-bottom: 40px;
   }
 
   .contact-page__grid {
     grid-template-columns: 1fr;
-    gap: 60px;
+    gap: 48px;
   }
 
   .contact-page__form {
-    gap: 32px;
+    gap: 24px;
   }
 
   .contact-page__field input,
   .contact-page__field textarea {
     min-height: 48px;
+    font-size: 16px; /* Prevent iOS zoom */
+  }
+
+  /* Globe container: safe fixed height on mobile */
+  .contact-page__globe-wrapper {
+    height: 300px !important;
+    border-radius: 16px !important;
+  }
+}
+
+/* ── sm phones (≤ 430px) ── */
+@media (max-width: 430px) {
+  .contact-page {
+    padding-top: 90px;
+  }
+
+  .contact-page__header {
+    margin-bottom: 32px;
+  }
+
+  .contact-page__form {
+    gap: 20px;
+  }
+
+  .contact-page__globe-wrapper {
+    height: 240px !important;
+    margin-top: 24px !important;
+  }
+
+  .contact-page__info {
+    gap: 24px;
+  }
+}
+
+/* ── xs phones (≤ 360px) ── */
+@media (max-width: 360px) {
+  .contact-page {
+    padding-top: 80px;
+  }
+
+  .contact-page__globe-wrapper {
+    height: 200px !important;
+    border-radius: 12px !important;
+  }
+
+  .contact-page__field input,
+  .contact-page__field textarea {
+    font-size: 15px;
   }
 }

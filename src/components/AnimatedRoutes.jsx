@@ -8,6 +8,7 @@ import WorkPage from '../pages/WorkPage.jsx';
 import AboutPage from '../pages/AboutPage.jsx';
 import AllReadsPage from '../pages/AllReadsPage.jsx';
 import ContactPage from '../pages/ContactPage.jsx';
+import ExperiencePage from '../pages/ExperiencePage.jsx';
 import Login from '../pages/Login.jsx';
 import AdminDashboard from '../pages/AdminDashboard.jsx';
 import AdminProjects from '../pages/admin/AdminProjects.jsx';
@@ -28,6 +29,7 @@ export default function AnimatedRoutes() {
         <Route path="/work" element={<PageWrapper><WorkPage /></PageWrapper>} />
         <Route path="/about" element={<PageWrapper><AboutPage /></PageWrapper>} />
         <Route path="/reads" element={<PageWrapper><AllReadsPage /></PageWrapper>} />
+        <Route path="/experience" element={<PageWrapper><ExperiencePage /></PageWrapper>} />
         <Route path="/contact" element={<PageWrapper><ContactPage /></PageWrapper>} />
         <Route path="/login" element={<PageWrapper><Login /></PageWrapper>} />
         <Route 

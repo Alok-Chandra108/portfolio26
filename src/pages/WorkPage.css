@@ -9,6 +9,7 @@
   align-items: baseline;
   justify-content: space-between;
   margin-bottom: 60px;
+  gap: 20px;
 }
 
 .work-page__grid {
@@ -17,17 +18,54 @@
   gap: 24px;
 }
 
-@media (max-width: 768px) {
+/* lg: tablets (768–1023px) */
+@media (max-width: 1023px) {
+  .work-page__grid {
+    gap: 20px;
+  }
+}
+
+/* md: phones (≤767px) */
+@media (max-width: 767px) {
   .work-page {
     padding-top: 100px;
+    padding-bottom: 60px;
   }
 
   .work-page__header {
     flex-direction: column;
     gap: 8px;
+    margin-bottom: 40px;
   }
 
   .work-page__grid {
     grid-template-columns: 1fr;
+    gap: 20px;
+  }
+}
+
+/* sm phones (≤430px) */
+@media (max-width: 430px) {
+  .work-page {
+    padding-top: 90px;
+  }
+
+  .work-page__header {
+    margin-bottom: 28px;
+  }
+
+  .work-page__grid {
+    gap: 16px;
+  }
+}
+
+/* xs phone (≤360px) */
+@media (max-width: 360px) {
+  .work-page {
+    padding-top: 80px;
+  }
+
+  .work-page__grid {
+    gap: 12px;
   }
 }

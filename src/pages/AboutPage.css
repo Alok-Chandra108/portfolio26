@@ -61,6 +61,15 @@
   line-height: 1;
 }
 
+/* lg: 768–1023px — tablet */
+@media (max-width: 1023px) {
+  .about-page__content {
+    grid-template-columns: 1fr 1.3fr;
+    gap: 40px;
+  }
+}
+
+/* md: ≤767px — phone */
 @media (max-width: 768px) {
   .about-page {
     padding-top: 100px;
@@ -79,5 +88,44 @@
   .about-page__stats {
     flex-wrap: wrap;
     gap: 24px;
+  }
+}
+
+/* sm: ≤430px */
+@media (max-width: 430px) {
+  .about-page {
+    padding-top: 90px;
+  }
+
+  .about-page__content {
+    gap: 28px;
+  }
+
+  .about-page__bio {
+    font-size: 0.95rem;
+  }
+
+  .about-page__stat-num {
+    font-size: 36px;
+  }
+
+  .about-page__stats {
+    gap: 20px;
+  }
+}
+
+/* xs: ≤360px */
+@media (max-width: 360px) {
+  .about-page {
+    padding-top: 80px;
+  }
+
+  .about-page__stat-num {
+    font-size: 32px;
+  }
+
+  .about-page__stats {
+    gap: 16px;
+    flex-wrap: wrap;
   }
 }
