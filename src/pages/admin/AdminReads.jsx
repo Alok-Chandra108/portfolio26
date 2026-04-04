@@ -18,7 +18,8 @@ const AdminReads = () => {
     author: "",
     category: "Fiction",
     status: "Want to Read",
-    cover: ""
+    cover: "",
+    isFeatured: false
   });
 
   const categories = ["Fiction", "Non-Fiction", "Design", "Tech", "Productivity", "Business", "Self-Help"];
@@ -56,7 +57,8 @@ const AdminReads = () => {
       author: book.author,
       category: book.category,
       status: book.status,
-      cover: book.cover || ""
+      cover: book.cover || "",
+      isFeatured: book.isFeatured || false
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -64,7 +66,7 @@ const AdminReads = () => {
   const handleCancel = () => {
     setIsEditing(false);
     setCurrentBookId(null);
-    setFormData({ title: "", author: "", category: "Fiction", status: "Want to Read", cover: "" });
+    setFormData({ title: "", author: "", category: "Fiction", status: "Want to Read", cover: "", isFeatured: false });
   };
 
   const handleSubmit = async (e) => {
@@ -144,6 +146,17 @@ const AdminReads = () => {
                 <input type="url" className="form-input" name="cover" value={formData.cover} onChange={handleChange} placeholder="https://..." />
               </div>
 
+              <div className="form-group" style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: "15px" }}>
+                <input 
+                  type="checkbox" 
+                  name="isFeatured" 
+                  id="isFeatured"
+                  checked={formData.isFeatured} 
+                  onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })} 
+                />
+                <label htmlFor="isFeatured" style={{ margin: 0, cursor: "pointer" }}>Feature on Homepage (Top 4 Picks)</label>
+              </div>
+
               <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
                 <button type="submit" className="login-button" style={{ marginTop: 0 }}>
                   {isEditing ? "Update Book" : "Save Book"}
@@ -172,7 +185,10 @@ const AdminReads = () => {
                   <div style={{ display: "flex", gap: "20px", alignItems: "center" }}>
                     {book.cover && <img src={book.cover} alt={book.title} style={{ width: "50px", height: "70px", objectFit: "cover", borderRadius: "4px" }} />}
                     <div>
-                      <h3 style={{ margin: 0, fontSize: "1.1rem" }}>{book.title}</h3>
+                      <h3 style={{ margin: 0, fontSize: "1.1rem", display: "flex", alignItems: "center", gap: "8px" }}>
+                        {book.title}
+                        {book.isFeatured && <span style={{ fontSize: "0.8rem", background: "var(--color-accent)", color: "var(--color-dark)", padding: "2px 6px", borderRadius: "4px" }}>⭐ Top Pick</span>}
+                      </h3>
                       <p style={{ margin: "5px 0 0 0", color: "var(--color-muted)", fontSize: "0.9rem" }}>by {book.author}</p>
                     </div>
                   </div>

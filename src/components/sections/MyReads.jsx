@@ -1,14 +1,16 @@
-import { useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { gsap, ScrollTrigger, useGSAP } from '../../utils/gsapPlugins.js';
 import BookCard from '../ui/BookCard.jsx';
 import AnimatedButton from '../ui/AnimatedButton.jsx';
-import books from '../../data/books.js';
+import { db } from '../../firebase/config';
+import { collection, query, where, getDocs, limit } from 'firebase/firestore';
 import './MyReads.css';
 
 const rotations = [-2, 1.5, -1, 2.5];
-const displayBooks = books.slice(0, 4);
 
 export default function MyReads() {
+  const [displayBooks, setDisplayBooks] = useState([]);
+  const [loading, setLoading] = useState(true);
   const sectionRef = useRef(null);
   const headingRef = useRef(null);
   const cardsContainerRef = useRef(null);
@@ -28,7 +30,31 @@ export default function MyReads() {
     });
   }, []);
 
+  useEffect(() => {
+    const fetchFeaturedBooks = async () => {
+      try {
+        const q = query(collection(db, "reads"), where("isFeatured", "==", true), limit(4));
+        const querySnapshot = await getDocs(q);
+        const booksData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+        setDisplayBooks(booksData);
+      } catch (error) {
+        console.error("Error fetching featured books:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFeaturedBooks();
+  }, []);
+
   useGSAP(() => {
+    if (loading || displayBooks.length === 0) return;
+    
+    // reset refs list to match currently rendered list safely
+    cardRefs.current = cardRefs.current.slice(0, displayBooks.length);
+
     const mm = gsap.matchMedia();
 
     mm.add({
@@ -131,7 +157,7 @@ export default function MyReads() {
 
     ScrollTrigger.refresh();
 
-  }, { scope: sectionRef });
+  }, { scope: sectionRef, dependencies: [loading, displayBooks] });
 
   return (
     <section className="my-reads section" ref={sectionRef}>
@@ -142,21 +168,27 @@ export default function MyReads() {
         </div>
 
         <div className="my-reads__cards" ref={cardsContainerRef}>
-          {displayBooks.map((book, i) => (
-            <div
-              key={book.id}
-              ref={el => cardRefs.current[i] = el}
-              className="my-reads__card-wrap will-animate"
-            >
-              <BookCard
-                book={book}
-                index={i}
-                rotation={rotations[i]}
-                onHover={handleCardHover}
-                onLeave={handleCardLeave}
-              />
-            </div>
-          ))}
+          {loading ? (
+            <p style={{ textAlign: 'center', width: '100%', color: 'var(--color-muted)' }}>Loading top reads...</p>
+          ) : displayBooks.length === 0 ? (
+            <p style={{ textAlign: 'center', width: '100%', color: 'var(--color-muted)' }}>No featured reads yet.</p>
+          ) : (
+            displayBooks.map((book, i) => (
+              <div
+                key={book.id}
+                ref={el => cardRefs.current[i] = el}
+                className="my-reads__card-wrap will-animate"
+              >
+                <BookCard
+                  book={book}
+                  index={i}
+                  rotation={rotations[i]}
+                  onHover={handleCardHover}
+                  onLeave={handleCardLeave}
+                />
+              </div>
+            ))
+          )}
         </div>
 
         <div className="my-reads__cta">
