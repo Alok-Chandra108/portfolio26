@@ -21,7 +21,8 @@ This portfolio is not just a collection of projects; it's a statement on digital
 - **🌟 Dynamic Hero**: High-impact entry section featuring scroll-triggered GSAP reveals, a magnetic marquee, and a name heading with **per-character dynamic coloring** on hover.
 - **🏗️ Interactive "Skills Lattice"**: A dual-row, infinite scrolling marquee with scroll-driven parallax shifts, showcasing core competencies with a high-end editorial feel.
 - **☁️ Cloud & DevOps Services**: A structured services section highlighting expertise in **Infrastructure (AWS/GCP)**, **CI/CD (GitHub Actions)**, and **Monitoring (Prometheus/Grafana)** with GSAP-animated entry reveals.
-- **🎓 Education Timeline**: A visually striking "Midnight" dark-mode timeline with neon green accents, strictly adhering to the **60-30-10 color rule** for max impact.
+- **🎓 Education Timeline**: A visually striking "Midnight" dark-mode timeline with neon green accents, now dynamically populated from Firestore.
+- **💼 Work Experience**: A seamless tracking of professional history, integrated directly with the Education CMS to render clean, interactive journeys.
 - **📚 Immersive "My Reads"**: A real-time library powered by Firestore, featuring **mobile-optimized horizontal card strips** and sleek desktop grid transitions.
 - **📖 All Reads Page**: A dedicated `/reads` route with a refined 2-column portrait card grid and advanced status-based filtering.
 - **🎯 Interactive CTAs**: Premium "Ready to Scale" call-to-action sections with cursor-following background effects and letter-spacing animations.
@@ -33,7 +34,7 @@ This portfolio is not just a collection of projects; it's a statement on digital
 
 ## 🔮 Future Roadmap
 
-- **✍️ Interactive Experience CMS**: Building out the Admin forms for managing the Work Experience section dynamically via Firestore.
+- **🔒 Firestore Security Rules**: Fully locking down the new Firebase Admin datasets (Experience, Education, Projects) strictly to authenticated user UUIDs to guarantee enterprise-level security.
 - **🖼️ Advanced Image Optimization**: Implementing lazy loading and automated WebP conversions for high-res project photography.
 - **🌐 Global Traffic Visualization**: Expanding the 3D globe to include real-time project hit visualizations and animated data arcs.
 
@@ -92,7 +93,7 @@ prime-einstein/
 │   │   └── skillsService.js      # Data fetching for skills
 │   ├── pages/
 │   │   ├── admin/                # Full-page authenticated admin views
-│   │   │   ├── AdminExperience.jsx
+│   │   │   ├── AdminExperience.jsx  # Unified Work & Education CMS logic
 │   │   │   ├── AdminProjects.jsx
 │   │   │   ├── AdminReads.jsx
 │   │   │   └── AdminSkills.jsx
@@ -130,8 +131,8 @@ prime-einstein/
 | `src/components` | Layout and orchestration: `AnimatedRoutes`, `PageWrapper`, `SmoothScroll`, `Navbar`, `Footer`, `Loader`. | **Orchestration**: Manages routing, smooth scroll, and global UI state. |
 | `src/components/ui` | Reusable, stateless components: `BookCard`, `ProjectCard`, `AnimatedButton`, `PillTag`, `DownloadCV`. | **Atoms/Molecules**: Highly composable across different sections. |
 | `src/components/ui/Globe` | Multi-layered 3D Earth visualization using R3F and three-globe. | **Three.js Layer**: Decoupled 3D logic with custom GLSL shaders. |
-| `src/pages` | Full route views: `Home`, `AboutPage`, `WorkPage`, `AllReadsPage`, `ContactPage`, `Login`, `AdminDashboard`. | **Pages**: Thin orchestration layers that compose sections. |
-| `src/pages/admin` | Private views for managing Skills, Reads, Projects, and Experience data. | **Admin Portal**: Protected by `ProtectedRoute` + Firebase Auth. |
+| `src/pages` | Full route views: `Home`, `AboutPage`, `WorkPage`, `AllReadsPage`, `ContactPage`, `Login`, `AdminDashboard`, and `ExperiencePage`. | **Pages**: Thin orchestration layers that compose sections. |
+| `src/pages/admin` | Private views for managing Skills, Reads, Projects, Work Experience, and Education data dynamically. | **Admin Portal**: Protected by `ProtectedRoute` + Firebase Auth. |
 | `src/styles` | Global design tokens, resets, typography scale, and admin-specific styles. | **Design System**: CSS variables shared across all components. |
 | `src/context` | Centralized Firebase auth state via React Context. | **Provider Pattern**: Injects auth state into the component tree. |
 | `src/firebase` | Firebase initialization and specific service layers for Firestore data. | **Service Layer**: Decouples database logic from UI components. |
