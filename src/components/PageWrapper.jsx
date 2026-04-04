@@ -4,63 +4,63 @@ import { useLenis } from 'lenis/react';
 import { ScrollTrigger } from '../utils/gsapPlugins.js';
 
 /* ─────────────────────────────────────────────────────────────────
-   VENETIAN BLIND PAGE TRANSITION
-   3 horizontal panels sweep down to cover the screen on exit
-   then peel back upward to reveal the new page on enter.
-   Colors: charcoal → acid-green → near-black — brand signature.
+   VENETIAN BLIND PAGE TRANSITION (V3 — 'GREEN PARDA')
+   Kinetic sequence: "Slam-Down" on Exit → "Peel-Up" on Entrance.
+   Colors: Charcoal → Near-Black → Acid-Green (The Hero).
+   Staggered delays and Z-index ensure 'Acid-Green' is the parda.
 ───────────────────────────────────────────────────────────────── */
 
 const EASE = [0.76, 0, 0.24, 1];
 
-// Panel cover = slide IN from top (clipPath top→bottom)
-// Panel peel  = slide AWAY to top (clipPath bottom→top)
-function buildPanelVariants(delay) {
-  return {
-    initial: { clipPath: 'inset(0 0 100% 0)' },  // Hidden below
-    animate: {
-      clipPath: 'inset(0 0 100% 0)',              // Still hidden (no cover on entry start)
-    },
-    exit: {
-      clipPath: 'inset(0 0 0% 0)',               // Slam DOWN to cover on exit
-      transition: { duration: 0.55, delay, ease: EASE },
-    },
-  };
-}
-
-// Reverse panels: start from covering the screen, then peel away upward
-function buildRevealPanelVariants(delay) {
-  return {
-    initial: { clipPath: 'inset(0 0 0% 0)' },   // Starts fully covering screen
-    animate: {
-      clipPath: 'inset(0 0 100% 0)',             // Peels upward (reveals new page)
-      transition: { duration: 0.65, delay, ease: EASE },
-    },
-    exit: { clipPath: 'inset(0 0 100% 0)' },    // Already hidden on exit
-  };
-}
-
 const panels = [
-  { color: '#1a1a18', coverDelay: 0,    revealDelay: 0.14 },  // Charcoal
-  { color: '#b8ff00', coverDelay: 0.08, revealDelay: 0.07 },  // Brand green
-  { color: '#0f0f0f', coverDelay: 0.16, revealDelay: 0 },     // Near-black (last cover, first reveal)
+  { color: '#b8ff00', z: 10005, exitDelay: 0.12, revealDelay: 0.18 }, // Brand Green (The Hero - Top)
+  { color: '#1a1a18', z: 10004, exitDelay: 0.06, revealDelay: 0.08 }, // Charcoal (Middle)
+  { color: '#0f0f0f', z: 10003, exitDelay: 0,    revealDelay: 0    }, // Black (Bottom)
 ];
 
-// Content fades in once the last panel (near-black) finishes peeling
+const panelVariants = (panel) => ({
+  initial: { clipPath: 'inset(0 0 0% 0)' },   // Starts FULLY covered (Entrance state)
+  animate: {
+    clipPath: 'inset(0 0 100% 0)',             // Peel UP to reveal new page
+    transition: {
+      duration: 0.75, // Slower reveal for the parda effect
+      delay: panel.revealDelay,
+      ease: EASE
+    },
+  },
+  exit: {
+    clipPath: 'inset(0 0 0% 0)',               // Slam DOWN from TOP to cover old page
+    transition: {
+      duration: 0.55,
+      delay: panel.exitDelay,
+      ease: EASE
+    },
+  },
+});
+
 const contentVariants = {
   initial: { opacity: 0 },
   animate: {
     opacity: 1,
-    transition: { duration: 0.45, delay: 0.9, ease: 'linear' },
+    transition: {
+      duration: 0.45,
+      delay: 0.8, // Fade in once the green parda starts moving
+      ease: 'linear'
+    },
   },
   exit: {
     opacity: 0,
-    transition: { duration: 0.15, ease: 'linear' },
+    transition: {
+      duration: 0.2,
+      ease: 'linear'
+    },
   },
 };
 
 export default function PageWrapper({ children }) {
   const lenis = useLenis();
 
+  // Scroll to top on navigation — Lenis driven
   useEffect(() => {
     if (lenis) {
       lenis.scrollTo(0, { immediate: true });
@@ -69,7 +69,8 @@ export default function PageWrapper({ children }) {
     }
   }, [lenis]);
 
-  const handleAnimationComplete = (definition) => {
+  // Refresh GSAP ScrollTrigger after the entrance transition finishes
+  const handleTransitionComplete = (definition) => {
     if (definition === 'animate') {
       setTimeout(() => {
         ScrollTrigger.refresh();
@@ -83,25 +84,22 @@ export default function PageWrapper({ children }) {
       animate="animate"
       exit="exit"
       className="page-wrapper"
-      onAnimationComplete={handleAnimationComplete}
+      onAnimationComplete={handleTransitionComplete}
     >
-      {/* Page Content — fades in after panels reveal */}
+      {/* 🔹 Core Content — Fades in as the green parda peels 🔹 */}
       <motion.div variants={contentVariants}>
         {children}
       </motion.div>
 
-      {/* Venetian Blind Panels */}
+      {/* 🔹 Venetian Blind Panels — Orchestrated Overlay 🔹 */}
       {panels.map((panel, i) => (
         <motion.div
           key={i}
           className="page-transition-panel"
-          initial="initial"
-          animate="animate"
-          exit="exit"
-          variants={buildRevealPanelVariants(panel.revealDelay)}
+          variants={panelVariants(panel)}
           style={{
             background: panel.color,
-            zIndex: 10003 - i,
+            zIndex: panel.z,
           }}
         />
       ))}

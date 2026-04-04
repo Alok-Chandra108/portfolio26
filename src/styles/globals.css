@@ -159,9 +159,17 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 10001;
-  pointer-events: none; /* Framer Motion animates clip-path — no click-blocking needed */
-  will-change: clip-path;
+  pointer-events: none;
+  will-change: clip-path, opacity;
+  backface-visibility: hidden;
+  transform: translateZ(0); /* Force discrete layer */
+}
+
+/* Subtle frosted-glass hint on the brand-colored middle panel */
+.page-transition-panel[style*="background: rgb(184, 255, 0)"],
+.page-transition-panel[style*="background: #b8ff00"] {
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 }
 
 /* ── Responsive ────────────────────────────────────── */

@@ -148,15 +148,15 @@ export default function Navbar() {
         </Link>
 
         <div className="navbar__right">
+          <div className="navbar__status-wrap desktop-only">
+            <StatusPulse />
+          </div>
+
           <Link to="/contact" className="navbar__cta-btn">
             <span>LET'S TALK</span>
             <span className="navbar__cta-arrow">→</span>
           </Link>
           
-          <div className="navbar__status-wrap desktop-only">
-            <StatusPulse />
-          </div>
-
           <button
             className="navbar__menu-btn"
             onClick={() => setMenuOpen(!menuOpen)}
