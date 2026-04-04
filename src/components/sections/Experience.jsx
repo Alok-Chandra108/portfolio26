@@ -164,7 +164,7 @@ export default function Experience({ preview = false }) {
 
           {/* Right — Detail Panel */}
           <div className="experience__panel">
-            <ExperiencePanel data={active} key={active.id} />
+            <ExperiencePanel data={active} />
           </div>
         </div>
 
@@ -183,40 +183,60 @@ export default function Experience({ preview = false }) {
 /* ── Detail Panel — animates on data change ─────────── */
 function ExperiencePanel({ data }) {
   const panelRef = useRef(null);
+  const [displayData, setDisplayData] = useState(data);
+  const tlRef = useRef(null);
 
   useGSAP(() => {
     if (!panelRef.current) return;
-    gsap.fromTo(panelRef.current,
-      { opacity: 0, y: 20, clipPath: 'inset(0 0 100% 0)' },
-      { opacity: 1, y: 0, clipPath: 'inset(0 0 0% 0)', duration: 0.65, ease: 'expo.out' }
-    );
-  }, { scope: panelRef });
+
+    if (data.id !== displayData.id) {
+      if (tlRef.current) tlRef.current.kill();
+      tlRef.current = gsap.timeline();
+
+      // Exit: Top edge drops down to the bottom (flowing down)
+      tlRef.current.to(panelRef.current, {
+        clipPath: 'inset(100% 0% 0% 0%)',
+        duration: 0.7,
+        ease: 'power4.inOut',
+        onComplete: () => setDisplayData(data)
+      });
+    } else {
+      if (tlRef.current) tlRef.current.kill();
+      tlRef.current = gsap.timeline();
+
+      // Enter: Bottom edge drops down from the top
+      tlRef.current.fromTo(panelRef.current,
+        { clipPath: 'inset(0% 0% 100% 0%)' },
+        { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.85, ease: 'power4.inOut' }
+      );
+    }
+  }, { dependencies: [data, displayData], scope: panelRef });
 
   return (
     <div className="experience__panel-inner" ref={panelRef}>
       {/* Company + Period */}
       <div className="experience__panel-top">
         <div>
-          <p className="experience__panel-company">{data.company}</p>
+          <p className="experience__panel-company">{displayData.company}</p>
           <p className="experience__panel-period mono-label">
-            {data.startDate} — {data.isCurrent ? 'Present' : data.endDate}
-            {data.location && ` · ${data.location}`}
+            {displayData.startDate} — {displayData.isCurrent ? 'Present' : displayData.endDate}
+            {displayData.location && ` · ${displayData.location}`}
           </p>
         </div>
-        {data.isCurrent && (
+        {displayData.isCurrent && (
           <span className="experience__panel-badge">Current</span>
         )}
       </div>
 
       {/* Role */}
-      <h3 className="experience__panel-role">{data.role}</h3>
+      <h3 className="experience__panel-role">{displayData.role}</h3>
 
       {/* Divider */}
       <div className="experience__panel-divider" />
 
       {/* Description */}
-      {data.description && (
-        <p className="experience__panel-desc body-text">{data.description}</p>
+      {displayData.description && (
+        <p className="experience__panel-desc body-text">{displayData.description}</p>
       )}
 
       {/* Corner accent */}
