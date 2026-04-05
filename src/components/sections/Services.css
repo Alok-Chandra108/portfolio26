@@ -111,13 +111,20 @@
 .service-block__skills {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 12px;
-  padding-left: 48px; /* Perfectly aligned with the start of the title (32px num + 16px gap) */
+  gap: 12px;
+  padding-left: 48px;
+  margin: 0;
+  list-style: none;
+  width: 100%;
 }
 
 .service-block__skill {
-  font-family: var(--font-body);
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  display: flex;
+  align-items: center;
+  transition: transform 0.3s var(--transition-base), opacity 0.3s var(--transition-base);
+  /* Prevent any potential overlapping or collapse */
+  position: relative;
+  height: auto;
 }
 
 .service-block:hover .service-block__skill {
@@ -167,8 +174,9 @@
 
   .service-block__skills {
     padding-left: 0;
-    margin-top: 16px;
+    margin-top: 24px;
     gap: 12px;
+    justify-content: flex-start;
   }
 
   .service-block__skill {

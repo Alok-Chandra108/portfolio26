@@ -93,21 +93,24 @@ export default function Services() {
 
         /* ── Skill pills "rain in" (desktop only) */
         if (!isMobile) {
-          const pills = block.querySelectorAll('.pill-tag');
-          if (pills.length) {
-            gsap.from(pills, {
-              y: -20,
-              opacity: 0,
-              duration: 0.65,
-              stagger: 0.08,
-              ease: 'back.out(1.4)',
-              scrollTrigger: {
-                trigger: block,
-                start: 'top 85%',
-                toggleActions: 'play none none reverse',
-                invalidateOnRefresh: true,
-              },
-            });
+          const pillContainers = block.querySelectorAll('.service-block__skill');
+          if (pillContainers.length) {
+            gsap.fromTo(pillContainers, 
+              { y: -15, opacity: 0 },
+              {
+                y: 0,
+                opacity: 1,
+                duration: 0.6,
+                stagger: 0.05,
+                ease: 'back.out(1.7)',
+                scrollTrigger: {
+                  trigger: block,
+                  start: 'top 88%',
+                  toggleActions: 'play none none reverse',
+                  invalidateOnRefresh: true,
+                },
+              }
+            );
           }
         }
       });
