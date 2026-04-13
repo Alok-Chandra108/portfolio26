@@ -24,13 +24,10 @@ export default function SmoothScroll({ children }) {
       ref={lenisRef} 
       root 
       options={{ 
-        duration: 1.5, 
+        duration: 1.2, 
         easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
         smoothWheel: true,
-        wheelMultiplier: 1,
-        touchMultiplier: 2,
-        syncTouch: true,
-        infinite: false,
+        syncTouch: false,
       }}
     >
       {children}
