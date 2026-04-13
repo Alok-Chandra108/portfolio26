@@ -33,6 +33,15 @@ const AdminProjects = () => {
   const [formError, setFormError] = useState("");
   const [formSuccess, setFormSuccess] = useState("");
   const formRef = useRef(null);
+  const fileInputRef = useRef(null);
+
+  // New states for image upload
+  const [imageSource, setImageSource] = useState("url"); // "url" or "upload"
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [dragActive, setDragActive] = useState(false);
 
   // Setup sensors for DND
   const sensors = useSensors(
@@ -72,6 +81,55 @@ const AdminProjects = () => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+        setFormError("File size exceeds 5MB limit.");
+        return;
+      }
+      setImageFile(file);
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreview(previewUrl);
+      setFormError("");
+    }
+  };
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      const file = e.dataTransfer.files[0];
+      if (file.type.startsWith("image/")) {
+        handleFileSelection(file);
+      } else {
+        setFormError("Please upload an image file.");
+      }
+    }
+  };
+
+  const handleFileSelection = (file) => {
+    if (file.size > 5 * 1024 * 1024) {
+      setFormError("File size exceeds 5MB limit.");
+      return;
+    }
+    setImageFile(file);
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+    setFormError("");
+  };
+
   const { contextSafe } = useGSAP({ scope: formRef });
 
   const resetForm = () => {
@@ -86,6 +144,11 @@ const AdminProjects = () => {
     setIsEditing(false);
     setCurrentProject(null);
     setFormError("");
+    setImageSource("url");
+    setImageFile(null);
+    setImagePreview("");
+    setUploadProgress(0);
+    setIsUploading(false);
   };
 
   const handleSubmit = async (e) => {
@@ -93,19 +156,41 @@ const AdminProjects = () => {
     setFormError("");
     setFormSuccess("");
 
-    if (!formData.title || !formData.description || !formData.image) {
-      setFormError("Please fill in all required fields.");
+    if (!formData.title || !formData.description) {
+      setFormError("Please fill in title and description.");
       return;
     }
 
-    const projectPayload = {
-      ...formData,
-      tags: typeof formData.tags === "string" 
-        ? formData.tags.split(",").map(t => t.trim()).filter(t => t !== "")
-        : formData.tags
-    };
+    if (imageSource === "url" && !formData.image) {
+      setFormError("Please provide an image URL.");
+      return;
+    }
+
+    if (imageSource === "upload" && !imageFile && !formData.image) {
+      setFormError("Please upload an image.");
+      return;
+    }
+
+    setIsUploading(true);
+    let finalImageUrl = formData.image;
 
     try {
+      // Handle image upload if in upload mode and a new file is selected
+      if (imageSource === "upload" && imageFile) {
+        setUploadProgress(1); // Start with 1% to show the progress bar immediately
+        finalImageUrl = await projectsService.uploadImage(imageFile, (progress) => {
+          setUploadProgress(progress);
+        });
+      }
+
+      const projectPayload = {
+        ...formData,
+        image: finalImageUrl,
+        tags: typeof formData.tags === "string" 
+          ? formData.tags.split(",").map(t => t.trim()).filter(t => t !== "")
+          : (Array.isArray(formData.tags) ? formData.tags : [])
+      };
+
       if (isEditing) {
         await projectsService.updateProject(currentProject.id, projectPayload);
         setFormSuccess("Project updated successfully!");
@@ -131,7 +216,10 @@ const AdminProjects = () => {
         setFormSuccess("");
       }, 2000);
     } catch (error) {
-      setFormError("Failed to save project. Please try again.");
+      console.error("Submit error:", error);
+      setFormError(`Failed to save project: ${error.message || "Unknown error"}`);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -141,11 +229,13 @@ const AdminProjects = () => {
     setFormData({
       title: project.title,
       description: project.description,
-      tags: project.tags.join(", "),
+      tags: Array.isArray(project.tags) ? project.tags.join(", ") : "",
       image: project.image,
       type: project.type || "tall",
       link: project.link || "#"
     });
+    setImageSource("url"); // Default to URL for existing projects
+    setImagePreview(project.image);
     
     window.scrollTo({ top: 0, behavior: "smooth" });
     
@@ -261,15 +351,72 @@ const AdminProjects = () => {
               </div>
 
               <div className="form-group">
-                <label>Image URL *</label>
-                <input 
-                  type="text" 
-                  name="image" 
-                  className="form-input" 
-                  value={formData.image} 
-                  onChange={handleInputChange} 
-                  placeholder="Unsplash URL or other direct link"
-                />
+                <label>Project Image *</label>
+                
+                <div className="image-source-toggle">
+                  <button 
+                    type="button" 
+                    className={`toggle-btn ${imageSource === "url" ? "active" : ""}`}
+                    onClick={() => setImageSource("url")}
+                  >
+                    Paste URL
+                  </button>
+                  <button 
+                    type="button" 
+                    className={`toggle-btn ${imageSource === "upload" ? "active" : ""}`}
+                    onClick={() => setImageSource("upload")}
+                  >
+                    Upload Image
+                  </button>
+                </div>
+
+                {imageSource === "url" ? (
+                  <input 
+                    type="text" 
+                    name="image" 
+                    className="form-input" 
+                    value={formData.image} 
+                    onChange={handleInputChange} 
+                    placeholder="Unsplash URL or other direct link"
+                  />
+                ) : (
+                  <div 
+                    className={`dropzone ${dragActive ? "drag-active" : ""} ${imageFile || imagePreview ? "has-file" : ""}`}
+                    onDragEnter={handleDrag}
+                    onDragLeave={handleDrag}
+                    onDragOver={handleDrag}
+                    onDrop={handleDrop}
+                    onClick={() => fileInputRef.current.click()}
+                  >
+                    <input 
+                      type="file" 
+                      ref={fileInputRef} 
+                      onChange={handleFileChange} 
+                      accept="image/*" 
+                      style={{ display: "none" }} 
+                    />
+                    
+                    {imagePreview ? (
+                      <div className="upload-preview-container">
+                        <img src={imagePreview} alt="Preview" className="upload-preview" />
+                        <div className="replace-overlay">Click or drag to replace</div>
+                      </div>
+                    ) : (
+                      <div className="dropzone-content">
+                        <span className="upload-icon">↑</span>
+                        <p>Drag & Drop or <span>Browse</span></p>
+                        <p className="upload-hint">Supports: JPG, PNG, GIF (Max 5MB)</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {isUploading && uploadProgress > 0 && (
+                  <div className="upload-progress-wrap">
+                    <div className="progress-bar" style={{ width: `${uploadProgress}%` }}></div>
+                    <span className="progress-text">Uploading: {Math.round(uploadProgress)}%</span>
+                  </div>
+                )}
               </div>
 
               <div className="form-group" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "15px" }}>
@@ -311,8 +458,8 @@ const AdminProjects = () => {
               </div>
 
               <div style={{ display: "flex", gap: "10px", marginTop: "30px" }}>
-                <button type="submit" className="login-button" style={{ flex: 2 }}>
-                  {isEditing ? "Apply Changes" : "Save Project"}
+                <button type="submit" className="login-button" style={{ flex: 2 }} disabled={isUploading}>
+                  {isUploading ? "Uploading..." : isEditing ? "Apply Changes" : "Save Project"}
                 </button>
                 {isEditing && (
                   <button type="button" onClick={resetForm} className="btn-logout" style={{ flex: 1, padding: "0" }}>

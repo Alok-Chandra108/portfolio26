@@ -368,3 +368,143 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+/* Image Upload Styles */
+.image-source-toggle {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.1);
+  background: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn.active {
+  background: var(--color-dark);
+  color: white;
+  border-color: var(--color-dark);
+}
+
+.dropzone {
+  width: 100%;
+  height: 180px;
+  border: 2px dashed rgba(0,0,0,0.1);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  background: #fafafa;
+}
+
+.dropzone:hover, .dropzone.drag-active {
+  border-color: var(--color-accent);
+  background: rgba(184, 255, 0, 0.05);
+}
+
+.dropzone.has-file {
+  border-style: solid;
+}
+
+.dropzone-content {
+  text-align: center;
+  pointer-events: none;
+}
+
+.upload-icon {
+  display: block;
+  font-size: 2rem;
+  margin-bottom: 8px;
+  color: var(--color-muted);
+}
+
+.dropzone-content p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-dark);
+}
+
+.dropzone-content p span {
+  color: var(--color-accent);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.upload-hint {
+  font-size: 0.75rem !important;
+  color: var(--color-muted) !important;
+  margin-top: 5px !important;
+}
+
+.upload-preview-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.upload-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.replace-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.upload-preview-container:hover .replace-overlay {
+  opacity: 1;
+}
+
+.upload-progress-wrap {
+  margin-top: 15px;
+  background: #f0f0f0;
+  height: 24px;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar {
+  height: 100%;
+  background: var(--color-accent);
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--color-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
