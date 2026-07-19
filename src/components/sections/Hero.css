@@ -108,6 +108,7 @@
   display: flex;
   white-space: nowrap;
   animation: marqueeScroll 14s linear infinite;
+  will-change: transform;
 }
 
 .hero__marquee-track:hover {

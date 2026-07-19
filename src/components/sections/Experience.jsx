@@ -187,6 +187,14 @@ function ExperiencePanel({ experiences, activeIndex }) {
   const reelRef = useRef(null);
   const containerRef = useRef(null);
   const prevIndex = useRef(activeIndex);
+  const panelCardsRef = useRef([]);
+
+  // Cache panel cards when experiences change
+  useEffect(() => {
+    if (reelRef.current) {
+      panelCardsRef.current = Array.from(reelRef.current.querySelectorAll('.experience__panel-card'));
+    }
+  }, [experiences]);
 
   useGSAP(() => {
     if (!reelRef.current) return;
@@ -208,10 +216,11 @@ function ExperiencePanel({ experiences, activeIndex }) {
     });
 
     // Subtle parallax shift for internal content to enhance the "spin" feel
-    const innerContent = reelRef.current.querySelectorAll('.experience__panel-card');
+    const innerContent = panelCardsRef.current;
     innerContent.forEach((card, i) => {
       if (i === activeIndex) {
-        gsap.fromTo(card.querySelectorAll('.experience__panel-role, .experience__panel-desc'),
+        const contentElements = card.querySelectorAll('.experience__panel-role, .experience__panel-desc');
+        gsap.fromTo(contentElements,
           { y: direction * 20, opacity: 0 },
           { y: 0, opacity: 1, duration: 0.6, delay: 0.1, stagger: 0.05, ease: 'power2.out' }
         );

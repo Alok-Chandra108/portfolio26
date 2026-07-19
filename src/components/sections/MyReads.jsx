@@ -136,21 +136,20 @@ export default function MyReads() {
 
       /* ── Fan depth parallax (desktop only) ── */
       if (!isMobile) {
-        cardRefs.current.forEach((card, i) => {
-          if (!card) return;
-          // Each card scrolls at slightly different y rate — creates 3D depth
-          const depthOffset = [30, 50, 20, 60][i] || 40;
-          gsap.to(card, {
-            y: `-=${depthOffset}`,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: 1.5 + i * 0.2,
-              invalidateOnRefresh: true,
-            },
-          });
+        // Single ScrollTrigger for all cards - more performant than 4 separate ones
+        gsap.to(cardRefs.current, {
+          y: (i, target) => {
+            const depthOffset = [30, 50, 20, 60][i] || 40;
+            return `-=${depthOffset}`;
+          },
+          ease: 'none',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1.5,
+            invalidateOnRefresh: true,
+          },
         });
       }
     });

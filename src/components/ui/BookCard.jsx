@@ -17,7 +17,7 @@ export default function BookCard({ book, index, rotation = 0, onHover, onLeave }
 
   const handleMouseEnter = () => {
     if (!cardRef.current || !quickToRef.current) return;
-    
+
     quickToRef.current({
       y: -12,
       rotation: 0,
@@ -31,7 +31,7 @@ export default function BookCard({ book, index, rotation = 0, onHover, onLeave }
 
   const handleMouseLeave = () => {
     if (!cardRef.current || !quickToRef.current) return;
-    
+
     quickToRef.current({
       y: 0,
       rotation: rotation,
