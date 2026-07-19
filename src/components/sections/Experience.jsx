@@ -140,11 +140,13 @@ export default function Experience({ preview = false }) {
             </div>
 
             <div className="experience__list">
+              {/* Clear refs array to avoid stale references from previous renders */}
+              {itemsRef.current.length = 0}
               {displayData.map((exp, i) => (
                 <button
                   key={exp.id}
                   className={`experience__item ${i === activeIndex ? 'experience__item--active' : ''}`}
-                  ref={el => itemsRef.current[i] = el}
+                  ref={el => { itemsRef.current[i] = el; }}
                   onMouseEnter={() => setActiveIndex(i)}
                   onClick={() => setActiveIndex(i)}
                   aria-selected={i === activeIndex}
@@ -193,13 +195,16 @@ function ExperiencePanel({ experiences, activeIndex }) {
     const direction = activeIndex > prevIndex.current ? 1 : -1;
     prevIndex.current = activeIndex;
 
+    // Kill any existing tweens on the reel to prevent accumulation
+    gsap.killTweensOf(reelRef.current);
+
     // Animate the reel to the active index
     // Using yPercent for clean percentage-based movement
     gsap.to(reelRef.current, {
-      y: -(activeIndex * 100) + '%',
+      yPercent: -activeIndex * 100,
       duration: 0.75,
       ease: 'expo.out', // Smooth "roulette" deceleration
-      overwrite: true
+      overwrite: 'auto'
     });
 
     // Subtle parallax shift for internal content to enhance the "spin" feel

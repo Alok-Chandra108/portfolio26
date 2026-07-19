@@ -16,6 +16,9 @@ export default function Work() {
   const [loading, setLoading] = useState(true);
   const [hoveredId, setHoveredId] = useState(null);
 
+  // Get contextSafe early so it's available for all useGSAP callbacks
+  const { contextSafe } = useGSAP({ scope: sectionRef });
+
   /* ── Data Fetching ───────────────────────── */
   useEffect(() => {
     const fetchProjects = async () => {
@@ -130,8 +133,6 @@ export default function Work() {
     };
   }, { dependencies: [loading], scope: sectionRef });
 
-  const { contextSafe } = useGSAP({ scope: sectionRef });
-
   /* ── Preview show/hide on row hover ─────────────────── */
   const handleRowEnter = contextSafe((project) => {
     setHoveredId(project.id);
@@ -177,14 +178,19 @@ export default function Work() {
         </div>
 
         {/* Top ruling line */}
+        {/* Clear refs array to avoid stale references */}
+        {linesRef.current.length = 0}
         <div
           className="work__rule"
-          ref={el => linesRef.current[-1] = el}
+          ref={el => linesRef.current[linesRef.current.length] = el}
           style={{ scaleX: 1 }}
         />
 
         {/* Numbered showcase list */}
         <div className="work__list">
+          {/* Clear refs arrays to avoid stale references */}
+          {rowsRef.current.length = 0}
+          {linesRef.current.length = 0}
           {projects.map((project, i) => (
             <div key={project.id}>
               <a

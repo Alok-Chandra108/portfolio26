@@ -168,6 +168,8 @@ export default function MyReads() {
         </div>
 
         <div className="my-reads__cards" ref={cardsContainerRef}>
+          {/* Clear refs array to avoid stale references from previous renders */}
+          {cardRefs.current.length = 0}
           {loading ? (
             <p style={{ textAlign: 'center', width: '100%', color: 'var(--color-muted)' }}>Loading top reads...</p>
           ) : displayBooks.length === 0 ? (

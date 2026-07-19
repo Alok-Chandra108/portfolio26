@@ -178,7 +178,10 @@ export default function Navbar() {
             {navLinks.map((link, i) => (
               <button
                 key={link.path}
-                ref={el => menuLinksRef.current[i] = el}
+                ref={el => {
+                  if (i === 0) menuLinksRef.current = [];
+                  menuLinksRef.current[i] = el;
+                }}
                 className="menu-overlay__link"
                 onClick={() => handleNavClick(link.path)}
               >
