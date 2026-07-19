@@ -49,11 +49,16 @@ export default function MyReads() {
     fetchFeaturedBooks();
   }, []);
 
+  /* ── Ref Array Initialization (Phase 1 fix) ───────────────────────── */
+  // Initialize ref array in useEffect BEFORE animations run
+  useEffect(() => {
+    if (!loading && displayBooks.length > 0) {
+      cardRefs.current = Array(displayBooks.length).fill(null);
+    }
+  }, [loading, displayBooks]);
+
   useGSAP(() => {
     if (loading || displayBooks.length === 0) return;
-    
-    // reset refs list to match currently rendered list safely
-    cardRefs.current = cardRefs.current.slice(0, displayBooks.length);
 
     const mm = gsap.matchMedia();
 
