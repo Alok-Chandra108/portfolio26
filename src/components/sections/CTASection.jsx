@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { gsap, ScrollTrigger, useGSAP } from '../../utils/gsapPlugins.js';
+import { gsap, useGSAP } from '../../utils/gsapPlugins.js';
 import './CTASection.css';
 
 export default function CTASection() {
@@ -57,25 +57,7 @@ export default function CTASection() {
           );
         });
       }
-
-      /* ── Background noise parallax shift (desktop) */
-      if (!isMobile) {
-        gsap.to(sectionRef.current, {
-          backgroundPositionY: '+=20px',
-          ease: 'none',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: 2,
-            invalidateOnRefresh: true,
-          },
-        });
-      }
     });
-
-    ScrollTrigger.refresh();
-
   }, { scope: sectionRef });
 
   /* ── Cursor-following circle (desktop only) ── */

@@ -10,7 +10,7 @@
 .marquee-strip__track {
   display: flex;
   white-space: nowrap;
-  animation: marqueeStripScroll 8s linear infinite;
+  animation: marqueeStripScroll 20s linear infinite;
 }
 
 .marquee-strip__track:hover {
@@ -32,6 +32,6 @@
   }
 
   to {
-    transform: translateX(-33.333%);
+    transform: translateX(-50%);
   }
 }

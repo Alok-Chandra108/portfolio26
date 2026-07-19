@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { gsap, ScrollTrigger, useGSAP } from '../../utils/gsapPlugins.js';
+import { gsap, useGSAP } from '../../utils/gsapPlugins.js';
 import { experienceService } from '../../firebase/experienceService.js';
 import staticEducationData from '../../data/education.js';
 import './Education.css';
@@ -7,7 +7,7 @@ import './Education.css';
 export default function Education() {
   const [educationData, setEducationData] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   const sectionRef = useRef(null);
   const lineRef = useRef(null);
   const headingRef = useRef(null);
@@ -23,13 +23,6 @@ export default function Education() {
       .catch(() => setEducationData(staticEducationData))
       .finally(() => setLoading(false));
   }, []);
-
-  // Use useGSAP for cleanup and scoping
-  useGSAP(() => {
-    // Re-initialize arrays for refs to ensure they match current DOM across hot reloads
-    itemsRef.current = [];
-    nodesRef.current = [];
-  }, { dependencies: [educationData], scope: sectionRef });
 
   useGSAP(() => {
     const mm = gsap.matchMedia();
@@ -127,16 +120,14 @@ export default function Education() {
       });
     });
 
-    ScrollTrigger.refresh();
-
+    // Revert matchMedia handlers — mm.add re-runs on breakpoint changes
+    // live outside the useGSAP context, so context revert alone misses them
+    return () => mm.revert();
   }, { dependencies: [educationData, loading], scope: sectionRef });
 
-  const addItem = (el) => {
-    if (el && !itemsRef.current.includes(el)) itemsRef.current.push(el);
-  };
-  const addNode = (el) => {
-    if (el && !nodesRef.current.includes(el)) nodesRef.current.push(el);
-  };
+  /* Indexed callback refs — stable slots, no stale entries on re-render */
+  const setItem = (i) => (el) => { itemsRef.current[i] = el; };
+  const setNode = (i) => (el) => { nodesRef.current[i] = el; };
 
   return (
     <section className="education section" ref={sectionRef}>
@@ -155,8 +146,8 @@ export default function Education() {
           {/* Education Milestone Cards */}
           {educationData.map((item, index) => (
             <div className="education__item" key={item.id}>
-              <div className="education__node will-animate" ref={addNode} />
-              <div className="education__content will-animate" ref={addItem}>
+              <div className="education__node will-animate" ref={setNode(index)} />
+              <div className="education__content will-animate" ref={setItem(index)}>
                 <span className="education__year">{item.startDate || item.year}</span>
                 <h3 className="education__degree">{item.role || item.degree}</h3>
                 <h4 className="education__institution">{item.company || item.institution}</h4>

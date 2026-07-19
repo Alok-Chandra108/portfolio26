@@ -56,7 +56,7 @@ export default function Experience({ preview = false }) {
       { clipPath: 'inset(0 0% 0 0)', duration: 1.4, ease: 'expo.out' }
     );
 
-    // Stagger items from bottom
+    // Stagger items from bottom - itemsRef is now pre-populated
     tl.fromTo(itemsRef.current.filter(Boolean),
       { y: 50, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.9, stagger: 0.12, ease: 'expo.out' },
@@ -81,7 +81,11 @@ export default function Experience({ preview = false }) {
       );
     }
 
-    ScrollTrigger.refresh();
+    // Async data changed page height — refresh other sections' trigger
+    // positions, deferred to after paint (sync refresh in a layout effect
+    // forces measurement before layout settles)
+    const rafId = requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => cancelAnimationFrame(rafId);
   }, { dependencies: [loading, experiences], scope: sectionRef });
 
   /* ── Active marker animation ─────────────────────── */
@@ -140,8 +144,6 @@ export default function Experience({ preview = false }) {
             </div>
 
             <div className="experience__list">
-              {/* Clear refs array to avoid stale references from previous renders */}
-              {itemsRef.current.length = 0}
               {displayData.map((exp, i) => (
                 <button
                   key={exp.id}
@@ -189,9 +191,10 @@ function ExperiencePanel({ experiences, activeIndex }) {
   const prevIndex = useRef(activeIndex);
   const panelCardsRef = useRef([]);
 
-  // Cache panel cards when experiences change
+  // Cache panel cards when experiences change - CLEAR FIRST then populate
   useEffect(() => {
     if (reelRef.current) {
+      panelCardsRef.current = []; // Clear first
       panelCardsRef.current = Array.from(reelRef.current.querySelectorAll('.experience__panel-card'));
     }
   }, [experiences]);
@@ -227,7 +230,7 @@ function ExperiencePanel({ experiences, activeIndex }) {
       }
     });
 
-  }, { dependencies: [activeIndex], scope: containerRef });
+  }, { dependencies: [activeIndex], scope: reelRef }); // FIXED: scope is reelRef, not containerRef
 
   return (
     <div className="experience__panel-viewport" ref={containerRef}>

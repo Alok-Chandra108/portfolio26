@@ -10,7 +10,7 @@ export default function CustomCursor() {
   const dotRef = useRef(null);
   const ringRef = useRef(null);
   const isVisible = useRef(false);
-  
+
   // Store quickTo instances for cleanup
   const quickToRefs = useRef({
     dotX: null,
@@ -18,17 +18,12 @@ export default function CustomCursor() {
     ringX: null,
     ringY: null
   });
-  
+
   // Store media query listener for cleanup
   const mediaQueryRef = useRef(null);
-  
+
   // Track mobile state
   const [isMobile, setIsMobile] = useState(false);
-
-  // Throttle mousemove with requestAnimationFrame
-  const mousePos = useRef({ x: 0, y: 0 });
-  const rafId = useRef(null);
-  const pendingUpdate = useRef(false);
 
   // Check mobile once on mount
   useEffect(() => {
@@ -37,19 +32,19 @@ export default function CustomCursor() {
       const isTouch = 'ontouchstart' in window;
       setIsMobile(mq.matches || isTouch);
     };
-    
+
     checkMobile();
-    
+
     // Listen for viewport changes
     const mq = window.matchMedia('(max-width: 768px)');
     mediaQueryRef.current = mq;
-    
+
     const handler = (e) => {
       setIsMobile(e.matches || 'ontouchstart' in window);
     };
-    
+
     mq.addEventListener('change', handler);
-    
+
     return () => {
       mq.removeEventListener('change', handler);
       mediaQueryRef.current = null;
@@ -60,39 +55,6 @@ export default function CustomCursor() {
   if (isMobile) {
     return null;
   }
-
-  // Throttled mouse position updater
-  const updateCursorPosition = useCallback(() => {
-    const dot = dotRef.current;
-    const ring = ringRef.current;
-    if (!dot || !ring || !quickToRefs.current.dotX) return;
-
-    quickToRefs.current.dotX(mousePos.current.x);
-    quickToRefs.current.dotY(mousePos.current.y);
-    quickToRefs.current.ringX(mousePos.current.x);
-    quickToRefs.current.ringY(mousePos.current.y);
-    
-    pendingUpdate.current = false;
-  }, []);
-
-  const handleMouseMove = useCallback((e) => {
-    mousePos.current.x = e.clientX;
-    mousePos.current.y = e.clientY;
-    
-    if (!isVisible.current) {
-      const dot = dotRef.current;
-      const ring = ringRef.current;
-      if (dot && ring) {
-        gsap.to([dot, ring], { opacity: 1, scale: 1, duration: 0.3 });
-        isVisible.current = true;
-      }
-    }
-    
-    if (!pendingUpdate.current) {
-      pendingUpdate.current = true;
-      rafId.current = requestAnimationFrame(updateCursorPosition);
-    }
-  }, [updateCursorPosition]);
 
   useEffect(() => {
     const dot = dotRef.current;
@@ -107,6 +69,18 @@ export default function CustomCursor() {
     quickToRefs.current.dotY = gsap.quickTo(dot, "y", { duration: 0.1, ease: "power3.out" });
     quickToRefs.current.ringX = gsap.quickTo(ring, "x", { duration: 0.4, ease: "power2.out" });
     quickToRefs.current.ringY = gsap.quickTo(ring, "y", { duration: 0.4, ease: "power2.out" });
+
+    const handleMouseMove = (e) => {
+      if (!isVisible.current) {
+        gsap.to([dot, ring], { opacity: 1, scale: 1, duration: 0.3 });
+        isVisible.current = true;
+      }
+
+      quickToRefs.current.dotX(e.clientX);
+      quickToRefs.current.dotY(e.clientY);
+      quickToRefs.current.ringX(e.clientX);
+      quickToRefs.current.ringY(e.clientY);
+    };
 
     const handleMouseDown = () => {
       gsap.to(ring, { scale: 0.8, duration: 0.2, ease: "power2.out" });
@@ -154,7 +128,7 @@ export default function CustomCursor() {
       const target = e.target;
       const clickable = target.closest('a, button, .card, [data-cursor="pointer"], .clickable');
       const hideCursor = target.closest('[data-cursor="hide"], .navbar__logo');
-      
+
       if (clickable || hideCursor) {
         gsap.to(ring, {
           scale: 1,
@@ -168,7 +142,7 @@ export default function CustomCursor() {
       }
     };
 
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mousedown', handleMouseDown);
     window.addEventListener('mouseup', handleMouseUp);
     document.addEventListener('mouseleave', handleMouseLeave);
@@ -182,19 +156,14 @@ export default function CustomCursor() {
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseover', handleMouseOver);
       document.removeEventListener('mouseout', handleMouseOut);
-      
-      // Cancel pending RAF
-      if (rafId.current) {
-        cancelAnimationFrame(rafId.current);
-      }
-      
+
       // Kill quickTo instances to prevent memory leaks
       Object.values(quickToRefs.current).forEach(qt => {
         if (qt && qt.kill) qt.kill();
       });
       quickToRefs.current = { dotX: null, dotY: null, ringX: null, ringY: null };
     };
-  }, [handleMouseMove]);
+  }, []);
 
   return (
     <>

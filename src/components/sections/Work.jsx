@@ -73,35 +73,60 @@ export default function Work() {
     });
 
     // Row animations - Trigger Each Individually
-    rowsRef.current.forEach((row, i) => {
-      if (!row) return;
-      
-      gsap.fromTo(
-        row,
-        { 
-          clipPath: window.innerWidth < 640 ? 'none' : 'inset(0 100% 0 0)', 
-          y: window.innerWidth < 640 ? 30 : 0,
-          opacity: window.innerWidth < 640 ? 0 : 1 
-        },
-        {
-          clipPath: 'inset(0 0% 0 0)',
-          y: 0,
-          opacity: 1,
-          duration: 1.1,
-          ease: 'expo.out',
-          scrollTrigger: {
-            trigger: row,
-            start: () => 'top 88%',
-            invalidateOnRefresh: true,
-            toggleActions: 'play none none none',
-          },
-        }
-      );
+    // Use matchMedia for responsive animations (SSR-safe)
+    const mm = gsap.matchMedia();
+    
+    mm.add("(min-width: 640px)", () => {
+      rowsRef.current.forEach((row, i) => {
+        if (!row) return;
+        
+        gsap.fromTo(
+          row,
+          { clipPath: 'inset(0 100% 0 0)', y: 0, opacity: 1 },
+          {
+            clipPath: 'inset(0 0% 0 0)',
+            y: 0,
+            opacity: 1,
+            duration: 1.1,
+            ease: 'expo.out',
+            scrollTrigger: {
+              trigger: row,
+              start: () => 'top 88%',
+              invalidateOnRefresh: true,
+              toggleActions: 'play none none none',
+            },
+          }
+        );
+      });
     });
     
-    // Critical: Refresh ScrollTrigger after dynamic content renders
-    ScrollTrigger.refresh();
-
+    mm.add("(max-width: 639px)", () => {
+      rowsRef.current.forEach((row, i) => {
+        if (!row) return;
+        
+        gsap.fromTo(
+          row,
+          { clipPath: 'none', y: 30, opacity: 0 },
+          {
+            clipPath: 'none',
+            y: 0,
+            opacity: 1,
+            duration: 1.1,
+            ease: 'expo.out',
+            scrollTrigger: {
+              trigger: row,
+              start: () => 'top 88%',
+              invalidateOnRefresh: true,
+              toggleActions: 'play none none none',
+            },
+          }
+        );
+      });
+    });
+    
+    // Async data changed page height — deferred refresh (see Experience.jsx)
+    const rafId = requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => cancelAnimationFrame(rafId);
   }, { dependencies: [loading, projects], scope: sectionRef });
 
   /* ── Floating preview follows cursor (desktop only) ──── */
@@ -178,19 +203,14 @@ export default function Work() {
         </div>
 
         {/* Top ruling line */}
-        {/* Clear refs array to avoid stale references */}
-        {linesRef.current.length = 0}
         <div
           className="work__rule"
-          ref={el => linesRef.current[linesRef.current.length] = el}
+          ref={el => linesRef.current[0] = el}
           style={{ scaleX: 1 }}
         />
 
         {/* Numbered showcase list */}
         <div className="work__list">
-          {/* Clear refs arrays to avoid stale references */}
-          {rowsRef.current.length = 0}
-          {linesRef.current.length = 0}
           {projects.map((project, i) => (
             <div key={project.id}>
               <a
@@ -222,7 +242,7 @@ export default function Work() {
                 <span className="work__row-arrow">→</span>
               </a>
               {/* Ruling line below each row */}
-              <div className="work__rule" ref={el => linesRef.current[i] = el} />
+              <div className="work__rule" ref={el => linesRef.current[i + 1] = el} />
             </div>
           ))}
         </div>
