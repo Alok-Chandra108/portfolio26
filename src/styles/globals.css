@@ -165,12 +165,9 @@ body::before {
   transform: translateZ(0); /* Force discrete layer */
 }
 
-/* Subtle frosted-glass hint on the brand-colored middle panel */
-.page-transition-panel[style*="background: rgb(184, 255, 0)"],
-.page-transition-panel[style*="background: #b8ff00"] {
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-}
+/* NOTE: backdrop-filter was removed from transition panels — a permanent
+   full-screen blur layer forces the GPU to re-render the whole backdrop
+   every frame, even when the panel is fully clipped away. */
 
 /* ── Responsive ────────────────────────────────────── */
 /*
@@ -215,8 +212,10 @@ html.lenis body {
 }
 
 /* ── GPU Compositing Utility ────────────────────────────────────────── */
-.will-animate,
-.page-wrapper {
+/* Only small, actually-animating elements get layer promotion.
+   Promoting .page-wrapper rasterized the ENTIRE page as one giant GPU
+   layer, which is a major scroll-lag source on integrated GPUs. */
+.will-animate {
   will-change: transform, opacity;
   backface-visibility: hidden;
   transform: translateZ(0); /* Force layer creation */

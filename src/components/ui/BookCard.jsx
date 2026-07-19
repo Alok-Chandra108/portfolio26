@@ -1,30 +1,44 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { gsap } from '../../utils/gsapPlugins.js';
 import './BookCard.css';
 
 export default function BookCard({ book, index, rotation = 0, onHover, onLeave }) {
   const cardRef = useRef(null);
+  const quickToRef = useRef(null);
+
+  // Initialize quickTo on mount for performant hover animations
+  useEffect(() => {
+    if (!cardRef.current) return;
+    quickToRef.current = gsap.quickTo(cardRef.current, "y,rotation,scale,boxShadow", {
+      duration: 0.4,
+      ease: "power2.out"
+    });
+  }, []);
 
   const handleMouseEnter = () => {
-    gsap.to(cardRef.current, {
+    if (!cardRef.current || !quickToRef.current) return;
+    
+    quickToRef.current({
       y: -12,
       rotation: 0,
       scale: 1.03,
-      duration: 0.4,
-      ease: 'power2.out',
       boxShadow: '0 24px 60px rgba(0,0,0,0.18)',
+      duration: 0.4,
+      ease: 'power2.out'
     });
     if (onHover) onHover(index);
   };
 
   const handleMouseLeave = () => {
-    gsap.to(cardRef.current, {
+    if (!cardRef.current || !quickToRef.current) return;
+    
+    quickToRef.current({
       y: 0,
       rotation: rotation,
       scale: 1,
-      duration: 0.5,
-      ease: 'elastic.out(1, 0.6)',
       boxShadow: '0 8px 30px rgba(0,0,0,0.08)',
+      duration: 0.5,
+      ease: 'elastic.out(1, 0.6)'
     });
     if (onLeave) onLeave(index);
   };

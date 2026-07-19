@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { gsap } from '../utils/gsapPlugins.js';
 import './CustomCursor.css';
 
@@ -10,13 +10,53 @@ export default function CustomCursor() {
   const dotRef = useRef(null);
   const ringRef = useRef(null);
   const isVisible = useRef(false);
+  
+  // Store quickTo instances for cleanup
+  const quickToRefs = useRef({
+    dotX: null,
+    dotY: null,
+    ringX: null,
+    ringY: null
+  });
+  
+  // Store media query listener for cleanup
+  const mediaQueryRef = useRef(null);
+  
+  // Track mobile state
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check mobile once on mount
+  useEffect(() => {
+    const checkMobile = () => {
+      const mq = window.matchMedia('(max-width: 768px)');
+      const isTouch = 'ontouchstart' in window;
+      setIsMobile(mq.matches || isTouch);
+    };
+    
+    checkMobile();
+    
+    // Listen for viewport changes
+    const mq = window.matchMedia('(max-width: 768px)');
+    mediaQueryRef.current = mq;
+    
+    const handler = (e) => {
+      setIsMobile(e.matches || 'ontouchstart' in window);
+    };
+    
+    mq.addEventListener('change', handler);
+    
+    return () => {
+      mq.removeEventListener('change', handler);
+      mediaQueryRef.current = null;
+    };
+  }, []);
+
+  // Don't render or run on mobile
+  if (isMobile) {
+    return null;
+  }
 
   useEffect(() => {
-    // Skip on mobile/touch
-    if (window.matchMedia('(max-width: 768px)').matches || 'ontouchstart' in window) {
-      return;
-    }
-
     const dot = dotRef.current;
     const ring = ringRef.current;
     if (!dot || !ring) return;
@@ -24,11 +64,11 @@ export default function CustomCursor() {
     // Set initial state
     gsap.set([dot, ring], { opacity: 0, scale: 0, xPercent: -50, yPercent: -50 });
 
-    // Optimized movement with GSAP quickTo
-    const dotXTo = gsap.quickTo(dot, "x", { duration: 0.1, ease: "power3.out" });
-    const dotYTo = gsap.quickTo(dot, "y", { duration: 0.1, ease: "power3.out" });
-    const ringXTo = gsap.quickTo(ring, "x", { duration: 0.4, ease: "power2.out" });
-    const ringYTo = gsap.quickTo(ring, "y", { duration: 0.4, ease: "power2.out" });
+    // Create optimized quickTo instances
+    quickToRefs.current.dotX = gsap.quickTo(dot, "x", { duration: 0.1, ease: "power3.out" });
+    quickToRefs.current.dotY = gsap.quickTo(dot, "y", { duration: 0.1, ease: "power3.out" });
+    quickToRefs.current.ringX = gsap.quickTo(ring, "x", { duration: 0.4, ease: "power2.out" });
+    quickToRefs.current.ringY = gsap.quickTo(ring, "y", { duration: 0.4, ease: "power2.out" });
 
     const handleMouseMove = (e) => {
       if (!isVisible.current) {
@@ -36,10 +76,10 @@ export default function CustomCursor() {
         isVisible.current = true;
       }
       
-      dotXTo(e.clientX);
-      dotYTo(e.clientY);
-      ringXTo(e.clientX);
-      ringYTo(e.clientY);
+      quickToRefs.current.dotX(e.clientX);
+      quickToRefs.current.dotY(e.clientY);
+      quickToRefs.current.ringX(e.clientX);
+      quickToRefs.current.ringY(e.clientY);
     };
 
     const handleMouseDown = () => {
@@ -116,14 +156,14 @@ export default function CustomCursor() {
       document.removeEventListener('mouseleave', handleMouseLeave);
       document.removeEventListener('mouseover', handleMouseOver);
       document.removeEventListener('mouseout', handleMouseOut);
+      
+      // Kill quickTo instances to prevent memory leaks
+      Object.values(quickToRefs.current).forEach(qt => {
+        if (qt && qt.kill) qt.kill();
+      });
+      quickToRefs.current = { dotX: null, dotY: null, ringX: null, ringY: null };
     };
   }, []);
-
-  // Don't render on mobile/touch
-  if (typeof window !== 'undefined' &&
-    (window.matchMedia('(max-width: 768px)').matches || 'ontouchstart' in window)) {
-    return null;
-  }
 
   return (
     <>

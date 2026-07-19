@@ -39,7 +39,7 @@ export default function Hero() {
 
   // Entry animations & Parallax
   useGSAP(() => {
-    let mm = gsap.matchMedia();
+    const mm = gsap.matchMedia();
 
     mm.add("all", () => {
       // Heading words
@@ -108,6 +108,9 @@ export default function Hero() {
         });
       }
     });
+
+    // Cleanup matchMedia on unmount
+    return () => mm.revert();
   }, { scope: sectionRef });
 
   const marqueeContent = 'AWS ✦ Docker ✦ Kubernetes ✦ Terraform ✦ CI/CD ✦ Linux ✦ DevOps ✦ Ansible ✦ Jenkins ✦ Prometheus ✦ Grafana ✦ Git ✦ Bash ✦ ';
