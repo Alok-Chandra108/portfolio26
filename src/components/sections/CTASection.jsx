@@ -57,7 +57,25 @@ export default function CTASection() {
           );
         });
       }
+
+      /* ── Background noise parallax shift (desktop) */
+      if (!isMobile) {
+        gsap.to(sectionRef.current, {
+          backgroundPositionY: '+=20px',
+          ease: 'none',
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 2,
+            invalidateOnRefresh: true,
+          },
+        });
+      }
     });
+
+    ScrollTrigger.refresh();
+
   }, { scope: sectionRef });
 
   /* ── Cursor-following circle (desktop only) ── */

@@ -34,15 +34,6 @@ export default function Work() {
     fetchProjects();
   }, []);
 
-  /* ── Ref Array Initialization (Phase 1 fix) ───────────────────────── */
-  // Initialize ref arrays in useEffect BEFORE animations run
-  useEffect(() => {
-    if (!loading && projects.length > 0) {
-      rowsRef.current = Array(projects.length).fill(null);
-      linesRef.current = Array(projects.length + 1).fill(null); // +1 for top ruling line
-    }
-  }, [loading, projects]);
-
   /* ── Scroll entrance animations ───────────────────────── */
   useGSAP(() => {
     if (loading || projects.length === 0) return;
@@ -82,55 +73,30 @@ export default function Work() {
     });
 
     // Row animations - Trigger Each Individually
-    // Use matchMedia for responsive animations (SSR-safe)
-    const mm = gsap.matchMedia();
-    
-    mm.add("(min-width: 640px)", () => {
-      rowsRef.current.forEach((row, i) => {
-        if (!row) return;
-        
-        gsap.fromTo(
-          row,
-          { clipPath: 'inset(0 100% 0 0)', y: 0, opacity: 1 },
-          {
-            clipPath: 'inset(0 0% 0 0)',
-            y: 0,
-            opacity: 1,
-            duration: 1.1,
-            ease: 'expo.out',
-            scrollTrigger: {
-              trigger: row,
-              start: () => 'top 88%',
-              invalidateOnRefresh: true,
-              toggleActions: 'play none none none',
-            },
-          }
-        );
-      });
-    });
-    
-    mm.add("(max-width: 639px)", () => {
-      rowsRef.current.forEach((row, i) => {
-        if (!row) return;
-        
-        gsap.fromTo(
-          row,
-          { clipPath: 'none', y: 30, opacity: 0 },
-          {
-            clipPath: 'none',
-            y: 0,
-            opacity: 1,
-            duration: 1.1,
-            ease: 'expo.out',
-            scrollTrigger: {
-              trigger: row,
-              start: () => 'top 88%',
-              invalidateOnRefresh: true,
-              toggleActions: 'play none none none',
-            },
-          }
-        );
-      });
+    rowsRef.current.forEach((row, i) => {
+      if (!row) return;
+      
+      gsap.fromTo(
+        row,
+        { 
+          clipPath: window.innerWidth < 640 ? 'none' : 'inset(0 100% 0 0)', 
+          y: window.innerWidth < 640 ? 30 : 0,
+          opacity: window.innerWidth < 640 ? 0 : 1 
+        },
+        {
+          clipPath: 'inset(0 0% 0 0)',
+          y: 0,
+          opacity: 1,
+          duration: 1.1,
+          ease: 'expo.out',
+          scrollTrigger: {
+            trigger: row,
+            start: () => 'top 88%',
+            invalidateOnRefresh: true,
+            toggleActions: 'play none none none',
+          },
+        }
+      );
     });
     
     // Critical: Refresh ScrollTrigger after dynamic content renders
@@ -212,14 +178,19 @@ export default function Work() {
         </div>
 
         {/* Top ruling line */}
+        {/* Clear refs array to avoid stale references */}
+        {linesRef.current.length = 0}
         <div
           className="work__rule"
-          ref={el => linesRef.current[0] = el}
+          ref={el => linesRef.current[linesRef.current.length] = el}
           style={{ scaleX: 1 }}
         />
 
         {/* Numbered showcase list */}
         <div className="work__list">
+          {/* Clear refs arrays to avoid stale references */}
+          {rowsRef.current.length = 0}
+          {linesRef.current.length = 0}
           {projects.map((project, i) => (
             <div key={project.id}>
               <a
@@ -251,7 +222,7 @@ export default function Work() {
                 <span className="work__row-arrow">→</span>
               </a>
               {/* Ruling line below each row */}
-              <div className="work__rule" ref={el => linesRef.current[i + 1] = el} />
+              <div className="work__rule" ref={el => linesRef.current[i] = el} />
             </div>
           ))}
         </div>

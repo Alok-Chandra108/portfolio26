@@ -28,13 +28,6 @@ export default function Services() {
   const blocksRef = useRef([]);
   const linesRef = useRef([]);
 
-  /* ── Ref Array Initialization (Phase 1 fix) ───────────────────────── */
-  // Initialize ref arrays in useEffect BEFORE animations run
-  useEffect(() => {
-    blocksRef.current = Array(services.length + 1).fill(null); // +1 for CTA
-    linesRef.current = Array(services.length).fill(null);
-  }, []);
-
   useGSAP(() => {
     const mm = gsap.matchMedia();
 
@@ -132,7 +125,7 @@ export default function Services() {
       <div className="container services__grid">
         <div className="services__left">
           <h2 className="heading-section will-animate" ref={headingRef}>
-            I'm building a strong foundation in Cloud & DevOps
+            I'm building a strong foundation in Cloud &amp; DevOps
           </h2>
         </div>
         <div className="services__right">

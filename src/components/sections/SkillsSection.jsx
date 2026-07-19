@@ -30,17 +30,6 @@ export default function SkillsSection() {
   const row1Skills = skills.filter(s => (s.row || 1) === 1);
   const row2Skills = skills.filter(s => s.row === 2);
 
-  /* ── Ref Array Initialization (Phase 1 fix) ───────────────────────── */
-  // Initialize ref arrays in useEffect BEFORE animations run
-  useEffect(() => {
-    if (skills.length > 0) {
-      row1AutoRef.current = null;
-      row1ScrollRef.current = null;
-      row2AutoRef.current = null;
-      row2ScrollRef.current = null;
-    }
-  }, [skills]);
-
   useGSAP(() => {
     if (skills.length === 0) return;
 
@@ -51,101 +40,88 @@ export default function SkillsSection() {
       const container = autoRef.current;
       const totalWidth = container.scrollWidth / 2;
 
+      // Set starting position for reverse row
+      if (direction === -1) {
+        gsap.set(container, { x: -totalWidth });
+      }
+
+      // Seamless infinite loop
       gsap.to(container, {
-        x: -totalWidth * direction,
-        ease: 'none',
-        duration: totalWidth / 50,
+        x: `+=${direction * -totalWidth}`,
+        duration: 40,
+        ease: "none",
         repeat: -1,
         modifiers: {
-          x: gsap.utils.unitize(x => parseFloat(x) % totalWidth * direction)
+          x: gsap.utils.unitize(x => {
+            let value = parseFloat(x);
+            return value % totalWidth;
+          })
         }
       });
 
-      scrollRef.current.addEventListener('wheel', (e) => {
-        e.preventDefault();
-        gsap.to(container, {
-          x: `+=${e.deltaY * 0.5 * direction}`,
-          modifiers: {
-            x: gsap.utils.unitize(x => parseFloat(x) % totalWidth * direction)
-          },
-          ease: 'power2.out',
-          overwrite: 'auto'
-        });
-      }, { passive: false });
+      // Scroll parallax
+      gsap.to(scrollRef.current, {
+        xPercent: direction === 1 ? -25 : 25,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: true,
+          invalidateOnRefresh: true,
+        }
+      });
     };
 
-    // Only create marquees if elements exist
-    if (row1Skills.length > 0 && row1AutoRef.current && row1ScrollRef.current) {
-      createMarquee(row1AutoRef, row1ScrollRef, 1);
-    }
-    if (row2Skills.length > 0 && row2AutoRef.current && row2ScrollRef.current) {
-      createMarquee(row2AutoRef, row2ScrollRef, -1);
-    }
+    if (row1Skills.length > 0) createMarquee(row1AutoRef, row1ScrollRef, 1);
+    if (row2Skills.length > 0) createMarquee(row2AutoRef, row2ScrollRef, -1);
 
     ScrollTrigger.refresh();
 
-  }, { dependencies: [skills], scope: sectionRef });
+  }, { dependencies: [skills, row1Skills.length, row2Skills.length], scope: sectionRef });
+
+  if (skills.length === 0) return null;
 
   return (
-    <section className="skills-section section" ref={sectionRef}>
-      <div className="skills__wrapper">
-        <div className="skills__header">
-          <h2 className="heading-section">Technical Skills</h2>
-          <span className="sub-label">(Tools & Technologies)</span>
-        </div>
+    <section className="skills-section" ref={sectionRef}>
+      <div className="skills-section__header container">
+        <span className="skills-section__subtitle">Expertise</span>
+        <h2 className="skills-section__title">I keep good skills.</h2>
+      </div>
 
-        {/* Row 1 — Left-to-Right */}
-        <div className="skills__marquee-row">
-          <div 
-            className="skills__marquee-scroll" 
-            ref={row1ScrollRef}
-            onMouseEnter={e => gsap.to(e.currentTarget, { timeScale: 0.2, duration: 0.3 })}
-            onMouseLeave={e => gsap.to(e.currentTarget, { timeScale: 1, duration: 0.5 })}
-          >
-            <div className="skills__marquee-auto" ref={row1AutoRef}>
-              {row1Skills.map(skill => (
-                <div key={skill.id} className="skill-pill">
-                  <span className="skill-pill__icon" style={{ backgroundImage: `url(${skill.icon})` }} />
-                  <span className="skill-pill__name">{skill.name}</span>
-                </div>
-              ))}
-              {/* Duplicate for seamless loop */}
-              {row1Skills.map(skill => (
-                <div key={`${skill.id}-clone`} className="skill-pill">
-                  <span className="skill-pill__icon" style={{ backgroundImage: `url(${skill.icon})` }} />
-                  <span className="skill-pill__name">{skill.name}</span>
-                </div>
+      <div className="skills-marquee-container">
+        {/* ROW 1 */}
+        {row1Skills.length > 0 && (
+          <div className="skills-marquee-row-wrapper" ref={row1ScrollRef}>
+            <div className="skills-marquee-row" ref={row1AutoRef}>
+              {[...row1Skills, ...row1Skills, ...row1Skills, ...row1Skills, ...row1Skills, ...row1Skills].map((skill, i) => (
+                <SkillCard key={`row1-${skill.id}-${i}`} skill={skill} index={(i % row1Skills.length) + 1} />
               ))}
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Row 2 — Right-to-Left */}
-        <div className="skills__marquee-row skills__marquee-row--reverse">
-          <div 
-            className="skills__marquee-scroll" 
-            ref={row2ScrollRef}
-            onMouseEnter={e => gsap.to(e.currentTarget, { timeScale: 0.2, duration: 0.3 })}
-            onMouseLeave={e => gsap.to(e.currentTarget, { timeScale: 1, duration: 0.5 })}
-          >
-            <div className="skills__marquee-auto" ref={row2AutoRef}>
-              {row2Skills.map(skill => (
-                <div key={skill.id} className="skill-pill">
-                  <span className="skill-pill__icon" style={{ backgroundImage: `url(${skill.icon})` }} />
-                  <span className="skill-pill__name">{skill.name}</span>
-                </div>
-              ))}
-              {/* Duplicate for seamless loop */}
-              {row2Skills.map(skill => (
-                <div key={`${skill.id}-clone`} className="skill-pill">
-                  <span className="skill-pill__icon" style={{ backgroundImage: `url(${skill.icon})` }} />
-                  <span className="skill-pill__name">{skill.name}</span>
-                </div>
+        {/* ROW 2 */}
+        {row2Skills.length > 0 && (
+          <div className="skills-marquee-row-wrapper" ref={row2ScrollRef} style={{ marginLeft: '-20%' }}>
+            <div className="skills-marquee-row" ref={row2AutoRef}>
+              {[...row2Skills, ...row2Skills, ...row2Skills, ...row2Skills, ...row2Skills, ...row2Skills].map((skill, i) => (
+                <SkillCard key={`row2-${skill.id}-${i}`} skill={skill} index={(i % row2Skills.length) + 1} />
               ))}
             </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
+  );
+}
+
+function SkillCard({ skill, index }) {
+  return (
+    <div className="skill-card">
+      <span className="skill-card__bg-number">{index.toString().padStart(2, '0')}</span>
+      <img src={skill.logoUrl} alt={skill.name} className="skill-card__logo" />
+      <h3 className="skill-card__name">{skill.name}</h3>
+    </div>
   );
 }

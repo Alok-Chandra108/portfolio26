@@ -7,7 +7,7 @@ import './Education.css';
 export default function Education() {
   const [educationData, setEducationData] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  
   const sectionRef = useRef(null);
   const lineRef = useRef(null);
   const headingRef = useRef(null);
@@ -24,14 +24,12 @@ export default function Education() {
       .finally(() => setLoading(false));
   }, []);
 
-  /* ── Ref Array Initialization (Phase 1 fix) ───────────────────────── */
-  // Initialize ref arrays in useEffect BEFORE animations run
-  useEffect(() => {
-    if (!loading && educationData.length > 0) {
-      itemsRef.current = Array(educationData.length).fill(null);
-      nodesRef.current = Array(educationData.length).fill(null);
-    }
-  }, [loading, educationData]);
+  // Use useGSAP for cleanup and scoping
+  useGSAP(() => {
+    // Re-initialize arrays for refs to ensure they match current DOM across hot reloads
+    itemsRef.current = [];
+    nodesRef.current = [];
+  }, { dependencies: [educationData], scope: sectionRef });
 
   useGSAP(() => {
     const mm = gsap.matchMedia();
