@@ -1,7 +1,6 @@
 import React, { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls, Stars, PerspectiveCamera } from "@react-three/drei";
-import { EffectComposer, Bloom } from "@react-three/postprocessing";
+import { OrbitControls, Stars } from "@react-three/drei";
 import { Earth } from "./Earth";
 import { Clouds } from "./Clouds";
 import { Atmosphere } from "./Atmosphere";
@@ -14,8 +13,8 @@ export default function GlobeScene() {
   return (
     <div className="globe-canvas-container">
       <Canvas
-        dpr={isMobile ? [1, 1.25] : [1, 2]}
-        gl={{ antialias: !isMobile, alpha: true }}
+        dpr={isMobile ? [1, 1.25] : [1, 1.5]}
+        gl={{ antialias: !isMobile, alpha: true, powerPreference: "high-performance" }}
         camera={{ position: [0, 0, 3], fov: 45 }}
       >
         <Suspense fallback={null}>
@@ -28,11 +27,8 @@ export default function GlobeScene() {
             autoRotateSpeed={0.5}
           />
 
-          {/* High-impact lighting for stability */}
-          <ambientLight intensity={0.9} />
-          <directionalLight position={[10, 10, 10]} intensity={2.0} color="#ffffff" />
-          <directionalLight position={[-10, 5, -10]} intensity={1.0} color="#ffffff" />
-          <pointLight position={[0, 0, 5]} intensity={0.5} color="#0088ff" />
+          <directionalLight position={[10, 10, 10]} intensity={1.5} color="#ffffff" />
+          <directionalLight position={[-10, 5, -10]} intensity={0.7} color="#ffffff" />
 
           {/* Globe Layers */}
           <group rotation={[0, 0, 0.4]}>
@@ -42,14 +38,14 @@ export default function GlobeScene() {
             <GlobeArcs />
           </group>
 
-          {/* Cinematic star field - larger, brighter stars with a closer radius */}
-          <Stars 
-            radius={150} 
-            depth={50} 
-            count={isMobile ? 1500 : 3500} 
-            factor={8} 
-            saturation={0.5} 
-            fade={true} 
+          {/* Cinematic star field - reduced count for performance */}
+          <Stars
+            radius={150}
+            depth={50}
+            count={isMobile ? 400 : 1000}
+            factor={8}
+            saturation={0.5}
+            fade={true}
             speed={1}
           />
         </Suspense>

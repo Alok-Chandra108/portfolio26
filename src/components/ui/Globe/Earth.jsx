@@ -6,10 +6,9 @@ import { TextureLoader } from "three";
 export function Earth() {
   const earthRef = useRef();
 
-  const [dayMap, nightMap, specularMap, normalMap] = useLoader(TextureLoader, [
+  const [dayMap, nightMap, normalMap] = useLoader(TextureLoader, [
     "/textures/planets/earth_atmos_2048.jpg",
     "/textures/planets/earth_lights_2048.png",
-    "/textures/planets/earth_specular_2048.jpg",
     "/textures/planets/earth_normal_2048.jpg",
   ]);
 
@@ -21,8 +20,9 @@ export function Earth() {
   });
 
   return (
-    <mesh ref={earthRef} castShadow receiveShadow>
-      <sphereGeometry args={[1, 64, 64]} />
+    <mesh ref={earthRef} castShadow={false} receiveShadow={false}>
+      {/* 32 segments = 1/4 the triangles of 64 */}
+      <sphereGeometry args={[1, 32, 32]} />
       <meshStandardMaterial
         map={dayMap}
         normalMap={normalMap}
@@ -30,7 +30,7 @@ export function Earth() {
         metalness={0.0}
         emissiveMap={nightMap}
         emissive={new THREE.Color(0xffccaa)}
-        emissiveIntensity={3}
+        emissiveIntensity={1.2}
       />
     </mesh>
   );

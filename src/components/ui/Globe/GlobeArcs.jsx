@@ -59,11 +59,11 @@ export function GlobeArcs() {
         
         {/* Animated Pulse Ring - Emerald Green (Dimmed) */}
         <mesh ref={pulseRef}>
-          <sphereGeometry args={[0.04, 32, 32]} />
-          <meshBasicMaterial 
-            color={hovered ? "#00ff88" : "#00aa55"} 
-            transparent={true} 
-            opacity={0.2} 
+          <sphereGeometry args={[0.04, 16, 16]} />
+          <meshBasicMaterial
+            color={hovered ? "#00ff88" : "#00aa55"}
+            transparent={true}
+            opacity={0.2}
             side={THREE.DoubleSide}
           />
         </mesh>

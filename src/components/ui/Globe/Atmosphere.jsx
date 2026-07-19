@@ -1,9 +1,10 @@
-import * as THREE from 'three'
+import * as THREE from "three";
 
 export function Atmosphere() {
   return (
     <mesh scale={[1.05, 1.05, 1.05]}>
-      <sphereGeometry args={[1, 64, 64]} />
+      {/* 32 segments = 1/4 the triangles of 64 */}
+      <sphereGeometry args={[1, 32, 32]} />
       <shaderMaterial
         transparent={true}
         side={THREE.BackSide}
@@ -19,8 +20,8 @@ export function Atmosphere() {
         fragmentShader={`
           varying vec3 vNormal;
           void main() {
-            // Muted, premium light-blue tone
-            gl_FragColor = vec4(0.4, 0.7, 1.0, intensity * 0.4);
+            float intensity = pow(0.6 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.0);
+            gl_FragColor = vec4(0.4, 0.7, 1.0, intensity * 0.35);
           }
         `}
       />
