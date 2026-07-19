@@ -8,7 +8,6 @@ export default function Marquee() {
       <div className="marquee-strip__track">
         <span className="marquee-strip__text">{content}</span>
         <span className="marquee-strip__text">{content}</span>
-        <span className="marquee-strip__text">{content}</span>
       </div>
     </section>
   );
