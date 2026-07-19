@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { gsap, useGSAP } from '../../utils/gsapPlugins.js';
+import { gsap, ScrollTrigger, useGSAP } from '../../utils/gsapPlugins.js';
 import AnimatedButton from '../ui/AnimatedButton.jsx';
 import PillTag from '../ui/PillTag.jsx';
 import './Services.css';
@@ -122,6 +122,8 @@ export default function Services() {
         }
       });
     });
+
+    ScrollTrigger.refresh();
 
   }, { scope: sectionRef });
 

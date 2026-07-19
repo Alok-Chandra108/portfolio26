@@ -1,18 +1,17 @@
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { useLenis } from 'lenis/react';
+import { gsap, ScrollToPlugin } from '../utils/gsapPlugins.js';
 import './Footer.css';
 
 export default function Footer() {
   const talkRef = useRef(null);
-  const lenis = useLenis();
 
   const scrollToTop = () => {
-    if (lenis) {
-      // Use Lenis smooth scroll instead of GSAP ScrollToPlugin
-      // which bypasses Lenis and causes scroll jank
-      lenis.scrollTo(0, { duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
-    }
+    gsap.to(window, {
+      scrollTo: 0,
+      duration: 1.2,
+      ease: 'power4.inOut',
+    });
   };
 
   return (
