@@ -38,13 +38,6 @@ export default function Experience({ preview = false }) {
       .finally(() => setLoading(false));
   }, []);
 
-  /* ── Pre-size ref arrays in useEffect BEFORE animations run ──────────────── */
-  useEffect(() => {
-    if (!loading && experiences.length > 0) {
-      itemsRef.current = Array(experiences.length).fill(null);
-    }
-  }, [loading, experiences]);
-
   /* ── Entrance Animations ─────────────────────────── */
   useGSAP(() => {
     if (loading || experiences.length === 0) return;

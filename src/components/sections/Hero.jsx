@@ -33,7 +33,7 @@ export default function Hero() {
     if (!subtitleRef.current) return;
     gsap.fromTo(subtitleRef.current,
       { y: 40, opacity: 0, clipPath: 'inset(0 100% 0 0)' },
-      { y: 0, opacity: 1, clipPath: 'inset(0 0% 0 0)', duration: 0.6, ease: 'expo.out' }
+      { y: 0, opacity: 1, clipPath: 'inset(0 0% 0 0)', duration: 0.6, ease: 'expo.out', overwrite: 'auto' }
     );
   }, { dependencies: [subIndex], scope: sectionRef });
 
@@ -141,7 +141,11 @@ export default function Hero() {
     e.currentTarget.style.setProperty('--hover-color', `hsl(${newHue}, 80%, 65%)`);
   };
 
-  const initialHues = useRef('ALOK CHANDRA'.split('').map(() => Math.floor(Math.random() * 360)));
+  const initialHues = useRef(null);
+  if (initialHues.current === null) {
+    // Lazy init — avoids regenerating the hue array on every render
+    initialHues.current = 'ALOK CHANDRA'.split('').map(() => Math.floor(Math.random() * 360));
+  }
 
   return (
     <section className="hero section" ref={sectionRef}>

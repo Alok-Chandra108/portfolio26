@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { gsap, ScrollTrigger, useGSAP } from '../../utils/gsapPlugins.js';
+import { gsap, useGSAP } from '../../utils/gsapPlugins.js';
 import AnimatedButton from '../ui/AnimatedButton.jsx';
 import './About.css';
 
@@ -110,9 +110,9 @@ export default function About() {
       }
     });
 
-    // Final refresh
-    ScrollTrigger.refresh();
-
+    // Revert matchMedia handlers on unmount — animations created by mm.add
+    // re-runs (on breakpoint changes) live outside the useGSAP context
+    return () => mm.revert();
   }, { scope: sectionRef });
 
   return (

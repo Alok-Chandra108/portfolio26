@@ -34,15 +34,6 @@ export default function Work() {
     fetchProjects();
   }, []);
 
-  /* ── Ref Array Initialization (Phase 1 fix) ───────────────────────── */
-  // Initialize ref arrays in useEffect BEFORE animations run
-  useEffect(() => {
-    if (!loading && projects.length > 0) {
-      rowsRef.current = Array(projects.length).fill(null);
-      linesRef.current = Array(projects.length + 1).fill(null); // +1 for top ruling line
-    }
-  }, [loading, projects]);
-
   /* ── Scroll entrance animations ───────────────────────── */
   useGSAP(() => {
     if (loading || projects.length === 0) return;

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { gsap, ScrollTrigger, useGSAP } from '../../utils/gsapPlugins.js';
+import { gsap, useGSAP } from '../../utils/gsapPlugins.js';
 import { skillsService } from '../../firebase/skillsService.js';
 import './SkillsSection.css';
 
@@ -30,25 +30,17 @@ export default function SkillsSection() {
   const row1Skills = skills.filter(s => (s.row || 1) === 1);
   const row2Skills = skills.filter(s => s.row === 2);
 
-  /* ── Ref Array Initialization (Phase 1 fix) ───────────────────────── */
-  // Initialize ref arrays in useEffect BEFORE animations run
-  useEffect(() => {
-    if (skills.length > 0) {
-      row1AutoRef.current = null;
-      row1ScrollRef.current = null;
-      row2AutoRef.current = null;
-      row2ScrollRef.current = null;
-    }
-  }, [skills]);
-
   useGSAP(() => {
     if (skills.length === 0) return;
+
+    const cleanups = [];
 
     // Seamless marquee (NO FLASH / NO RESET)
     const createMarquee = (autoRef, scrollRef, direction = 1) => {
       if (!autoRef.current || !scrollRef.current) return;
 
       const container = autoRef.current;
+      const scrollEl = scrollRef.current;
       const totalWidth = container.scrollWidth / 2;
 
       gsap.to(container, {
@@ -61,7 +53,7 @@ export default function SkillsSection() {
         }
       });
 
-      scrollRef.current.addEventListener('wheel', (e) => {
+      const handleWheel = (e) => {
         e.preventDefault();
         gsap.to(container, {
           x: `+=${e.deltaY * 0.5 * direction}`,
@@ -71,7 +63,10 @@ export default function SkillsSection() {
           ease: 'power2.out',
           overwrite: 'auto'
         });
-      }, { passive: false });
+      };
+
+      scrollEl.addEventListener('wheel', handleWheel, { passive: false });
+      cleanups.push(() => scrollEl.removeEventListener('wheel', handleWheel));
     };
 
     // Only create marquees if elements exist
@@ -82,8 +77,7 @@ export default function SkillsSection() {
       createMarquee(row2AutoRef, row2ScrollRef, -1);
     }
 
-    ScrollTrigger.refresh();
-
+    return () => cleanups.forEach(fn => fn());
   }, { dependencies: [skills], scope: sectionRef });
 
   return (
