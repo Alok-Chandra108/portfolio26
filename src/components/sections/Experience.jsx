@@ -81,7 +81,11 @@ export default function Experience({ preview = false }) {
       );
     }
 
-    ScrollTrigger.refresh();
+    // Async data changed page height — refresh other sections' trigger
+    // positions, deferred to after paint (sync refresh in a layout effect
+    // forces measurement before layout settles)
+    const rafId = requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => cancelAnimationFrame(rafId);
   }, { dependencies: [loading, experiences], scope: sectionRef });
 
   /* ── Active marker animation ─────────────────────── */

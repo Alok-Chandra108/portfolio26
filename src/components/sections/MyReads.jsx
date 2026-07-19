@@ -159,8 +159,9 @@ export default function MyReads() {
       }
     });
 
-    ScrollTrigger.refresh();
-
+    // Async data changed page height — deferred refresh (see Experience.jsx)
+    const rafId = requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => cancelAnimationFrame(rafId);
   }, { scope: sectionRef, dependencies: [loading, displayBooks] });
 
   return (

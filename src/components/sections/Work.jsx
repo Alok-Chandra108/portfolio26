@@ -124,9 +124,9 @@ export default function Work() {
       });
     });
     
-    // Critical: Refresh ScrollTrigger after dynamic content renders
-    ScrollTrigger.refresh();
-
+    // Async data changed page height — deferred refresh (see Experience.jsx)
+    const rafId = requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => cancelAnimationFrame(rafId);
   }, { dependencies: [loading, projects], scope: sectionRef });
 
   /* ── Floating preview follows cursor (desktop only) ──── */

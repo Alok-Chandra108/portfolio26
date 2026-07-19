@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { gsap, ScrollTrigger, useGSAP } from '../../utils/gsapPlugins.js';
+import { gsap, useGSAP } from '../../utils/gsapPlugins.js';
 import PillTag from '../ui/PillTag.jsx';
 import DownloadCV from '../ui/DownloadCV.jsx';
 import './Hero.css';
