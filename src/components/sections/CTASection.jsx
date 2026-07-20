@@ -9,6 +9,9 @@ export default function CTASection() {
   const linesRef = useRef([]);
   const [isHovered, setIsHovered] = useState(false);
 
+  // Get contextSafe for event handlers
+  const { contextSafe } = useGSAP({ scope: sectionRef });
+
   useGSAP(() => {
     const mm = gsap.matchMedia();
 
@@ -74,7 +77,7 @@ export default function CTASection() {
       }
     });
 
-    ScrollTrigger.refresh();
+    // Removed ScrollTrigger.refresh() - not needed in useGSAP
 
   }, { scope: sectionRef });
 
@@ -86,12 +89,12 @@ export default function CTASection() {
     const xSetter = gsap.quickSetter(circleRef.current, 'x', 'px');
     const ySetter = gsap.quickSetter(circleRef.current, 'y', 'px');
 
-    const handleMouseMove = (e) => {
+    const handleMouseMove = contextSafe((e) => {
       const rect = sectionRef.current?.getBoundingClientRect();
       if (!rect) return;
       xSetter(e.clientX - rect.left - 100);
       ySetter(e.clientY - rect.top - 100);
-    };
+    });
 
     const section = sectionRef.current;
     section.addEventListener('mousemove', handleMouseMove);

@@ -127,7 +127,7 @@ export default function Education() {
       });
     });
 
-    ScrollTrigger.refresh();
+    // Removed ScrollTrigger.refresh() - not needed in useGSAP
 
   }, { dependencies: [educationData, loading], scope: sectionRef });
 

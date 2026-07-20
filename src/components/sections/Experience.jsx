@@ -25,8 +25,12 @@ export default function Experience({ preview = false }) {
   const sectionRef = useRef(null);
   const headingRef = useRef(null);
   const lineRef = useRef(null);
+  // Pre-size itemsRef to avoid sparse arrays
   const itemsRef = useRef([]);
   const markerRef = useRef(null);
+
+  // Get contextSafe for use in animations
+  const { contextSafe } = useGSAP({ scope: sectionRef });
 
   useEffect(() => {
     experienceService.getExperience()
@@ -42,6 +46,9 @@ export default function Experience({ preview = false }) {
   useGSAP(() => {
     if (loading || experiences.length === 0) return;
 
+    // Clear ref array at start of animation (not during render)
+    itemsRef.current.length = 0;
+
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: sectionRef.current,
@@ -56,7 +63,7 @@ export default function Experience({ preview = false }) {
       { clipPath: 'inset(0 0% 0 0)', duration: 1.4, ease: 'expo.out' }
     );
 
-    // Stagger items from bottom
+    // Stagger items from bottom - use filter(Boolean) to skip empty slots
     tl.fromTo(itemsRef.current.filter(Boolean),
       { y: 50, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.9, stagger: 0.12, ease: 'expo.out' },
@@ -81,7 +88,8 @@ export default function Experience({ preview = false }) {
       );
     }
 
-    ScrollTrigger.refresh();
+    // Removed ScrollTrigger.refresh() - not needed in useGSAP
+
   }, { dependencies: [loading, experiences], scope: sectionRef });
 
   /* ── Active marker animation ─────────────────────── */
@@ -140,8 +148,6 @@ export default function Experience({ preview = false }) {
             </div>
 
             <div className="experience__list">
-              {/* Clear refs array to avoid stale references from previous renders */}
-              {itemsRef.current.length = 0}
               {displayData.map((exp, i) => (
                 <button
                   key={exp.id}
@@ -189,8 +195,12 @@ function ExperiencePanel({ experiences, activeIndex }) {
   const prevIndex = useRef(activeIndex);
   const panelCardsRef = useRef([]);
 
-  // Cache panel cards when experiences change
+  // Get contextSafe for this component's scope
+  const { contextSafe } = useGSAP({ scope: reelRef });
+
+  // Cache panel cards when experiences change - clear first to avoid stale refs
   useEffect(() => {
+    panelCardsRef.current = [];
     if (reelRef.current) {
       panelCardsRef.current = Array.from(reelRef.current.querySelectorAll('.experience__panel-card'));
     }
@@ -227,7 +237,7 @@ function ExperiencePanel({ experiences, activeIndex }) {
       }
     });
 
-  }, { dependencies: [activeIndex], scope: containerRef });
+  }, { dependencies: [activeIndex], scope: reelRef });
 
   return (
     <div className="experience__panel-viewport" ref={containerRef}>

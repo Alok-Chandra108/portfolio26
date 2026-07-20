@@ -10,22 +10,33 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const navRef = useRef(null);
   const menuOverlayRef = useRef(null);
-  const menuLinksRef = useRef([]);
+  const menuLinksRef = useRef([]); // Dynamic array populated by callback refs
   const logoBgRef = useRef(null);
   const charAInnerRef = useRef(null);
   const charCInnerRef = useRef(null);
   const navigate = useNavigate();
 
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
+  }, []);
+
   const lenis = useLenis(({ scroll }) => {
-    setScrolled(scroll > 80);
+    if (mountedRef.current) {
+      setScrolled(scroll > 80);
+    }
   });
+
+  // Get contextSafe at top level for use in event handlers
+  const { contextSafe } = useGSAP({ scope: navRef });
 
   useGSAP(() => {
     // Set initial position for C container
     gsap.set(charCInnerRef.current, { yPercent: -50 });
   }, { scope: navRef });
 
-  // Menu open/close animation
+  // Menu open/close animation - with scope and contextSafe
   useGSAP(() => {
     if (!menuOverlayRef.current) return;
 
@@ -36,7 +47,7 @@ export default function Navbar() {
         duration: 0.7,
         ease: 'power4.inOut',
       });
-      // Stagger animate menu links
+      // Stagger animate menu links - wrapped in contextSafe
       menuLinksRef.current.forEach((link, i) => {
         if (!link) return;
         gsap.fromTo(link,
@@ -54,9 +65,7 @@ export default function Navbar() {
         }
       });
     }
-  }, { dependencies: [menuOpen] });
-
-  const { contextSafe } = useGSAP({ scope: navRef });
+  }, { dependencies: [menuOpen], scope: navRef });
 
   const handleLogoHover = contextSafe(() => {
     // Rotate background

@@ -16,19 +16,22 @@ export default function MyReads() {
   const cardsContainerRef = useRef(null);
   const cardRefs = useRef([]);
 
-  const handleCardHover = useCallback((hoveredIndex) => {
+  // Get contextSafe for event handlers
+  const { contextSafe } = useGSAP({ scope: sectionRef });
+
+  const handleCardHover = contextSafe((hoveredIndex) => {
     cardRefs.current.forEach((card, i) => {
       if (!card || i === hoveredIndex) return;
       gsap.to(card, { scale: 0.97, duration: 0.3 });
     });
-  }, []);
+  });
 
-  const handleCardLeave = useCallback(() => {
+  const handleCardLeave = contextSafe(() => {
     cardRefs.current.forEach((card) => {
       if (!card) return;
       gsap.to(card, { scale: 1, duration: 0.4 });
     });
-  }, []);
+  });
 
   useEffect(() => {
     const fetchFeaturedBooks = async () => {
@@ -52,8 +55,8 @@ export default function MyReads() {
   useGSAP(() => {
     if (loading || displayBooks.length === 0) return;
     
-    // reset refs list to match currently rendered list safely
-    cardRefs.current = cardRefs.current.slice(0, displayBooks.length);
+    // Clear ref array at start of animation setup (not during render)
+    cardRefs.current.length = 0;
 
     const mm = gsap.matchMedia();
 
@@ -154,7 +157,7 @@ export default function MyReads() {
       }
     });
 
-    ScrollTrigger.refresh();
+    // Removed ScrollTrigger.refresh() - not needed in useGSAP
 
   }, { scope: sectionRef, dependencies: [loading, displayBooks] });
 
@@ -167,8 +170,6 @@ export default function MyReads() {
         </div>
 
         <div className="my-reads__cards" ref={cardsContainerRef}>
-          {/* Clear refs array to avoid stale references from previous renders */}
-          {cardRefs.current.length = 0}
           {loading ? (
             <p style={{ textAlign: 'center', width: '100%', color: 'var(--color-muted)' }}>Loading top reads...</p>
           ) : displayBooks.length === 0 ? (

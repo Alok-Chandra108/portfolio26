@@ -116,7 +116,7 @@ export default function Services() {
       });
     });
 
-    ScrollTrigger.refresh();
+    // Removed ScrollTrigger.refresh() - not needed in useGSAP
 
   }, { scope: sectionRef });
 
@@ -125,7 +125,7 @@ export default function Services() {
       <div className="container services__grid">
         <div className="services__left">
           <h2 className="heading-section will-animate" ref={headingRef}>
-            I'm building a strong foundation in Cloud &amp; DevOps
+            I'm building a strong foundation in Cloud & DevOps
           </h2>
         </div>
         <div className="services__right">

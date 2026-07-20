@@ -76,7 +76,7 @@ export default function SkillsSection() {
     if (row1Skills.length > 0) createMarquee(row1AutoRef, row1ScrollRef, 1);
     if (row2Skills.length > 0) createMarquee(row2AutoRef, row2ScrollRef, -1);
 
-    ScrollTrigger.refresh();
+    // Removed ScrollTrigger.refresh() - not needed in useGSAP
 
   }, { dependencies: [skills, row1Skills.length, row2Skills.length], scope: sectionRef });
 

@@ -110,8 +110,7 @@ export default function About() {
       }
     });
 
-    // Final refresh
-    ScrollTrigger.refresh();
+    // Removed ScrollTrigger.refresh() - not needed in useGSAP
 
   }, { scope: sectionRef });
 
@@ -123,7 +122,7 @@ export default function About() {
             I build robust infrastructure, because downtime is bad
           </h2>
           <p className="body-text about__body will-animate" ref={bodyRef}>
-            I'm a Cloud &amp; DevOps enthusiast passionate about architecting scalable,
+            I'm a Cloud & DevOps enthusiast passionate about architecting scalable,
             resilient systems that power modern applications. With a deep interest in
             automation, continuous integration, and cloud-native technologies, I bridge
             the gap between development and operations. Every project is an opportunity

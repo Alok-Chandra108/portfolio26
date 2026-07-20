@@ -38,6 +38,10 @@ export default function Work() {
   useGSAP(() => {
     if (loading || projects.length === 0) return;
 
+    // Clear ref arrays at start of animation setup (not during render)
+    rowsRef.current.length = 0;
+    linesRef.current.length = 0;
+
     // Heading wipe reveal
     if (headingRef.current) {
       gsap.fromTo(
@@ -72,35 +76,59 @@ export default function Work() {
       });
     });
 
-    // Row animations - Trigger Each Individually
-    rowsRef.current.forEach((row, i) => {
-      if (!row) return;
-      
-      gsap.fromTo(
-        row,
-        { 
-          clipPath: window.innerWidth < 640 ? 'none' : 'inset(0 100% 0 0)', 
-          y: window.innerWidth < 640 ? 30 : 0,
-          opacity: window.innerWidth < 640 ? 0 : 1 
-        },
-        {
-          clipPath: 'inset(0 0% 0 0)',
-          y: 0,
-          opacity: 1,
-          duration: 1.1,
-          ease: 'expo.out',
-          scrollTrigger: {
-            trigger: row,
-            start: () => 'top 88%',
-            invalidateOnRefresh: true,
-            toggleActions: 'play none none none',
-          },
-        }
-      );
+    // Row animations - use matchMedia for responsive animations
+    const mm = gsap.matchMedia();
+
+    mm.add('(min-width: 640px)', () => {
+      rowsRef.current.forEach((row, i) => {
+        if (!row) return;
+        
+        gsap.fromTo(
+          row,
+          { clipPath: 'inset(0 100% 0 0)', y: 0, opacity: 1 },
+          {
+            clipPath: 'inset(0 0% 0 0)',
+            y: 0,
+            opacity: 1,
+            duration: 1.1,
+            ease: 'expo.out',
+            scrollTrigger: {
+              trigger: row,
+              start: () => 'top 88%',
+              invalidateOnRefresh: true,
+              toggleActions: 'play none none none',
+            },
+          }
+        );
+      });
     });
-    
-    // Critical: Refresh ScrollTrigger after dynamic content renders
-    ScrollTrigger.refresh();
+
+    mm.add('(max-width: 639px)', () => {
+      rowsRef.current.forEach((row, i) => {
+        if (!row) return;
+        
+        gsap.fromTo(
+          row,
+          { clipPath: 'none', y: 30, opacity: 0 },
+          {
+            clipPath: 'none',
+            y: 0,
+            opacity: 1,
+            duration: 1.1,
+            ease: 'expo.out',
+            scrollTrigger: {
+              trigger: row,
+              start: () => 'top 88%',
+              invalidateOnRefresh: true,
+              toggleActions: 'play none none none',
+            },
+          }
+        );
+      });
+    });
+
+    // Return cleanup for matchMedia
+    return () => mm.revert();
 
   }, { dependencies: [loading, projects], scope: sectionRef });
 
@@ -124,11 +152,24 @@ export default function Work() {
     const section = sectionRef.current;
     const mq = window.matchMedia('(min-width: 1024px)');
     
+    const handleChange = contextSafe((e) => {
+      if (e.matches) {
+        section?.addEventListener('mousemove', onMove);
+      } else {
+        section?.removeEventListener('mousemove', onMove);
+      }
+    });
+
+    // Add change listener for responsive behavior
+    mq.addEventListener('change', handleChange);
+    
+    // Initial check
     if (mq.matches) {
       section?.addEventListener('mousemove', onMove);
     }
 
     return () => {
+      mq.removeEventListener('change', handleChange);
       section?.removeEventListener('mousemove', onMove);
     };
   }, { dependencies: [loading], scope: sectionRef });
@@ -178,8 +219,6 @@ export default function Work() {
         </div>
 
         {/* Top ruling line */}
-        {/* Clear refs array to avoid stale references */}
-        {linesRef.current.length = 0}
         <div
           className="work__rule"
           ref={el => linesRef.current[linesRef.current.length] = el}
@@ -188,9 +227,6 @@ export default function Work() {
 
         {/* Numbered showcase list */}
         <div className="work__list">
-          {/* Clear refs arrays to avoid stale references */}
-          {rowsRef.current.length = 0}
-          {linesRef.current.length = 0}
           {projects.map((project, i) => (
             <div key={project.id}>
               <a

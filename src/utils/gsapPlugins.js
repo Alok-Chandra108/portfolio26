@@ -85,18 +85,17 @@ try {
   ({ PixiPlugin } = await import("gsap/PixiPlugin"));
 } catch(e) { /* PixiPlugin not available */ }
 
-// Register all available plugins
-const plugins = [
-  useGSAP, Flip, Observer, ScrollTrigger, ScrollToPlugin,
+// Register all available plugins (NOTE: useGSAP is a React hook, NOT a GSAP plugin — do not register it here)
+// eslint-disable-next-line react-hooks/rules-of-hooks
+gsap.registerPlugin(
+  Flip, Observer, ScrollTrigger, ScrollToPlugin,
   TextPlugin, MotionPathPlugin, Draggable,
   SplitText, ScrollSmoother, DrawSVGPlugin, MorphSVGPlugin,
   ScrambleTextPlugin, InertiaPlugin, CustomEase, CustomBounce,
   CustomWiggle, RoughEase, ExpoScaleEase, SlowMo,
   GSDevTools, MotionPathHelper, Physics2DPlugin, PhysicsPropsPlugin,
   EaselPlugin, PixiPlugin
-].filter(Boolean);
-
-gsap.registerPlugin(...plugins);
+);
 
 export {
   gsap, useGSAP, Flip, Observer, ScrollTrigger, ScrollToPlugin,
