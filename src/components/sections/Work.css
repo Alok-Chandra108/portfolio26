@@ -164,8 +164,14 @@
   z-index: 100;
   opacity: 0;
   transform: scale(0.88);
-  will-change: transform, opacity;
+  will-change: transform, opacity, width, height;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  transition: width 0.35s cubic-bezier(0.25, 1, 0.5, 1), height 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.work__preview--tall {
+  width: 240px;
+  height: 340px;
 }
 
 .work__preview img {

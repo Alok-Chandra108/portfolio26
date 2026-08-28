@@ -15,6 +15,7 @@ export default function Work() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hoveredId, setHoveredId] = useState(null);
+  const [isPortrait, setIsPortrait] = useState(false);
 
   // Get contextSafe early so it's available for all useGSAP callbacks
   const { contextSafe } = useGSAP({ scope: sectionRef });
@@ -145,8 +146,10 @@ export default function Work() {
     const onMove = contextSafe((e) => {
       const rect = sectionRef.current?.getBoundingClientRect();
       if (!rect) return;
+      const hovered = projects.find(p => p.id === hoveredId);
+      const isTall = hovered?.type === 'tall' || isPortrait;
       xS(e.clientX - rect.left + 24);
-      yS(e.clientY - rect.top - 80);
+      yS(e.clientY - rect.top - (isTall ? 140 : 80));
     });
 
     const section = sectionRef.current;
@@ -172,11 +175,16 @@ export default function Work() {
       mq.removeEventListener('change', handleChange);
       section?.removeEventListener('mousemove', onMove);
     };
-  }, { dependencies: [loading], scope: sectionRef });
+  }, { dependencies: [loading, hoveredId, isPortrait], scope: sectionRef });
 
   /* ── Preview show/hide on row hover ─────────────────── */
   const handleRowEnter = contextSafe((project) => {
     setHoveredId(project.id);
+    if (project.type === 'tall') {
+      setIsPortrait(true);
+    } else if (project.type === 'wide') {
+      setIsPortrait(false);
+    }
     if (window.innerWidth < 1024) return;
     gsap.to(previewRef.current, {
       opacity: 1,
@@ -196,7 +204,17 @@ export default function Work() {
     });
   });
 
+  const handleImageLoad = (e) => {
+    const { naturalWidth, naturalHeight } = e.target;
+    if (naturalHeight > naturalWidth * 1.05) {
+      setIsPortrait(true);
+    } else if (!hoveredProject?.type) {
+      setIsPortrait(false);
+    }
+  };
+
   const hoveredProject = projects.find(p => p.id === hoveredId);
+  const isTall = hoveredProject?.type === 'tall' || isPortrait;
 
   if (loading && projects.length === 0) {
     return (
@@ -264,11 +282,16 @@ export default function Work() {
         </div>
 
         {/* Floating preview image (desktop hover) */}
-        <div className="work__preview" ref={previewRef} aria-hidden="true">
+        <div 
+          className={`work__preview ${isTall ? 'work__preview--tall' : ''}`} 
+          ref={previewRef} 
+          aria-hidden="true"
+        >
           <img
             src={hoveredProject?.image || projects[0]?.image}
             alt=""
             loading="eager"
+            onLoad={handleImageLoad}
           />
         </div>
 
