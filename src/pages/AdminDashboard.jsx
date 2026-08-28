@@ -70,6 +70,12 @@ const AdminDashboard = () => {
             <Link to="/admin/messages" className="btn-manage" style={{ textDecoration: 'none' }}>View Messages</Link>
           </div>
 
+          <div className="admin-card">
+            <h3>About Me</h3>
+            <p>Update your profile photo, heading, and bio.</p>
+            <Link to="/admin/about" className="btn-manage" style={{ textDecoration: 'none' }}>Edit About</Link>
+          </div>
+
           <div className="admin-card status-card">
             <h3>Live Availability</h3>
             <p>Show visitors if you are open for new projects or currently deep in work.</p>

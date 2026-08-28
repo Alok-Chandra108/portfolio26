@@ -1,6 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { gsap, useGSAP } from '../utils/gsapPlugins.js';
 import AnimatedButton from '../components/ui/AnimatedButton.jsx';
+import { aboutService } from '../firebase/aboutService';
 import './AboutPage.css';
 
 export default function AboutPage() {
@@ -8,6 +9,37 @@ export default function AboutPage() {
   const contentRef = useRef(null);
   const photoRef = useRef(null);
   const statsRefs = useRef([]);
+
+  const defaultPhoto = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80";
+  const defaultHeading = "I build robust infrastructure, because downtime is bad";
+  const defaultBio1 = "I'm a Cloud & DevOps enthusiast with a passion for architecting resilient, scalable systems. My journey started with a curiosity for how servers and networks operate, and it has evolved into a career dedicated to automating deployments and building secure, reliable cloud infrastructure.";
+  const defaultBio2 = "I specialize in AWS, CI/CD pipelines, containerization, and Infrastructure as Code. When I'm not configuring clusters or writing automation scripts, you'll find me reading about system architecture, exploring new cloud services, or contributing to open-source tools.";
+
+  const [aboutData, setAboutData] = useState({
+    photoUrl: defaultPhoto,
+    heading: defaultHeading,
+    bio1: defaultBio1,
+    bio2: defaultBio2,
+  });
+
+  useEffect(() => {
+    const fetchAboutData = async () => {
+      try {
+        const data = await aboutService.getAboutData();
+        if (data) {
+          setAboutData({
+            photoUrl: data.photoUrl || defaultPhoto,
+            heading: data.heading || defaultHeading,
+            bio1: data.bio1 || defaultBio1,
+            bio2: data.bio2 || defaultBio2,
+          });
+        }
+      } catch (error) {
+        console.error("Failed to fetch about data:", error);
+      }
+    };
+    fetchAboutData();
+  }, []);
 
   useGSAP(() => {
     // Header reveal
@@ -80,7 +112,7 @@ export default function AboutPage() {
           <div className="about-page__left">
             <div className="about-page__photo" ref={photoRef}>
               <img
-                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80"
+                src={aboutData.photoUrl}
                 alt="Portrait"
                 loading="lazy"
               />
@@ -88,19 +120,16 @@ export default function AboutPage() {
           </div>
           <div className="about-page__right">
             <h2 className="heading-section">
-              I build robust infrastructure, because downtime is bad
+              {aboutData.heading}
             </h2>
             <p className="body-text about-page__bio">
-              I'm a Cloud & DevOps enthusiast with a passion for architecting resilient,
-              scalable systems. My journey started with a curiosity for how servers and networks
-              operate, and it has evolved into a career dedicated to automating deployments and
-              building secure, reliable cloud infrastructure.
+              {aboutData.bio1}
             </p>
-            <p className="body-text about-page__bio">
-              I specialize in AWS, CI/CD pipelines, containerization, and Infrastructure as Code.
-              When I'm not configuring clusters or writing automation scripts, you'll find me reading about
-              system architecture, exploring new cloud services, or contributing to open-source tools.
-            </p>
+            {aboutData.bio2 && (
+              <p className="body-text about-page__bio">
+                {aboutData.bio2}
+              </p>
+            )}
 
             <div className="about-page__stats">
               <div className="about-page__stat">

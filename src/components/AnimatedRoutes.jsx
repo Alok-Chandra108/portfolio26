@@ -16,6 +16,7 @@ import AdminExperience from '../pages/admin/AdminExperience.jsx';
 import AdminSkills from '../pages/admin/AdminSkills.jsx';
 import AdminReads from '../pages/admin/AdminReads.jsx';
 import AdminMessages from '../pages/admin/AdminMessages.jsx';
+import AdminAbout from '../pages/admin/AdminAbout.jsx';
 import ProtectedRoute from './ProtectedRoute.jsx';
 import NotFound from '../pages/NotFound.jsx';
 
@@ -77,6 +78,14 @@ export default function AnimatedRoutes() {
           element={
             <ProtectedRoute>
               <PageWrapper><AdminMessages /></PageWrapper>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/admin/about" 
+          element={
+            <ProtectedRoute>
+              <PageWrapper><AdminAbout /></PageWrapper>
             </ProtectedRoute>
           } 
         />
