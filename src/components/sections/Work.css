@@ -36,7 +36,7 @@
 /* Each row */
 .work__row {
   display: grid;
-  grid-template-columns: 56px 1fr auto auto;
+  grid-template-columns: 56px minmax(auto, max-content) minmax(0, 1fr) auto;
   align-items: center;
   gap: 24px;
   padding: 28px 0;
@@ -104,12 +104,22 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  max-width: 55vw;
 }
 
 .work__row-tags {
   display: flex;
   gap: 8px;
   flex-wrap: nowrap;
+  align-items: center;
+  overflow: hidden;
+  min-width: 0;
+  padding-right: 8px;
+  -webkit-mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 75%, rgba(0, 0, 0, 0) 100%);
+  mask-image: linear-gradient(to right, rgba(0, 0, 0, 1) 75%, rgba(0, 0, 0, 0) 100%);
+}
+
+.work__row-tags .pill-tag {
   flex-shrink: 0;
 }
 
