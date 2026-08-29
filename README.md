@@ -10,7 +10,7 @@ This portfolio is not just a collection of projects; it's a statement on digital
 
 - **Motion Architecture**: All animations are built on a systematic foundation using **GSAP** (`@gsap/react`), **Lenis** for smooth momentum-based scrolling, and **Framer Motion** for layout orchestration. This unified stack ensures all transitions feel deliberate, smooth, and performant.
 - **Micro-Interactions**: Magnetic elements, custom cursors, and per-character hover effects bridge the gap between user and interface.
-- **Glassmorphic Depth**: Deep backdrop blurs and luminous glows create a sense of physical space in a digital medium.
+- **Glassmorphic Depth**: Deep backdrop blurs and luminous glows create a sense of physical space in a digital medium..
 
 ---
 
