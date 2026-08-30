@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap, ScrollTrigger, useGSAP } from '../../utils/gsapPlugins.js';
 import PillTag from '../ui/PillTag.jsx';
 import DownloadCV from '../ui/DownloadCV.jsx';
+import HeroScene from './HeroScene.jsx';
 import './Hero.css';
 
 const subtitles = [
@@ -145,9 +146,10 @@ export default function Hero() {
 
   return (
     <section className="hero section" ref={sectionRef}>
+      <HeroScene />
       <div className="hero__annotation sub-label">(portfolio)</div>
 
-      <div className="hero__heading-wrap container">
+      <div className="hero__heading-wrap container" style={{ position: 'relative', zIndex: 1 }}>
         <h1 className="hero__heading heading-hero" ref={headingRef}>
           {'ALOK CHANDRA'.split(' ').map((word, wIndex) => (
             <span key={wIndex} className="hero__word-wrap">
@@ -181,7 +183,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="hero__marquee" ref={marqueeRef}>
+      <div className="hero__marquee" ref={marqueeRef} style={{ position: 'relative', zIndex: 1 }}>
         <div className="hero__marquee-track">
           <span className="hero__marquee-text">{marqueeContent}</span>
           <span className="hero__marquee-text">{marqueeContent}</span>
@@ -189,7 +191,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <div ref={cvBtnRef}>
+      <div ref={cvBtnRef} style={{ position: 'relative', zIndex: 1 }}>
         <DownloadCV />
       </div>
     </section>

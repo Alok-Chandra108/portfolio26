@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useLenis } from 'lenis/react';
 import { gsap, useGSAP } from '../utils/gsapPlugins.js';
+import { useAudio } from '../context/AudioContext.jsx';
 import StatusPulse from './StatusPulse';
 import './Navbar.css';
 
@@ -15,6 +16,7 @@ export default function Navbar() {
   const charAInnerRef = useRef(null);
   const charCInnerRef = useRef(null);
   const navigate = useNavigate();
+  const { isSoundEnabled, toggleSound } = useAudio();
 
   const mountedRef = useRef(true);
   useEffect(() => {
@@ -162,6 +164,20 @@ export default function Navbar() {
           <div className="navbar__status-wrap desktop-only">
             <StatusPulse />
           </div>
+
+          <button 
+            className="navbar__sound-toggle desktop-only" 
+            onClick={toggleSound}
+            aria-label="Toggle Sound"
+            style={{ 
+              background: 'transparent', border: '1px solid rgba(255,255,255,0.1)', 
+              color: 'var(--color-text)', borderRadius: '50%', width: '40px', height: '40px', 
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
+              marginRight: '12px'
+            }}
+          >
+            {isSoundEnabled ? '🔊' : '🔇'}
+          </button>
 
           <Link to="/contact" className="navbar__cta-btn">
             <span>LET'S TALK</span>

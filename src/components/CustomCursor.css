@@ -28,7 +28,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: border-radius 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
+  transition: border-radius 0.3s ease, border-color 0.3s ease, background-color 0.3s ease, width 0.3s ease, height 0.3s ease;
+}
+
+.cursor-text {
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: #000;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
 @media (max-width: 768px) {

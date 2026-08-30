@@ -9,7 +9,9 @@ import Footer from './components/Footer.jsx';
 import SmoothScroll from './components/SmoothScroll.jsx';
 import AnimatedRoutes from './components/AnimatedRoutes.jsx';
 import { AuthProvider } from './context/AuthContext';
+import { AudioProvider } from './context/AudioContext.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
+import CommandPalette from './components/ui/CommandPalette.jsx';
 
 
 // List of known routes to check against
@@ -91,9 +93,12 @@ function AppContent() {
 function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
+      <AudioProvider>
+        <AuthProvider>
+          <AppContent />
+          <CommandPalette />
+        </AuthProvider>
+      </AudioProvider>
     </BrowserRouter>
   );
 }

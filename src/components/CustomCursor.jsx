@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { gsap } from '../utils/gsapPlugins.js';
+import { useAudio } from '../context/AudioContext.jsx';
 import './CustomCursor.css';
 
 /**
@@ -9,7 +10,9 @@ import './CustomCursor.css';
 export default function CustomCursor() {
   const dotRef = useRef(null);
   const ringRef = useRef(null);
+  const textRef = useRef(null);
   const isVisible = useRef(false);
+  const { playHover, playClick } = useAudio();
 
   // Store quickTo instances for cleanup
   const quickToRefs = useRef({
@@ -59,10 +62,12 @@ export default function CustomCursor() {
   useEffect(() => {
     const dot = dotRef.current;
     const ring = ringRef.current;
+    const textEl = textRef.current;
     if (!dot || !ring) return;
 
     // Set initial state
     gsap.set([dot, ring], { opacity: 0, scale: 0, xPercent: -50, yPercent: -50 });
+    if (textEl) gsap.set(textEl, { opacity: 0, scale: 0 });
 
     // Create optimized quickTo instances
     quickToRefs.current.dotX = gsap.quickTo(dot, "x", { duration: 0.1, ease: "power3.out" });
@@ -83,6 +88,7 @@ export default function CustomCursor() {
     };
 
     const handleMouseDown = () => {
+      playClick();
       gsap.to(ring, { scale: 0.8, duration: 0.2, ease: "power2.out" });
       gsap.to(dot, { scale: 1.5, duration: 0.2 });
     };
@@ -107,13 +113,32 @@ export default function CustomCursor() {
       if (hideCursor) {
         gsap.to([dot, ring], { opacity: 0, scale: 0, duration: 0.2 });
       } else if (clickable) {
-        gsap.to(ring, {
-          scale: 1.8,
-          backgroundColor: 'rgba(184, 255, 0, 0.12)',
-          borderColor: 'rgba(184, 255, 0, 0.4)',
-          duration: 0.3,
-          ease: 'power2.out',
-        });
+        playHover();
+        
+        let cursorText = '';
+        if (clickable.hasAttribute('data-cursor')) {
+          cursorText = clickable.getAttribute('data-cursor').toUpperCase();
+        }
+
+        if (cursorText && textEl) {
+          textEl.innerText = cursorText;
+          gsap.to(textEl, { opacity: 1, scale: 1, duration: 0.3 });
+          gsap.to(ring, {
+            scale: 2.5,
+            backgroundColor: 'rgba(184, 255, 0, 0.9)',
+            borderColor: 'transparent',
+            duration: 0.3,
+            ease: 'power2.out',
+          });
+        } else {
+          gsap.to(ring, {
+            scale: 1.8,
+            backgroundColor: 'rgba(184, 255, 0, 0.12)',
+            borderColor: 'rgba(184, 255, 0, 0.4)',
+            duration: 0.3,
+            ease: 'power2.out',
+          });
+        }
         gsap.to(dot, { opacity: 0, duration: 0.2 });
       } else if (textCursor && !clickable) {
         gsap.to(ring, {
@@ -130,6 +155,9 @@ export default function CustomCursor() {
       const hideCursor = target.closest('[data-cursor="hide"], .navbar__logo');
 
       if (clickable || hideCursor) {
+        if (textEl) {
+          gsap.to(textEl, { opacity: 0, scale: 0, duration: 0.2 });
+        }
         gsap.to(ring, {
           scale: 1,
           opacity: 1,
@@ -168,7 +196,9 @@ export default function CustomCursor() {
   return (
     <>
       <div className="cursor-dot" ref={dotRef} />
-      <div className="cursor-ring" ref={ringRef} />
+      <div className="cursor-ring" ref={ringRef}>
+        <span className="cursor-text mono-label" ref={textRef} style={{ fontSize: '6px', color: '#000' }}></span>
+      </div>
     </>
   );
 }

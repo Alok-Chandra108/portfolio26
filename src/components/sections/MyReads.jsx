@@ -180,6 +180,7 @@ export default function MyReads() {
                 key={book.id}
                 ref={el => cardRefs.current[i] = el}
                 className="my-reads__card-wrap will-animate"
+                data-cursor="view"
               >
                 <BookCard
                   book={book}
