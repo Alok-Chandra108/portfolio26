@@ -68,7 +68,6 @@
   /* Flatten rotation — horizontal strips must sit level */
   .my-reads__card-wrap {
     width: 100%;
-    transform: none !important;
   }
 
   .my-reads__cta {

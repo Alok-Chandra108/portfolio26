@@ -52,6 +52,12 @@
   to { transform: translateX(-50%); }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .about__photo-strip {
+    animation-play-state: paused;
+  }
+}
+
 /* ── Responsive ──────────────────────────────── */
 
 /* ── sm + md phones (≤ 767px) ── */

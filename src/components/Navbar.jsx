@@ -33,7 +33,9 @@ export default function Navbar() {
 
   useGSAP(() => {
     // Set initial position for C container
-    gsap.set(charCInnerRef.current, { yPercent: -50 });
+    if (charCInnerRef.current) {
+      gsap.set(charCInnerRef.current, { yPercent: -50 });
+    }
   }, { scope: navRef });
 
   // Menu open/close animation - with scope and contextSafe

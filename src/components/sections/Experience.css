@@ -87,7 +87,6 @@
   border-radius: 50%;
   transform: translate(-50%, -50%);
   box-shadow: 0 0 0 4px rgba(184, 255, 0, 0.25);
-  transition: top 0.5s cubic-bezier(0.76, 0, 0.24, 1);
   will-change: top;
   z-index: 2;
 }

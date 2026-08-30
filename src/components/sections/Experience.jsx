@@ -198,16 +198,11 @@ function ExperiencePanel({ experiences, activeIndex }) {
   // Get contextSafe for this component's scope
   const { contextSafe } = useGSAP({ scope: reelRef });
 
-  // Cache panel cards when experiences change - clear first to avoid stale refs
-  useEffect(() => {
-    panelCardsRef.current = [];
-    if (reelRef.current) {
-      panelCardsRef.current = Array.from(reelRef.current.querySelectorAll('.experience__panel-card'));
-    }
-  }, [experiences]);
-
   useGSAP(() => {
     if (!reelRef.current) return;
+    
+    // Cache panel cards on the fly to avoid stale refs during rapid index changes
+    panelCardsRef.current = Array.from(reelRef.current.querySelectorAll('.experience__panel-card'));
 
     // Calculate direction: 1 for down (next), -1 for up (prev)
     const direction = activeIndex > prevIndex.current ? 1 : -1;
