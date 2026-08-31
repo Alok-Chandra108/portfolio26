@@ -26,7 +26,7 @@ function PhoenixModel({ url, mouse }) {
       const maxDim = Math.max(size.x, size.y, size.z);
 
       // Target size in world units (adjust to make it look right on screen)
-      const targetSize = 2.5; 
+      const targetSize = 3.5; 
       const scale = targetSize / maxDim;
       
       // Calculate offset to center the model BEFORE scaling is applied
@@ -46,8 +46,8 @@ function PhoenixModel({ url, mouse }) {
   });
 
   return (
-    // Fixed position: right side, vertically centered in viewport
-    <group position={[1.5, 0, 0]}>
+    // Shifted slightly to the left, moved UP to sit in the main whitespace above the banner
+    <group position={[-0.8, 0.4, 0]}>
       <Float speed={1.5} rotationIntensity={0} floatIntensity={0.4}>
         <group ref={pivotRef}>
           {/* Apply the computed scale here, safely outside the animated scene */}
@@ -92,7 +92,7 @@ export default function HeroScene() {
       }}
     >
       <Canvas
-        camera={{ position: [0, 0, 6], fov: 40 }}
+        camera={{ position: [0, 0, 5], fov: 40 }}
         dpr={[1, 1.5]}
         gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
         style={{ background: 'transparent' }}
