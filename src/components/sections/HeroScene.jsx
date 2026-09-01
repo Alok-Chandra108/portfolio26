@@ -112,10 +112,10 @@ function PhoenixModel({ url, mouse, pinkLightRef, blueLightRef }) {
   const cPitch = useRef(0);   // current smoothed X rotation
   const cRoll  = useRef(0);   // current smoothed Z rotation
 
-  // Tuning constants
-  const YAW_SCALE   = 12.0;
-  const PITCH_SCALE = 8.0;
-  const ROLL_SCALE  = 9.0;
+  // Tuning constants — direction-based rotation (stable throughout transit)
+  const DIR_YAW    = 0.55;   // max yaw angle from direction to target
+  const DIR_PITCH  = 0.30;   // max pitch angle from direction to target
+  const DIR_ROLL   = 0.40;   // max roll (banking) from direction to target
 
   // Compute base scale once
   useEffect(() => {
@@ -141,85 +141,97 @@ function PhoenixModel({ url, mouse, pinkLightRef, blueLightRef }) {
 
   useFrame((state, delta) => {
     if (!ready.current || !rootRef.current || !pivotRef.current) return;
-    const dt = Math.min(delta, 0.05);
 
-    // Advance waypoint timer
+    // ── 0. Clamp delta to prevent spiral on tab-switch ──────────────
+    const dt = Math.min(delta, 0.05);
+    const elapsed = state.clock.elapsedTime;
+
+    // ── 1. Advance waypoint timer ────────────────────────────────────
     const wp = WAYPOINTS[wpIdx.current];
     wpTimer.current += dt;
     if (wpTimer.current >= wp.dur) {
       wpTimer.current = 0;
       wpIdx.current = (wpIdx.current + 1) % WAYPOINTS.length;
-      // BUG 8 FIX: After first full loop, allow REST to play normally
       if (firstLoop.current && wpIdx.current === 0) {
         firstLoop.current = false;
       }
     }
 
-    // BUG 6 FIX: Position lerp 1.4 (rotation lerp 2.2 in step 8 = ~1.6x faster)
-    const posLerp = Math.min(dt * 1.4, 1.0);
-
-    // Set next waypoint target (zero allocation)
+    // ── 2. Position update ────────────────────────────────────────────
+    const posLerp = Math.min(dt * 1.8, 1.0);
     nextWpPos.current.set(...WAYPOINTS[wpIdx.current].pos);
-
-    // BUG 1 FIX: Save previous position BEFORE lerp so velocity is real frame displacement
     prevPos.current.copy(tPos.current);
-
-    // Smooth position toward waypoint
     tPos.current.lerp(nextWpPos.current, posLerp);
 
-    // BUG 1 FIX: Compute true velocity from actual frame movement
+    // ── 3. Velocity (for speed metric and lighting only) ─────────────
     velocity.current.subVectors(tPos.current, prevPos.current);
     const speed = velocity.current.length();
 
-    // Clip animation speed
-    if (names.length > 0 && actions[names[0]]) {
-      const clip = actions[names[0]];
-      clip.timeScale += (WAYPOINTS[wpIdx.current].ts - clip.timeScale) * Math.min(dt * 3.0, 1.0);
-    }
+    // ── 4. Direction to target waypoint (stable rotation signal) ─────
+    //    Unlike velocity (which decays exponentially from lerp), the
+    //    direction vector stays consistent throughout the entire transit.
+    //    This prevents the "rotate briefly then drift lifelessly" issue.
+    const dx = nextWpPos.current.x - tPos.current.x;
+    const dy = nextWpPos.current.y - tPos.current.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
 
-    // BUG 5 FIX: Derive yaw, pitch, AND roll from velocity
-    // YAW: moving right (+vx) → nose turns right → negative Y rotation
-    // PITCH: moving up (+vy) → nose tilts up → negative X rotation
-    // ROLL: turning right → right wing dips → positive Z roll (banking)
-    if (speed > 0.0003) {
-      tYaw.current   = THREE.MathUtils.clamp(-velocity.current.x * YAW_SCALE,   -0.85, 0.85);
-      tPitch.current = THREE.MathUtils.clamp(-velocity.current.y * PITCH_SCALE, -0.45, 0.45);
-      tRoll.current  = THREE.MathUtils.clamp( velocity.current.x * ROLL_SCALE,  -0.55, 0.55);
+    // ── 5. Derive rotation from direction (fades as phoenix arrives) ──
+    if (dist > 0.02) {
+      const ndx = dx / dist;  // normalized direction X
+      const ndy = dy / dist;  // normalized direction Y
+      // Full orientation when far (>0.4), smooth fade when close (<0.04)
+      const orientW = THREE.MathUtils.smoothstep(dist, 0.04, 0.4);
+
+      // YAW: heading right (ndx>0) → nose turns right → negative Y rotation
+      tYaw.current   = -ndx * DIR_YAW   * orientW;
+      // PITCH: heading up (ndy>0) → nose tilts up → negative X rotation
+      tPitch.current = -ndy * DIR_PITCH  * orientW;
+      // ROLL: heading right → bank right → negative Z rotation
+      tRoll.current  = -ndx * DIR_ROLL   * orientW;
     } else {
-      // Phoenix is nearly stationary — relax to neutral
-      tYaw.current   *= 0.95;
-      tPitch.current *= 0.95;
-      tRoll.current  *= 0.95;
+      // At waypoint — smoothly relax to neutral (frame-rate independent)
+      const relax = Math.min(dt * 3.0, 1.0);
+      tYaw.current   *= (1.0 - relax);
+      tPitch.current *= (1.0 - relax);
+      tRoll.current  *= (1.0 - relax);
     }
 
-    // BUG 7 FIX: Mouse look weighted by inverse of movement speed
-    // When flying fast, the phoenix faces its direction of travel.
-    // When hovering still, the phoenix looks at the cursor.
-    const mouseWeight = Math.max(0.0, 1.0 - speed * 20.0);
-    const mY = (mouse.current.x * Math.PI) / 14 * mouseWeight * 0.8;
+    // ── 6. Subtle idle breathing (always present, adds life) ─────────
+    const idleYaw   = Math.sin(elapsed * 0.4) * 0.025;
+    const idlePitch = Math.sin(elapsed * 0.6 + 1.0) * 0.015;
+
+    // ── 7. Mouse look — strong when hovering, fades when travelling ──
+    const mouseWeight = 1.0 - THREE.MathUtils.smoothstep(dist, 0.04, 0.35);
+    const mY =  (mouse.current.x * Math.PI) / 14 * mouseWeight * 0.8;
     const mX = -(mouse.current.y * Math.PI) / 16 * mouseWeight * 0.8;
 
-    // Smooth current rotations toward targets
-    const rotLerp = Math.min(dt * 2.2, 1.0);
+    // ── 8. Smooth current rotations toward targets ───────────────────
+    const rotLerp = Math.min(dt * 2.5, 1.0);
     cYaw.current   += (tYaw.current   - cYaw.current)   * rotLerp;
     cPitch.current += (tPitch.current - cPitch.current) * rotLerp;
     cRoll.current  += (tRoll.current  - cRoll.current)  * rotLerp;
 
-    // Apply rotation to pivot (physics + mouse additive)
-    pivotRef.current.rotation.x = cPitch.current + mX;
-    pivotRef.current.rotation.y = cYaw.current   + mY;
+    // ── 9. Apply rotation to pivot ───────────────────────────────────
+    pivotRef.current.rotation.x = cPitch.current + mX + idlePitch;
+    pivotRef.current.rotation.y = cYaw.current   + mY + idleYaw;
     pivotRef.current.rotation.z = cRoll.current;
 
-    // BUG 3 FIX: Manual float — no Float component interference
-    const floatY = Math.sin(state.clock.elapsedTime * 1.5) * 0.07;
+    // ── 10. Apply position + manual float ────────────────────────────
+    const floatY = Math.sin(elapsed * 1.5) * 0.07;
     rootRef.current.position.set(
       tPos.current.x,
       tPos.current.y + floatY,
       tPos.current.z
     );
 
-    // Light pulsing based on movement energy
-    const pulse = 0.5 + 0.5 * Math.sin(state.clock.elapsedTime * 2.5);
+    // ── 11. GLB clip timeScale ───────────────────────────────────────
+    if (names.length > 0 && actions[names[0]]) {
+      const clip = actions[names[0]];
+      clip.timeScale += (WAYPOINTS[wpIdx.current].ts - clip.timeScale) * Math.min(dt * 3.0, 1.0);
+    }
+
+    // ── 12. Light pulsing based on movement energy ───────────────────
+    const pulse = 0.5 + 0.5 * Math.sin(elapsed * 2.5);
     const energyBoost = Math.min(speed * 80.0, 6.0);
     if (pinkLightRef?.current) {
       pinkLightRef.current.intensity = 4 + pulse * 5 + energyBoost;
