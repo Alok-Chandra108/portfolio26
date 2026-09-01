@@ -1,6 +1,6 @@
 import { useRef, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useGLTF, useAnimations, Float, Environment } from "@react-three/drei";
+import { useGLTF, useAnimations, Environment } from "@react-three/drei";
 import * as THREE from "three";
 
 // Waypoints spread across the full hero section
@@ -127,7 +127,7 @@ function PhoenixModel({ url, mouse, pinkLightRef, blueLightRef }) {
     };
   }, [actions, names]);
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     if (!ready.current || !rootRef.current || !pivotRef.current) return;
     const dt = Math.min(delta, 0.05);
 
@@ -151,7 +151,6 @@ function PhoenixModel({ url, mouse, pinkLightRef, blueLightRef }) {
 
     // Smooth position toward waypoint
     tPos.current.lerp(nextWpPos.current, sp);
-    rootRef.current.position.copy(tPos.current);
 
     // BUG 1 FIX: Compute true velocity from actual frame movement
     velocity.current.subVectors(tPos.current, prevPos.current);
@@ -177,6 +176,14 @@ function PhoenixModel({ url, mouse, pinkLightRef, blueLightRef }) {
     pivotRef.current.rotation.y = tRotY.current + mY;
     pivotRef.current.rotation.z = tRotZ.current;
 
+    // BUG 3 FIX: Manual float — no Float component interference
+    const floatY = Math.sin(state.clock.elapsedTime * 1.5) * 0.07;
+    rootRef.current.position.set(
+      tPos.current.x,
+      tPos.current.y + floatY,
+      tPos.current.z
+    );
+
     // Accent light pulse
     const pulse = 0.5 + 0.5 * Math.sin(wpTimer.current * 2.0);
     if (pinkLightRef?.current) pinkLightRef.current.intensity = 4 + pulse * 6;
@@ -187,15 +194,14 @@ function PhoenixModel({ url, mouse, pinkLightRef, blueLightRef }) {
     <>
       <FireEmbers trackRef={rootRef} />
       <group ref={rootRef}>
-        <Float speed={1.2} rotationIntensity={0} floatIntensity={0.3}>
-          <group ref={pivotRef}>
-            <group ref={modelRef}>
-              <group ref={animRef} dispose={null}>
-                <primitive object={scene} />
-              </group>
+        {/* No <Float> — manual float applied in useFrame to rootRef.position */}
+        <group ref={pivotRef}>
+          <group ref={modelRef}>
+            <group ref={animRef} dispose={null}>
+              <primitive object={scene} />
             </group>
           </group>
-        </Float>
+        </group>
       </group>
     </>
   );
