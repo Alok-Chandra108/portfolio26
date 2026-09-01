@@ -3,18 +3,20 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, useAnimations, Environment } from "@react-three/drei";
 import * as THREE from "three";
 
-// Waypoints spread across the full hero section
-// X: -1.8 (far left) to 1.3 (right), Y: -0.9 (low) to 1.6 (high)
+// Waypoints — rotation is computed from velocity, NOT authored per waypoint
+// X: −1.8 → +1.3 (avoids overlapping heading text on far right)
+// Y: −1.0 → +1.8 (within viewport height), Z: always 0
 const WAYPOINTS = [
-  { id: "START",       pos: [-0.5,  0.3, 0], rot: [ 0,    0,     0   ], ts: 1.0, dur: 3.5 },
-  { id: "UPPER_RIGHT", pos: [ 1.2,  1.4, 0], rot: [ 0,   -0.4,   0.15], ts: 1.2, dur: 3.0 },
-  { id: "LOWER_RIGHT", pos: [ 1.0, -0.8, 0], rot: [ 0.5, -0.2,   0   ], ts: 1.5, dur: 2.8 },
-  { id: "CENTER_LOW",  pos: [-0.3, -0.9, 0], rot: [ 0.4,  0,     0   ], ts: 1.3, dur: 2.5 },
-  { id: "LEFT_MID",    pos: [-1.7,  0.2, 0], rot: [ 0,    0.5,  -0.1 ], ts: 1.0, dur: 3.0 },
-  { id: "UPPER_LEFT",  pos: [-1.5,  1.6, 0], rot: [-0.2,  0.3,   0   ], ts: 0.8, dur: 2.8 },
-  { id: "CENTER_HIGH", pos: [-0.3,  1.5, 0], rot: [-0.3,  0,     0   ], ts: 0.9, dur: 3.0 },
-  { id: "RIGHT_MID",   pos: [ 1.3,  0.3, 0], rot: [ 0,   -0.5,   0.1 ], ts: 1.4, dur: 2.5 },
-  { id: "REST",        pos: [-0.5,  0.3, 0], rot: [ 0,    0,     0   ], ts: 1.0, dur: 4.0 },
+  { id: "REST",         pos: [-0.5,  0.30, 0], ts: 1.0, dur: 3.5 },
+  { id: "UPPER_RIGHT",  pos: [ 1.1,  1.35, 0], ts: 1.2, dur: 3.0 },
+  { id: "LOWER_RIGHT",  pos: [ 0.9, -0.75, 0], ts: 1.5, dur: 2.8 },
+  { id: "CENTER_LOW",   pos: [-0.2, -0.85, 0], ts: 1.3, dur: 2.5 },
+  { id: "LEFT_MID",     pos: [-1.6,  0.20, 0], ts: 1.0, dur: 3.0 },
+  { id: "UPPER_LEFT",   pos: [-1.4,  1.55, 0], ts: 0.9, dur: 2.8 },
+  { id: "CENTER_HIGH",  pos: [-0.3,  1.45, 0], ts: 0.8, dur: 3.0 },
+  { id: "RIGHT_MID",    pos: [ 1.2,  0.30, 0], ts: 1.4, dur: 2.5 },
+  { id: "DIVE_LOW",     pos: [ 0.1, -1.00, 0], ts: 1.8, dur: 2.0 },
+  { id: "RISE_HIGH",    pos: [-0.5,  1.80, 0], ts: 0.7, dur: 2.5 },
 ];
 
 // ── Fire Embers ─────────────────────────────────────────────
