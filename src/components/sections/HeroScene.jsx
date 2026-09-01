@@ -151,17 +151,17 @@ function PhoenixModel({ url, mouse, pinkLightRef, blueLightRef }) {
       if (wpIdx.current === 0) wpIdx.current = 1; // skip re-entry after first pass
     }
 
-    const next = WAYPOINTS[wpIdx.current];
-    const sp   = Math.min(dt * 0.9, 1);
+    // BUG 6 FIX: Position lerp 1.4 (rotation lerp 2.2 in step 8 = ~1.6x faster)
+    const posLerp = Math.min(dt * 1.4, 1.0);
 
-    // BUG 2 FIX: Use pre-allocated nextWpPos instead of new THREE.Vector3()
-    nextWpPos.current.set(...next.pos);
+    // Set next waypoint target (zero allocation)
+    nextWpPos.current.set(...WAYPOINTS[wpIdx.current].pos);
 
     // BUG 1 FIX: Save previous position BEFORE lerp so velocity is real frame displacement
     prevPos.current.copy(tPos.current);
 
     // Smooth position toward waypoint
-    tPos.current.lerp(nextWpPos.current, sp);
+    tPos.current.lerp(nextWpPos.current, posLerp);
 
     // BUG 1 FIX: Compute true velocity from actual frame movement
     velocity.current.subVectors(tPos.current, prevPos.current);
