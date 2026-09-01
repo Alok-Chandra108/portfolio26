@@ -1,4 +1,4 @@
-﻿import { useRef, useEffect, useMemo } from "react";
+import { useRef, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, useAnimations, Float, Environment } from "@react-three/drei";
 import * as THREE from "three";
@@ -94,7 +94,13 @@ function PhoenixModel({ url, mouse, pinkLightRef, blueLightRef }) {
   const wpIdx   = useRef(0);
   const wpTimer = useRef(0);
   const ready   = useRef(false);
-  const tPos    = useRef(new THREE.Vector3(-0.5, 0.3, 0));
+
+  // BUG 1 & 2 FIX: Pre-allocate all THREE objects (zero allocations in useFrame)
+  const prevPos   = useRef(new THREE.Vector3(-0.5, 0.3, 0));
+  const tPos      = useRef(new THREE.Vector3(-0.5, 0.3, 0));
+  const velocity  = useRef(new THREE.Vector3());
+  const nextWpPos = useRef(new THREE.Vector3(-0.5, 0.3, 0));
+
   const tRotX   = useRef(0);
   const tRotY   = useRef(0);
   const tRotZ   = useRef(0);
@@ -137,20 +143,27 @@ function PhoenixModel({ url, mouse, pinkLightRef, blueLightRef }) {
     const next = WAYPOINTS[wpIdx.current];
     const sp   = Math.min(dt * 0.9, 1);
 
+    // BUG 2 FIX: Use pre-allocated nextWpPos instead of new THREE.Vector3()
+    nextWpPos.current.set(...next.pos);
+
+    // BUG 1 FIX: Save previous position BEFORE lerp so velocity is real frame displacement
+    prevPos.current.copy(tPos.current);
+
     // Smooth position toward waypoint
-    tPos.current.lerp(new THREE.Vector3(...next.pos), sp);
+    tPos.current.lerp(nextWpPos.current, sp);
     rootRef.current.position.copy(tPos.current);
+
+    // BUG 1 FIX: Compute true velocity from actual frame movement
+    velocity.current.subVectors(tPos.current, prevPos.current);
 
     // Clip animation speed
     if (names.length > 0 && actions[names[0]]) {
       actions[names[0]].timeScale += (next.ts - actions[names[0]].timeScale) * sp * 4;
     }
 
-    // Body tilt based on direction of travel
-    const vx    = next.pos[0] - tPos.current.x;
-    const vy    = next.pos[1] - tPos.current.y;
-    const bodyY = THREE.MathUtils.clamp(vx * 0.5, -0.6, 0.6);
-    const bodyX = THREE.MathUtils.clamp(-vy * 0.3, -0.4, 0.4);
+    // Body tilt based on direction of travel — now uses real velocity
+    const bodyY = THREE.MathUtils.clamp(velocity.current.x * 0.5, -0.6, 0.6);
+    const bodyX = THREE.MathUtils.clamp(-velocity.current.y * 0.3, -0.4, 0.4);
 
     const sp3 = Math.min(dt * 3, 1);
     tRotX.current += ((next.rot[0] + bodyX) - tRotX.current) * sp3;
