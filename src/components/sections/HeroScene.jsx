@@ -188,9 +188,12 @@ function PhoenixModel({ url, mouse, pinkLightRef, blueLightRef }) {
       tRoll.current  *= 0.95;
     }
 
-    // Mouse look — additive on top of body rotation
-    const mY = (mouse.current.x * Math.PI) / 14;
-    const mX = -(mouse.current.y * Math.PI) / 16;
+    // BUG 7 FIX: Mouse look weighted by inverse of movement speed
+    // When flying fast, the phoenix faces its direction of travel.
+    // When hovering still, the phoenix looks at the cursor.
+    const mouseWeight = Math.max(0.0, 1.0 - speed * 20.0);
+    const mY = (mouse.current.x * Math.PI) / 14 * mouseWeight * 0.8;
+    const mX = -(mouse.current.y * Math.PI) / 16 * mouseWeight * 0.8;
 
     // Smooth current rotations toward targets
     const rotLerp = Math.min(dt * 2.2, 1.0);
