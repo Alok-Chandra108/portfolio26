@@ -93,9 +93,10 @@ function PhoenixModel({ url, mouse, pinkLightRef, blueLightRef }) {
   const { scene, animations } = useGLTF(url);
   const { actions, names }    = useAnimations(animations, animRef);
 
-  const wpIdx   = useRef(0);
-  const wpTimer = useRef(0);
-  const ready   = useRef(false);
+  const wpIdx     = useRef(0);
+  const wpTimer   = useRef(0);
+  const firstLoop = useRef(true);
+  const ready     = useRef(false);
 
   // BUG 1 & 2 FIX: Pre-allocate all THREE objects (zero allocations in useFrame)
   const prevPos   = useRef(new THREE.Vector3(-0.5, 0.3, 0));
@@ -148,7 +149,10 @@ function PhoenixModel({ url, mouse, pinkLightRef, blueLightRef }) {
     if (wpTimer.current >= wp.dur) {
       wpTimer.current = 0;
       wpIdx.current = (wpIdx.current + 1) % WAYPOINTS.length;
-      if (wpIdx.current === 0) wpIdx.current = 1; // skip re-entry after first pass
+      // BUG 8 FIX: After first full loop, allow REST to play normally
+      if (firstLoop.current && wpIdx.current === 0) {
+        firstLoop.current = false;
+      }
     }
 
     // BUG 6 FIX: Position lerp 1.4 (rotation lerp 2.2 in step 8 = ~1.6x faster)
@@ -214,10 +218,15 @@ function PhoenixModel({ url, mouse, pinkLightRef, blueLightRef }) {
       tPos.current.z
     );
 
-    // Accent light pulse
-    const pulse = 0.5 + 0.5 * Math.sin(wpTimer.current * 2.0);
-    if (pinkLightRef?.current) pinkLightRef.current.intensity = 4 + pulse * 6;
-    if (blueLightRef?.current) blueLightRef.current.intensity  = 4 + (1 - pulse) * 6;
+    // Light pulsing based on movement energy
+    const pulse = 0.5 + 0.5 * Math.sin(state.clock.elapsedTime * 2.5);
+    const energyBoost = Math.min(speed * 80.0, 6.0);
+    if (pinkLightRef?.current) {
+      pinkLightRef.current.intensity = 4 + pulse * 5 + energyBoost;
+    }
+    if (blueLightRef?.current) {
+      blueLightRef.current.intensity = 3 + (1 - pulse) * 5;
+    }
   });
 
   return (
@@ -250,7 +259,7 @@ export default function HeroScene() {
       mouse.current.x =  (e.clientX / window.innerWidth)  * 2 - 1;
       mouse.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
     };
-    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mousemove", onMove, { passive: true });
     return () => window.removeEventListener("mousemove", onMove);
   }, []);
 
