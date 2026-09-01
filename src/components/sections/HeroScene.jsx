@@ -103,9 +103,18 @@ function PhoenixModel({ url, mouse, pinkLightRef, blueLightRef }) {
   const velocity  = useRef(new THREE.Vector3());
   const nextWpPos = useRef(new THREE.Vector3(-0.5, 0.3, 0));
 
-  const tRotX   = useRef(0);
-  const tRotY   = useRef(0);
-  const tRotZ   = useRef(0);
+  // Target and current smoothed rotation values
+  const tYaw   = useRef(0);   // target Y rotation (from velocity)
+  const tPitch = useRef(0);   // target X rotation (from velocity)
+  const tRoll  = useRef(0);   // target Z rotation (banking)
+  const cYaw   = useRef(0);   // current smoothed Y rotation
+  const cPitch = useRef(0);   // current smoothed X rotation
+  const cRoll  = useRef(0);   // current smoothed Z rotation
+
+  // Tuning constants
+  const YAW_SCALE   = 12.0;
+  const PITCH_SCALE = 8.0;
+  const ROLL_SCALE  = 9.0;
 
   // Compute base scale once
   useEffect(() => {
@@ -156,27 +165,43 @@ function PhoenixModel({ url, mouse, pinkLightRef, blueLightRef }) {
 
     // BUG 1 FIX: Compute true velocity from actual frame movement
     velocity.current.subVectors(tPos.current, prevPos.current);
+    const speed = velocity.current.length();
 
     // Clip animation speed
     if (names.length > 0 && actions[names[0]]) {
-      actions[names[0]].timeScale += (next.ts - actions[names[0]].timeScale) * sp * 4;
+      const clip = actions[names[0]];
+      clip.timeScale += (WAYPOINTS[wpIdx.current].ts - clip.timeScale) * Math.min(dt * 3.0, 1.0);
     }
 
-    // Body tilt based on direction of travel — now uses real velocity
-    const bodyY = THREE.MathUtils.clamp(velocity.current.x * 0.5, -0.6, 0.6);
-    const bodyX = THREE.MathUtils.clamp(-velocity.current.y * 0.3, -0.4, 0.4);
-
-    const sp3 = Math.min(dt * 3, 1);
-    tRotX.current += ((next.rot[0] + bodyX) - tRotX.current) * sp3;
-    tRotY.current += ((next.rot[1] + bodyY) - tRotY.current) * sp3;
-    tRotZ.current += (next.rot[2] - tRotZ.current) * sp3;
+    // BUG 5 FIX: Derive yaw, pitch, AND roll from velocity
+    // YAW: moving right (+vx) → nose turns right → negative Y rotation
+    // PITCH: moving up (+vy) → nose tilts up → negative X rotation
+    // ROLL: turning right → right wing dips → positive Z roll (banking)
+    if (speed > 0.0003) {
+      tYaw.current   = THREE.MathUtils.clamp(-velocity.current.x * YAW_SCALE,   -0.85, 0.85);
+      tPitch.current = THREE.MathUtils.clamp(-velocity.current.y * PITCH_SCALE, -0.45, 0.45);
+      tRoll.current  = THREE.MathUtils.clamp( velocity.current.x * ROLL_SCALE,  -0.55, 0.55);
+    } else {
+      // Phoenix is nearly stationary — relax to neutral
+      tYaw.current   *= 0.95;
+      tPitch.current *= 0.95;
+      tRoll.current  *= 0.95;
+    }
 
     // Mouse look — additive on top of body rotation
     const mY = (mouse.current.x * Math.PI) / 14;
     const mX = -(mouse.current.y * Math.PI) / 16;
-    pivotRef.current.rotation.x = tRotX.current + mX;
-    pivotRef.current.rotation.y = tRotY.current + mY;
-    pivotRef.current.rotation.z = tRotZ.current;
+
+    // Smooth current rotations toward targets
+    const rotLerp = Math.min(dt * 2.2, 1.0);
+    cYaw.current   += (tYaw.current   - cYaw.current)   * rotLerp;
+    cPitch.current += (tPitch.current - cPitch.current) * rotLerp;
+    cRoll.current  += (tRoll.current  - cRoll.current)  * rotLerp;
+
+    // Apply rotation to pivot (physics + mouse additive)
+    pivotRef.current.rotation.x = cPitch.current + mX;
+    pivotRef.current.rotation.y = cYaw.current   + mY;
+    pivotRef.current.rotation.z = cRoll.current;
 
     // BUG 3 FIX: Manual float — no Float component interference
     const floatY = Math.sin(state.clock.elapsedTime * 1.5) * 0.07;
