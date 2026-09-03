@@ -3,21 +3,30 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, useAnimations, Environment } from "@react-three/drei";
 import * as THREE from "three";
 
-// Waypoints — rotation is computed from velocity, NOT authored per waypoint
-// X: −1.8 → +1.3 (avoids overlapping heading text on far right)
-// Y: −1.0 → +1.8 (within viewport height), Z: always 0
+// Waypoints — Z depth variation added for proper banking visibility
 const WAYPOINTS = [
-  { id: "REST",         pos: [-0.5,  0.30, 0], ts: 1.0, dur: 3.5 },
-  { id: "UPPER_RIGHT",  pos: [ 1.1,  1.35, 0], ts: 1.2, dur: 3.0 },
-  { id: "LOWER_RIGHT",  pos: [ 0.9, -0.75, 0], ts: 1.5, dur: 2.8 },
-  { id: "CENTER_LOW",   pos: [-0.2, -0.85, 0], ts: 1.3, dur: 2.5 },
-  { id: "LEFT_MID",     pos: [-1.6,  0.20, 0], ts: 1.0, dur: 3.0 },
-  { id: "UPPER_LEFT",   pos: [-1.4,  1.55, 0], ts: 0.9, dur: 2.8 },
-  { id: "CENTER_HIGH",  pos: [-0.3,  1.45, 0], ts: 0.8, dur: 3.0 },
-  { id: "RIGHT_MID",    pos: [ 1.2,  0.30, 0], ts: 1.4, dur: 2.5 },
-  { id: "DIVE_LOW",     pos: [ 0.1, -1.00, 0], ts: 1.8, dur: 2.0 },
-  { id: "RISE_HIGH",    pos: [-0.5,  1.80, 0], ts: 0.7, dur: 2.5 },
+  { id: "REST",         pos: [-0.5,  0.30,  0.0], ts: 1.0, dur: 3.5 },
+  { id: "UPPER_RIGHT",  pos: [ 1.1,  1.35, -0.3], ts: 1.2, dur: 3.0 },
+  { id: "LOWER_RIGHT",  pos: [ 0.9, -0.75,  0.2], ts: 1.6, dur: 2.8 },
+  { id: "CENTER_LOW",   pos: [-0.2, -0.90, -0.2], ts: 1.4, dur: 2.5 },
+  { id: "LEFT_MID",     pos: [-1.6,  0.20,  0.3], ts: 1.0, dur: 3.0 },
+  { id: "UPPER_LEFT",   pos: [-1.4,  1.55, -0.1], ts: 0.9, dur: 2.8 },
+  { id: "CENTER_HIGH",  pos: [-0.3,  1.50,  0.4], ts: 0.8, dur: 3.0 },
+  { id: "RIGHT_MID",    pos: [ 1.2,  0.30, -0.4], ts: 1.4, dur: 2.5 },
+  { id: "DIVE_LOW",     pos: [ 0.1, -1.05,  0.3], ts: 1.9, dur: 2.0 },
+  { id: "RISE_HIGH",    pos: [-0.5,  1.80, -0.2], ts: 0.7, dur: 2.5 },
 ];
+
+// All tunable values at the top — never hardcode inside logic
+const POS_LERP_RATE = 2.5; // position smoothing (× dt per frame)
+const ROT_SLERP     = 4.0; // quaternion slerp speed (higher = snappier rotation)
+const ARRIVE_DIST   = 0.09; // world units — relax when this close to target
+const BANK_MAX      = 0.65; // radians — max roll/banking angle
+const MOUSE_YAW     = 0.18; // radians — max mouse yaw contribution
+const MOUSE_PITCH   = 0.14; // radians — max mouse pitch contribution
+const FLOAT_AMP     = 0.07; // world units — idle bob amplitude
+const FLOAT_HZ      = 1.5; // Hz — idle bob frequency
+const MODEL_SIZE    = 2.8; // target world-unit bounding box size
 
 // ── Fire Embers ─────────────────────────────────────────────
 function FireEmbers({ trackRef }) {
@@ -93,33 +102,30 @@ function PhoenixModel({ url, mouse, pinkLightRef, blueLightRef }) {
   const { scene, animations } = useGLTF(url);
   const { actions, names }    = useAnimations(animations, animRef);
 
-  const wpIdx     = useRef(0);
-  const wpTimer   = useRef(0);
-  const firstLoop = useRef(true);
-  const ready     = useRef(false);
+  // ── Position tracking ─────────────────────────────────────────
+  const tPos = useRef(new THREE.Vector3(-0.5, 0.3, 0)); // smoothed current position
+  const nextWp = useRef(new THREE.Vector3(-0.5, 0.3, 0)); // active waypoint target
 
-  // BUG 1 & 2 FIX: Pre-allocate all THREE objects (zero allocations in useFrame)
-  const prevPos   = useRef(new THREE.Vector3(-0.5, 0.3, 0));
-  const tPos      = useRef(new THREE.Vector3(-0.5, 0.3, 0));
-  const velocity  = useRef(new THREE.Vector3());
-  const nextWpPos = useRef(new THREE.Vector3(-0.5, 0.3, 0));
+  // ── Direction vector ──────────────────────────────────────────
+  const toTarget = useRef(new THREE.Vector3()); // nextWp - tPos (recomputed each frame)
+  const _dir = useRef(new THREE.Vector3()); // normalized copy of toTarget (for lookAt)
 
-  // Target and current smoothed rotation values
-  const tYaw   = useRef(0);   // target Y rotation (from velocity)
-  const tPitch = useRef(0);   // target X rotation (from velocity)
-  const tRoll  = useRef(0);   // target Z rotation (banking)
-  const cYaw   = useRef(0);   // current smoothed Y rotation
-  const cPitch = useRef(0);   // current smoothed X rotation
-  const cRoll  = useRef(0);   // current smoothed Z rotation
+  // ── Quaternion rotation system ────────────────────────────────
+  const _lookMat = useRef(new THREE.Matrix4()); // temp matrix for lookAt computation
+  const _targetQ = useRef(new THREE.Quaternion()); // desired body orientation
+  const _bankQ = useRef(new THREE.Quaternion()); // banking (roll) rotation
+  const _mouseQ = useRef(new THREE.Quaternion()); // additive mouse look rotation
+  const _pitchQ = useRef(new THREE.Quaternion()); // pitch for mouse look
+  const _worldUp = useRef(new THREE.Vector3(0, 1, 0)); // immutable world up
+  const _origin = useRef(new THREE.Vector3(0, 0, 0)); // immutable origin for lookAt
+  const _bankAxis = useRef(new THREE.Vector3(0, 0, 1)); // Z axis for banking rotation
+  const _mouseAxisX = useRef(new THREE.Vector3(1, 0, 0)); // X axis for mouse pitch
+  const _mouseAxisY = useRef(new THREE.Vector3(0, 1, 0)); // Y axis for mouse yaw
 
-  // Tuning constants
-  const POS_LERP    = 1.4;   // position smoothing rate
-  const ROT_LERP    = 2.2;   // rotation smoothing rate (faster than position)
-  const YAW_SCALE   = 12.0;  // velocity.x → yaw conversion factor
-  const PITCH_SCALE = 8.0;   // velocity.y → pitch conversion factor
-  const ROLL_SCALE  = 9.0;   // velocity.x → roll (banking) conversion factor
-  const MOUSE_SCALE = 0.8;   // max mouse influence on yaw/pitch
-  const SPEED_DAMP  = 20.0;  // how fast speed suppresses mouse look
+  // ── Waypoint state ────────────────────────────────────────────
+  const wpIdx = useRef(0);
+  const wpTimer = useRef(0);
+  const ready = useRef(false);
 
   // Compute base scale once
   useEffect(() => {
@@ -128,7 +134,17 @@ function PhoenixModel({ url, mouse, pinkLightRef, blueLightRef }) {
     const size   = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
     const maxDim = Math.max(size.x, size.y, size.z);
-    if (modelRef.current) modelRef.current.scale.setScalar(2.2 / maxDim);
+    
+    if (modelRef.current) {
+      modelRef.current.scale.setScalar(MODEL_SIZE / maxDim);
+      
+      // MODEL_ROTATION_OFFSET:
+      // If the phoenix flies tail-first on all transitions -> apply Fix A:
+      // modelRef.current.rotation.y = Math.PI; 
+      // If the phoenix flies sideways -> apply Fix B:
+      // modelRef.current.rotation.y = Math.PI / 2; (or -Math.PI/2)
+    }
+    
     scene.position.copy(center.negate());
     ready.current = true;
   }, [scene]);
@@ -145,114 +161,117 @@ function PhoenixModel({ url, mouse, pinkLightRef, blueLightRef }) {
 
   useFrame((state, delta) => {
     if (!ready.current || !rootRef.current || !pivotRef.current) return;
+    const dt = Math.min(delta, 0.05); // cap at 50ms to prevent spiral after tab switch
 
-    // ── 0. Clamp delta to prevent spiral on tab-switch ──────────────
-    const dt = Math.min(delta, 0.05);
-
-    // ── 1. Advance waypoint timer ────────────────────────────────────
-    const wp = WAYPOINTS[wpIdx.current];
+    // ─── STEP 1: Advance waypoint timer ─────────────────────────────────────
     wpTimer.current += dt;
-
-    if (wpTimer.current >= wp.dur) {
+    if (wpTimer.current >= WAYPOINTS[wpIdx.current].dur) {
       wpTimer.current = 0;
-      wpIdx.current   = (wpIdx.current + 1) % WAYPOINTS.length;
-      // After first full loop, allow REST to play normally (no skip)
-      if (firstLoop.current && wpIdx.current === 0) {
-        firstLoop.current = false;
-      }
+      wpIdx.current = (wpIdx.current + 1) % WAYPOINTS.length;
     }
 
-    // ── 2. Set next waypoint target (zero allocation) ───────────────
-    nextWpPos.current.set(...WAYPOINTS[wpIdx.current].pos);
+    // ─── STEP 2: Lerp position toward active waypoint ───────────────────────
+    const { pos, ts } = WAYPOINTS[wpIdx.current];
+    nextWp.current.set(pos[0], pos[1], pos[2]);
+    const posLerp = Math.min(dt * POS_LERP_RATE, 1.0);
+    tPos.current.lerp(nextWp.current, posLerp);
 
-    // ── 3. Store previous position BEFORE lerp ──────────────────────
-    //    THIS IS THE CRITICAL FIX — velocity is computed from frame delta
-    prevPos.current.copy(tPos.current);
+    // ─── STEP 3: Compute direction to target ────────────────────────────────
+    // toTarget = vector from current position → next waypoint
+    // This is the direction the bird should face while en-route.
+    // Normalized: gives a unit vector with magnitude exactly 1.0 regardless of distance.
+    // This is WHY direction-based works: the rotation signal never decays.
+    toTarget.current.subVectors(nextWp.current, tPos.current);
+    const dist = toTarget.current.length();
 
-    // ── 4. Lerp position toward waypoint ────────────────────────────
-    const posLerp = Math.min(dt * POS_LERP, 1.0);
-    tPos.current.lerp(nextWpPos.current, posLerp);
-
-    // ── 5. Compute true velocity (frame displacement) ───────────────
-    velocity.current.subVectors(tPos.current, prevPos.current);
-    const speed = velocity.current.length();
-
-    // ── 6. Derive target rotations from velocity ─────────────────────
-    //
-    // YAW (Y-axis): phoenix turns left/right to face direction of travel
-    //   Moving right (+velocity.x) → nose turns right → negative Y rotation
-    //   (in Three.js, -Y rotation = clockwise from above = facing right screen)
-    //
-    // PITCH (X-axis): phoenix tilts nose up/down based on vertical velocity
-    //   Moving up (+velocity.y)   → nose tilts up   → negative X rotation
-    //   Moving down (-velocity.y) → nose tilts down → positive X rotation
-    //
-    // ROLL (Z-axis): banking into turns, like a real bird
-    //   Turning right (negative yaw) → right wing dips → positive Z roll
-    //   Turning left  (positive yaw) → left wing dips  → negative Z roll
-    //
-    if (speed > 0.0003) {
-      tYaw.current   = THREE.MathUtils.clamp(-velocity.current.x * YAW_SCALE,   -0.85, 0.85);
-      tPitch.current = THREE.MathUtils.clamp(-velocity.current.y * PITCH_SCALE, -0.45, 0.45);
-      tRoll.current  = THREE.MathUtils.clamp( velocity.current.x * ROLL_SCALE,  -0.55, 0.55);
+    // ─── STEP 4: Compute target quaternion from travel direction ─────────────
+    if (dist > ARRIVE_DIST) {
+      // Bird is en-route — derive full body orientation from direction of travel
+      
+      // 4a. Normalize direction into _dir (safe copy — does not mutate toTarget)
+      _dir.current.copy(toTarget.current).divideScalar(dist);
+      
+      // 4b. Build a rotation matrix: "look FROM origin, TOWARD _dir, UP = worldUp"
+      // Three.js Matrix4.lookAt makes the matrix's -Z axis point toward 'target'.
+      // Since three.js -Z is the default "forward", this correctly orients
+      // any object whose model faces -Z to look toward the travel direction.
+      _lookMat.current.lookAt(_origin.current, _dir.current, _worldUp.current);
+      
+      // 4c. Extract the quaternion from that rotation matrix.
+      // This quaternion represents "face the travel direction".
+      _targetQ.current.setFromRotationMatrix(_lookMat.current);
+      
+      // 4d. Apply banking (roll) — rotate around the LOCAL Z axis (forward axis).
+      // When flying RIGHT (positive _dir.x), the right wing dips → positive Z rotation.
+      // When flying LEFT (negative _dir.x), the left wing dips → negative Z rotation.
+      // _dir.x is already normalized (-1 to +1), so bankAngle is bounded.
+      const bankAngle = _dir.current.x * BANK_MAX;
+      _bankQ.current.setFromAxisAngle(_bankAxis.current, bankAngle);
+      
+      // Multiply: apply banking ON TOP of the look-direction quaternion.
+      // Quaternion multiplication order: A.multiply(B) = "apply B in A's local space"
+      // We want banking in the bird's LOCAL forward space, so this is correct.
+      _targetQ.current.multiply(_bankQ.current);
     } else {
-      // Phoenix is nearly stationary — relax to neutral
-      tYaw.current   *= 0.95;
-      tPitch.current *= 0.95;
-      tRoll.current  *= 0.95;
+      // Bird is near the waypoint — smoothly relax toward neutral (identity quaternion)
+      // Identity = no rotation = bird sits level, which also allows mouse look to dominate
+      _targetQ.current.set(0, 0, 0, 1); // identity quaternion
     }
 
-    // ── 7. Mouse look — weighted by inverse speed ────────────────────
-    //    When flying fast, the phoenix faces its direction of travel.
-    //    When hovering still, the phoenix looks at the cursor.
-    const mouseWeight = Math.max(0.0, 1.0 - speed * SPEED_DAMP);
-    const mY = (mouse.current.x * Math.PI) / 14 * mouseWeight * MOUSE_SCALE;
-    const mX = -(mouse.current.y * Math.PI) / 16 * mouseWeight * MOUSE_SCALE;
+    // ─── STEP 5: Mouse look — additive quaternion on top of body orientation ─
+    // Mouse look is applied as a SEPARATE quaternion multiplied AFTER the body quaternion.
+    // This way it adds a head-look on top of whatever the body is doing.
+    // Mouse influence fades during travel (dist > ARRIVE_DIST suppresses it).
+    const mouseWeight = THREE.MathUtils.clamp(1.0 - dist / 0.5, 0.0, 1.0);
+    if (mouseWeight > 0.01) {
+      const mYaw = -mouse.current.x * MOUSE_YAW * mouseWeight;
+      const mPitch = mouse.current.y * MOUSE_PITCH * mouseWeight;
+      
+      _mouseQ.current.setFromAxisAngle(_mouseAxisY.current, mYaw);
+      _pitchQ.current.setFromAxisAngle(_mouseAxisX.current, mPitch);
+      _mouseQ.current.multiply(_pitchQ.current);
+      
+      _targetQ.current.multiply(_mouseQ.current);
+    }
 
-    // ── 8. Smooth current rotations toward targets ──────────────────
-    const rotLerp = Math.min(dt * ROT_LERP, 1.0);
-    cYaw.current   += (tYaw.current   - cYaw.current)   * rotLerp;
-    cPitch.current += (tPitch.current - cPitch.current) * rotLerp;
-    cRoll.current  += (tRoll.current  - cRoll.current)  * rotLerp;
+    // ─── STEP 6: Slerp current quaternion toward target ─────────────────────
+    // This is the key smoothing step. Slerp travels the shortest arc on the unit
+    // quaternion sphere — meaning it picks the most natural rotation path.
+    // alpha = how fast to turn: 0 = never moves, 1 = instant snap
+    const slerpAlpha = Math.min(dt * ROT_SLERP, 1.0);
+    pivotRef.current.quaternion.slerp(_targetQ.current, slerpAlpha);
 
-    // ── 9. Apply rotation to pivot (physics + mouse additive) ────────
-    pivotRef.current.rotation.x = cPitch.current + mX;
-    pivotRef.current.rotation.y = cYaw.current   + mY;
-    pivotRef.current.rotation.z = cRoll.current;
-
-    // ── 10. Apply position + manual float to root ───────────────────
-    const floatY = Math.sin(state.clock.elapsedTime * 1.5) * 0.07;
+    // ─── STEP 7: Apply position + float bob to rootRef ──────────────────────
+    // Float bob is manual sin wave — NO <Float> component anywhere.
+    const floatY = Math.sin(state.clock.elapsedTime * FLOAT_HZ) * FLOAT_AMP;
     rootRef.current.position.set(
       tPos.current.x,
       tPos.current.y + floatY,
-      tPos.current.z,
+      tPos.current.z
     );
 
-    // ── 11. GLB clip timeScale ───────────────────────────────────────
-    const targetTs = WAYPOINTS[wpIdx.current].ts;
+    // ─── STEP 8: GLB clip timeScale based on waypoint ───────────────────────
     if (names.length > 0 && actions[names[0]]) {
       const clip = actions[names[0]];
-      clip.timeScale += (targetTs - clip.timeScale) * Math.min(dt * 3.0, 1.0);
+      clip.timeScale += (ts - clip.timeScale) * Math.min(dt * 3.0, 1.0);
     }
 
-    // ── 12. Light pulsing based on movement energy ───────────────────
+    // ─── STEP 9: Accent light pulsing ───────────────────────────────────────
     const pulse = 0.5 + 0.5 * Math.sin(state.clock.elapsedTime * 2.5);
-    const energyBoost = Math.min(speed * 80.0, 6.0); // fast motion = more fire glow
-    if (pinkLightRef?.current) {
-      pinkLightRef.current.intensity = 4 + pulse * 5 + energyBoost;
-    }
-    if (blueLightRef?.current) {
-      blueLightRef.current.intensity = 3 + (1 - pulse) * 5;
-    }
+    const travelGlow = THREE.MathUtils.clamp((dist / 2.0) * 8.0, 0, 7);
+    if (pinkLightRef?.current) pinkLightRef.current.intensity = 4 + pulse * 5 + travelGlow;
+    if (blueLightRef?.current) blueLightRef.current.intensity = 3 + (1 - pulse) * 5;
   });
 
   return (
     <>
       <FireEmbers trackRef={rootRef} />
       <group ref={rootRef}>
-        {/* No <Float> — manual float applied in useFrame to rootRef.position */}
+        {/* position: updated in useFrame */}
         <group ref={pivotRef}>
+          {/* rotation: quaternion slerp in useFrame */}
           <group ref={modelRef}>
+            {/* scale: set once in useEffect */}
             <group ref={animRef} dispose={null}>
               <primitive object={scene} />
             </group>
