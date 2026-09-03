@@ -85,7 +85,7 @@ export default function SkillsSection() {
   return (
     <section className="skills-section" ref={sectionRef}>
       <div className="skills-section__header container">
-        <span className="skills-section__subtitle">Expertise</span>
+        <span className="skills-section__subtitle">(EXPERTISE)</span>
         <h2 className="skills-section__title">I keep good skills.</h2>
       </div>
 
@@ -116,11 +116,12 @@ export default function SkillsSection() {
   );
 }
 
-function SkillCard({ skill, index }) {
+function SkillCard({ skill }) {
   return (
     <div className="skill-card">
-      <span className="skill-card__bg-number">{index.toString().padStart(2, '0')}</span>
-      <img src={skill.logoUrl} alt={skill.name} className="skill-card__logo" />
+      <div className="skill-card__logo-wrap">
+        <img src={skill.logoUrl} alt={skill.name} className="skill-card__logo" loading="lazy" />
+      </div>
       <h3 className="skill-card__name">{skill.name}</h3>
     </div>
   );

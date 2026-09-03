@@ -39,46 +39,50 @@
   grid-template-columns: 56px minmax(auto, max-content) minmax(0, 1fr) auto;
   align-items: center;
   gap: 24px;
-  padding: 28px 0;
+  padding: 18px 0;
   text-decoration: none;
   color: var(--color-text);
   cursor: none;
   position: relative;
-  transition: background 0.3s ease;
+  transition: opacity 0.3s ease;
   will-change: clip-path, opacity;
-  overflow: hidden;
 }
 
 .work__row::before {
   content: '';
   position: absolute;
-  inset: 0;
-  background: var(--color-text);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.45s cubic-bezier(0.76, 0, 0.24, 1);
+  inset: -2px -16px;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 12px;
+  transform: scaleY(0.9);
+  opacity: 0;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
   z-index: 0;
+  pointer-events: none;
 }
 
 .work__row:hover::before {
-  transform: scaleX(1);
+  transform: scaleY(1);
+  opacity: 1;
 }
 
 .work__row > * {
   position: relative;
   z-index: 1;
-  transition: color 0.35s ease;
+  transition: color 0.35s ease, transform 0.3s ease;
 }
 
-.work__row:hover .work__row-num,
+.work__row:hover .work__row-num {
+  color: var(--color-text);
+}
+
 .work__row:hover .work__row-title {
-  color: var(--color-bg);
+  transform: translateX(8px);
 }
 
 .work__row:hover .work__row-tags .pill-tag {
-  border-color: rgba(232, 232, 223, 0.55);
-  color: rgba(232, 232, 223, 0.9);
-  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(0, 0, 0, 0.2);
+  background: transparent;
 }
 
 /* Dimmed state when another row is hovered */
@@ -88,10 +92,11 @@
 
 /* Row elements */
 .work__row-num {
+  font-family: var(--font-mono);
   font-size: 13px;
-  color: var(--color-accent);
-  font-weight: 600;
-  letter-spacing: 0.05em;
+  color: var(--color-muted);
+  font-weight: 500;
+  letter-spacing: 0.08em;
   transition: color 0.35s ease;
   flex-shrink: 0;
 }
@@ -261,7 +266,7 @@
     display: none;
   }
 
-  /* Disable the sliding background wipe on touch – too heavy */
+  /* Disable the background hover on touch */
   .work__row::before {
     display: none;
   }

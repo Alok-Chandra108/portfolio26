@@ -31,13 +31,22 @@
   transition: border-radius 0.3s ease, border-color 0.3s ease, background-color 0.3s ease, width 0.3s ease, height 0.3s ease;
 }
 
+.cursor-ring.has-text {
+  mix-blend-mode: normal !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
 .cursor-text {
-  font-size: 7px;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
   font-weight: 700;
-  letter-spacing: 0.15em;
-  color: #000;
+  letter-spacing: 0.12em;
+  color: #0f0f1a;
   white-space: nowrap;
   pointer-events: none;
+  text-transform: uppercase;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 @media (max-width: 768px) {

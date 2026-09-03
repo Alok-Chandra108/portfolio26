@@ -21,16 +21,10 @@ const placeholderData = [
 export default function Experience({ preview = false }) {
   const [experiences, setExperiences] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeIndex, setActiveIndex] = useState(0);
+  
   const sectionRef = useRef(null);
+  const trackRef = useRef(null);
   const headingRef = useRef(null);
-  const lineRef = useRef(null);
-  // Pre-size itemsRef to avoid sparse arrays
-  const itemsRef = useRef([]);
-  const markerRef = useRef(null);
-
-  // Get contextSafe for use in animations
-  const { contextSafe } = useGSAP({ scope: sectionRef });
 
   useEffect(() => {
     experienceService.getExperience()
@@ -42,69 +36,60 @@ export default function Experience({ preview = false }) {
       .finally(() => setLoading(false));
   }, []);
 
-  /* ── Entrance Animations ─────────────────────────── */
+  /* ── Horizontal Scroll GSAP ────────────────────────── */
   useGSAP(() => {
-    if (loading || experiences.length === 0) return;
+    if (loading || experiences.length === 0 || !trackRef.current) return;
 
-    // Clear ref array at start of animation (not during render)
-    itemsRef.current.length = 0;
-
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: sectionRef.current,
-        start: 'top 80%',
-        invalidateOnRefresh: true,
+    // Entrance animation for heading
+    gsap.fromTo(headingRef.current,
+      { clipPath: 'inset(0 100% 0 0)', opacity: 1 },
+      { 
+        clipPath: 'inset(0 0% 0 0)', 
+        duration: 1.4, 
+        ease: 'expo.out',
+        scrollTrigger: {
+          trigger: sectionRef.current,
+          start: 'top 80%',
+        }
       }
+    );
+
+    // Desktop/Tablet: Horizontal Scroll Pin
+    let mm = gsap.matchMedia();
+
+    mm.add("(min-width: 1024px)", () => {
+      const track = trackRef.current;
+      
+      // Calculate how far to move left
+      // scrollWidth is total width of track, clientWidth is what's visible
+      const getScrollAmount = () => -(track.scrollWidth - window.innerWidth + 80); // 80px buffer
+
+      const tween = gsap.to(track, {
+        x: getScrollAmount,
+        ease: "none"
+      });
+
+      ScrollTrigger.create({
+        trigger: sectionRef.current,
+        start: "top top",
+        end: () => `+=${track.scrollWidth}`,
+        pin: true,
+        animation: tween,
+        scrub: 1,
+        invalidateOnRefresh: true,
+        anticipatePin: 1
+      });
+
+      return () => {
+        tween.kill();
+      };
     });
 
-    // Heading clip-path wipe
-    tl.fromTo(headingRef.current,
-      { clipPath: 'inset(0 100% 0 0)', opacity: 1 },
-      { clipPath: 'inset(0 0% 0 0)', duration: 1.4, ease: 'expo.out' }
-    );
-
-    // Stagger items from bottom - use filter(Boolean) to skip empty slots
-    tl.fromTo(itemsRef.current.filter(Boolean),
-      { y: 50, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.9, stagger: 0.12, ease: 'expo.out' },
-      '-=0.8'
-    );
-
-    // Progress line draw
-    if (lineRef.current) {
-      gsap.fromTo(lineRef.current,
-        { scaleY: 0 },
-        {
-          scaleY: 1,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: 'top 60%',
-            end: 'bottom 80%',
-            scrub: 1,
-            invalidateOnRefresh: true,
-          }
-        }
-      );
-    }
-
-    // Removed ScrollTrigger.refresh() - not needed in useGSAP
+    // We don't need to return mm.revert() manually in useGSAP as it cleans up
 
   }, { dependencies: [loading, experiences], scope: sectionRef });
 
-  /* ── Active marker animation ─────────────────────── */
-  useGSAP(() => {
-    if (!markerRef.current || experiences.length === 0) return;
-    const targetY = activeIndex * (100 / (experiences.length || 1));
-    gsap.to(markerRef.current, {
-      top: `${targetY}%`,
-      duration: 0.5,
-      ease: 'power3.inOut',
-    });
-  }, { dependencies: [activeIndex, experiences], scope: sectionRef });
-
   const displayData = preview ? experiences.slice(0, 3) : experiences;
-  const active = displayData[activeIndex] || {};
 
   if (loading) {
     return (
@@ -119,161 +104,64 @@ export default function Experience({ preview = false }) {
   }
 
   return (
-    <section className="experience section" ref={sectionRef}>
-      <div className="container">
+    <section className="experience" ref={sectionRef}>
+      
+      <div className="experience__sticky-header container">
+        <span className="experience__label mono-label">(EXPERIENCE)</span>
+        <h2 className="experience__heading" ref={headingRef}>
+          Professional Journey
+        </h2>
+      </div>
 
-        {/* Header */}
-        <div className="experience__header">
-          <div className="experience__header-left">
-            <span className="sub-label experience__label">(Experience)</span>
-            <h2 className="heading-section experience__heading" ref={headingRef}>
-              Professional<br />Journey
-            </h2>
-          </div>
-          <div className="experience__header-right">
-            <p className="experience__count mono-label">
-              {String(activeIndex + 1).padStart(2, '0')} / {String(displayData.length).padStart(2, '0')}
-            </p>
-          </div>
-        </div>
+      <div className="experience__scroll-wrapper">
+        <div className="experience__track" ref={trackRef}>
+          
+          {/* Intro padding block so first card isn't flush against screen edge immediately */}
+          <div className="experience__track-spacer"></div>
 
-        {/* Main Layout */}
-        <div className="experience__layout">
+          {displayData.map((exp, i) => (
+            <div key={exp.id} className="experience__panel">
+              <div className="experience__panel-inner">
+                
+                {/* Background Role Stroke Typography */}
+                <div className="experience__bg-role" aria-hidden="true">
+                  {exp.role}
+                </div>
 
-          {/* Left — Timeline Rail */}
-          <div className="experience__rail">
-            <div className="experience__rail-track">
-              <div className="experience__rail-progress" ref={lineRef} />
-              <div className="experience__rail-marker" ref={markerRef} />
-            </div>
-
-            <div className="experience__list">
-              {displayData.map((exp, i) => (
-                <button
-                  key={exp.id}
-                  className={`experience__item ${i === activeIndex ? 'experience__item--active' : ''}`}
-                  ref={el => { itemsRef.current[i] = el; }}
-                  onMouseEnter={() => setActiveIndex(i)}
-                  onClick={() => setActiveIndex(i)}
-                  aria-selected={i === activeIndex}
-                >
-                  <span className="experience__item-index mono-label">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <div className="experience__item-meta">
-                    <span className="experience__item-role">{exp.role}</span>
-                    <span className="experience__item-company">{exp.company}</span>
+                {/* Content Grid */}
+                <div className="experience__panel-content">
+                  <div className="experience__panel-meta">
+                    <span className="experience__panel-index mono-label">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span className="experience__panel-date mono-label">
+                      {exp.startDate} — {exp.isCurrent ? 'Present' : exp.endDate}
+                    </span>
                   </div>
-                  <span className="experience__item-arrow">→</span>
-                </button>
-              ))}
+                  
+                  <div className="experience__panel-main">
+                    <h3 className="experience__panel-company">{exp.company}</h3>
+                    <h4 className="experience__panel-role">{exp.role}</h4>
+                    {exp.description && (
+                      <p className="experience__panel-desc body-text">{exp.description}</p>
+                    )}
+                  </div>
+                </div>
+
+              </div>
             </div>
-          </div>
+          ))}
 
-          {/* Right — Detail Panel — Roulette Viewport */}
-          <div className="experience__panel">
-            <ExperiencePanel experiences={displayData} activeIndex={activeIndex} />
-          </div>
+          {/* Outro padding block */}
+          {preview && experiences.length > 3 && (
+            <div className="experience__track-cta">
+              <AnimatedButton to="/experience">View Full Journey</AnimatedButton>
+            </div>
+          )}
+          <div className="experience__track-spacer"></div>
+
         </div>
-
-        {/* CTA */}
-        {preview && experiences.length > 3 && (
-          <div className="experience__cta">
-            <AnimatedButton to="/experience">view full journey</AnimatedButton>
-          </div>
-        )}
-
       </div>
     </section>
-  );
-}
-
-/* ── Detail Panel — Vertical Roulette Reel ──────────── */
-function ExperiencePanel({ experiences, activeIndex }) {
-  const reelRef = useRef(null);
-  const containerRef = useRef(null);
-  const prevIndex = useRef(activeIndex);
-  const panelCardsRef = useRef([]);
-
-  // Get contextSafe for this component's scope
-  const { contextSafe } = useGSAP({ scope: reelRef });
-
-  useGSAP(() => {
-    if (!reelRef.current) return;
-    
-    // Cache panel cards on the fly to avoid stale refs during rapid index changes
-    panelCardsRef.current = Array.from(reelRef.current.querySelectorAll('.experience__panel-card'));
-
-    // Calculate direction: 1 for down (next), -1 for up (prev)
-    const direction = activeIndex > prevIndex.current ? 1 : -1;
-    prevIndex.current = activeIndex;
-
-    // Kill any existing tweens on the reel to prevent accumulation
-    gsap.killTweensOf(reelRef.current);
-
-    // Animate the reel to the active index
-    // Using yPercent for clean percentage-based movement
-    gsap.to(reelRef.current, {
-      yPercent: -activeIndex * 100,
-      duration: 0.75,
-      ease: 'expo.out', // Smooth "roulette" deceleration
-      overwrite: 'auto'
-    });
-
-    // Subtle parallax shift for internal content to enhance the "spin" feel
-    const innerContent = panelCardsRef.current;
-    innerContent.forEach((card, i) => {
-      if (i === activeIndex) {
-        const contentElements = card.querySelectorAll('.experience__panel-role, .experience__panel-desc');
-        gsap.fromTo(contentElements,
-          { y: direction * 20, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.6, delay: 0.1, stagger: 0.05, ease: 'power2.out' }
-        );
-      }
-    });
-
-  }, { dependencies: [activeIndex], scope: reelRef });
-
-  return (
-    <div className="experience__panel-viewport" ref={containerRef}>
-      <div className="experience__panel-reel" ref={reelRef}>
-        {experiences.map((exp, i) => (
-          <div key={exp.id} className="experience__panel-card">
-            {/* Company + Period */}
-            <div className="experience__panel-top">
-              <div>
-                <p className="experience__panel-company">{exp.company}</p>
-                <p className="experience__panel-period mono-label">
-                  {exp.startDate} — {exp.isCurrent ? 'Present' : exp.endDate}
-                  {exp.location && ` · ${exp.location}`}
-                </p>
-              </div>
-              {exp.isCurrent && (
-                <span className="experience__panel-badge">Current</span>
-              )}
-            </div>
-
-            {/* Role */}
-            <h3 className="experience__panel-role">{exp.role}</h3>
-
-            {/* Divider */}
-            <div className="experience__panel-divider" />
-
-            {/* Description */}
-            {exp.description && (
-              <p className="experience__panel-desc body-text">{exp.description}</p>
-            )}
-
-            {/* Corner accent */}
-            <div className="experience__panel-accent" aria-hidden="true">
-              <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0 100 L100 0" stroke="var(--color-accent)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
-                <path d="M20 100 L100 20" stroke="var(--color-accent)" strokeWidth="0.5" opacity="0.5" vectorEffect="non-scaling-stroke" />
-              </svg>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
   );
 }

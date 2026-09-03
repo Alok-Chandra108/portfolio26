@@ -66,7 +66,6 @@ export default function BookCard({ book, index, rotation = 0, onHover, onLeave }
       style={{ transform: `rotate(${rotation}deg)` }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      data-cursor="pointer"
     >
       <div className="book-card__cover">
         <img

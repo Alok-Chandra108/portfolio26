@@ -45,13 +45,6 @@
   gap: 10px;
 }
 
-.about__label::before {
-  content: '';
-  display: inline-block;
-  width: 24px;
-  height: 1px;
-  background: var(--color-accent);
-}
 
 .about__heading {
   font-family: var(--font-display);

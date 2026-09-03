@@ -106,7 +106,7 @@ export default function CustomCursor() {
     // Event Delegation for hover states
     const handleMouseOver = (e) => {
       const target = e.target;
-      const clickable = target.closest('a, button, .card, [data-cursor="pointer"], .clickable');
+      const clickable = target.closest('a, button, .card, [data-cursor], .clickable');
       const hideCursor = target.closest('[data-cursor="hide"], .navbar__logo');
       const textCursor = target.closest('p, h1, h2, h3, h4, h5, h6, span, li');
 
@@ -117,30 +117,37 @@ export default function CustomCursor() {
         
         let cursorText = '';
         if (clickable.hasAttribute('data-cursor')) {
-          cursorText = clickable.getAttribute('data-cursor').toUpperCase();
+          const attr = clickable.getAttribute('data-cursor').trim().toLowerCase();
+          if (attr && attr !== 'pointer' && attr !== 'default' && attr !== 'hide') {
+            cursorText = attr.toUpperCase();
+          }
         }
 
         if (cursorText && textEl) {
           textEl.innerText = cursorText;
-          gsap.to(textEl, { opacity: 1, scale: 1, duration: 0.3 });
+          ring.classList.add('has-text');
+          gsap.to(textEl, { opacity: 1, scale: 1, duration: 0.2 });
           gsap.to(ring, {
-            scale: 2.5,
-            backgroundColor: 'rgba(184, 255, 0, 0.9)',
+            scale: 2.2,
+            backgroundColor: '#b8ff00',
             borderColor: 'transparent',
-            duration: 0.3,
+            duration: 0.25,
             ease: 'power2.out',
           });
         } else {
+          ring.classList.remove('has-text');
+          gsap.to(textEl, { opacity: 0, scale: 0, duration: 0.15 });
           gsap.to(ring, {
-            scale: 1.8,
-            backgroundColor: 'rgba(184, 255, 0, 0.12)',
-            borderColor: 'rgba(184, 255, 0, 0.4)',
-            duration: 0.3,
+            scale: 1.6,
+            backgroundColor: 'rgba(184, 255, 0, 0.15)',
+            borderColor: 'rgba(184, 255, 0, 0.5)',
+            duration: 0.25,
             ease: 'power2.out',
           });
         }
-        gsap.to(dot, { opacity: 0, duration: 0.2 });
+        gsap.to(dot, { opacity: 0, duration: 0.15 });
       } else if (textCursor && !clickable) {
+        ring.classList.remove('has-text');
         gsap.to(ring, {
           scale: 1.2,
           borderColor: 'rgba(255, 255, 255, 0.3)',
@@ -151,22 +158,23 @@ export default function CustomCursor() {
 
     const handleMouseOut = (e) => {
       const target = e.target;
-      const clickable = target.closest('a, button, .card, [data-cursor="pointer"], .clickable');
+      const clickable = target.closest('a, button, .card, [data-cursor], .clickable');
       const hideCursor = target.closest('[data-cursor="hide"], .navbar__logo');
 
       if (clickable || hideCursor) {
         if (textEl) {
-          gsap.to(textEl, { opacity: 0, scale: 0, duration: 0.2 });
+          gsap.to(textEl, { opacity: 0, scale: 0, duration: 0.15 });
         }
+        ring.classList.remove('has-text');
         gsap.to(ring, {
           scale: 1,
           opacity: 1,
           backgroundColor: 'transparent',
           borderColor: 'var(--color-accent)',
-          duration: 0.3,
+          duration: 0.25,
           ease: 'power2.out',
         });
-        gsap.to(dot, { opacity: 1, scale: 1, duration: 0.2 });
+        gsap.to(dot, { opacity: 1, scale: 1, duration: 0.15 });
       }
     };
 
@@ -197,7 +205,7 @@ export default function CustomCursor() {
     <>
       <div className="cursor-dot" ref={dotRef} />
       <div className="cursor-ring" ref={ringRef}>
-        <span className="cursor-text mono-label" ref={textRef} style={{ fontSize: '6px', color: '#000' }}></span>
+        <span className="cursor-text" ref={textRef}></span>
       </div>
     </>
   );

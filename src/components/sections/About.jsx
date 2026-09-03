@@ -130,7 +130,7 @@ export default function About() {
     <section className="about section" ref={sectionRef}>
       <div className="container about__grid">
         <div className="about__text">
-          <span className="about__label">About me</span>
+          <span className="about__label mono-label">(ABOUT ME)</span>
           <h2 className="about__heading will-animate" ref={headingRef}>
             {aboutData.heading}
           </h2>
