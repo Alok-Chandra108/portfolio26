@@ -44,6 +44,19 @@
   right: 50%;
   margin-left: -50vw;
   margin-right: -50vw;
+  /* Fade edges for a premium feel */
+  -webkit-mask: linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%);
+          mask: linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%);
+  cursor: grab;
+}
+
+.skills-marquee-container:active {
+  cursor: grabbing;
+}
+
+/* Row 2 offset — was inline style */
+.skills-marquee-row-wrapper--offset {
+  margin-left: -20%;
 }
 
 .skills-marquee-row {
