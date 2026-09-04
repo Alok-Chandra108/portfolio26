@@ -133,7 +133,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav ref={navRef} className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
+      <nav ref={navRef} className={`navbar ${scrolled && !menuOpen ? 'navbar--scrolled' : ''} ${menuOpen ? 'navbar--menu-open' : ''}`}>
         <Link 
           to="/" 
           className="navbar__logo" 

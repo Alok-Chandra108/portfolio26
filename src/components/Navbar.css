@@ -251,6 +251,20 @@
   margin-bottom: 12px;
 }
 
+/* ── Menu Open State ─────────────────────────────── */
+/* Adjust child elements for dark background when menu is open */
+.navbar--menu-open .status-pulse__label {
+  color: #fff !important;
+}
+
+.navbar--menu-open .navbar__sound-toggle {
+  color: #fff !important;
+}
+
+.navbar--menu-open .navbar__menu-btn {
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
 /* ── Responsive ────────────────────────────────── */
 
 /* ── md phones (≤ 767px) ── */
