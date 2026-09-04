@@ -21,7 +21,7 @@ const placeholderData = [
 export default function Experience({ preview = false }) {
   const [experiences, setExperiences] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   const sectionRef = useRef(null);
   const trackRef = useRef(null);
   const headingRef = useRef(null);
@@ -43,9 +43,9 @@ export default function Experience({ preview = false }) {
     // Entrance animation for heading
     gsap.fromTo(headingRef.current,
       { clipPath: 'inset(0 100% 0 0)', opacity: 1 },
-      { 
-        clipPath: 'inset(0 0% 0 0)', 
-        duration: 1.4, 
+      {
+        clipPath: 'inset(0 0% 0 0)',
+        duration: 1.4,
         ease: 'expo.out',
         scrollTrigger: {
           trigger: sectionRef.current,
@@ -59,16 +59,13 @@ export default function Experience({ preview = false }) {
 
     mm.add("(min-width: 1024px)", () => {
       const track = trackRef.current;
-      
+
       // Calculate how far to move left
       const getScrollAmount = () => {
         const panels = gsap.utils.toArray('.experience__panel', track);
-        if (panels.length === 0) return 0;
-        
-        // Calculate amount to perfectly center the last panel on the screen
-        const lastPanel = panels[panels.length - 1];
-        const amount = lastPanel.offsetLeft + (lastPanel.offsetWidth / 2) - (window.innerWidth / 2);
-        
+        if (panels.length <= 1) return 0;
+        // Scroll exactly enough so the last panel ends up where the first panel started
+        const amount = panels[panels.length - 1].offsetLeft - panels[0].offsetLeft;
         return amount > 0 ? -amount : 0;
       };
 
@@ -82,11 +79,8 @@ export default function Experience({ preview = false }) {
         start: "top top",
         end: () => {
           const panels = gsap.utils.toArray('.experience__panel', track);
-          if (panels.length === 0) return "+=0";
-          
-          const lastPanel = panels[panels.length - 1];
-          const amount = lastPanel.offsetLeft + (lastPanel.offsetWidth / 2) - (window.innerWidth / 2);
-          
+          if (panels.length <= 1) return "+=0";
+          const amount = panels[panels.length - 1].offsetLeft - panels[0].offsetLeft;
           return `+=${amount > 0 ? amount : 0}`;
         },
         pin: true,
@@ -121,24 +115,19 @@ export default function Experience({ preview = false }) {
 
   return (
     <section className="experience" ref={sectionRef}>
-      
-      <div className="experience__sticky-header container">
-        <span className="experience__label mono-label">(EXPERIENCE)</span>
-        <h2 className="experience__heading" ref={headingRef}>
-          Professional Journey
-        </h2>
-      </div>
+
+
 
       <div className="experience__scroll-wrapper">
         <div className="experience__track" ref={trackRef}>
-          
+
           {/* Intro padding block so first card isn't flush against screen edge immediately */}
           <div className="experience__track-spacer"></div>
 
           {displayData.map((exp, i) => (
             <div key={exp.id} className="experience__panel">
               <div className="experience__panel-inner">
-                
+
                 {/* Background Role Stroke Typography */}
                 <div className="experience__bg-role" aria-hidden="true">
                   {exp.role}
@@ -154,7 +143,7 @@ export default function Experience({ preview = false }) {
                       {exp.startDate} — {exp.isCurrent ? 'Present' : exp.endDate}
                     </span>
                   </div>
-                  
+
                   <div className="experience__panel-main">
                     <h3 className="experience__panel-company">{exp.company}</h3>
                     <h4 className="experience__panel-role">{exp.role}</h4>

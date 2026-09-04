@@ -12,7 +12,7 @@
 /* ── Header (Normal Flow) ── */
 .experience__sticky-header {
   position: relative;
-  padding-top: 140px;
+  padding-top: 100px;
   flex-shrink: 0;
   z-index: 10;
   text-align: center;
