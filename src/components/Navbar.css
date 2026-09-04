@@ -154,6 +154,65 @@
   margin-left: 8px;
 }
 
+.navbar__sound-toggle {
+  position: relative;
+  background: transparent;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  color: var(--color-text);
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  margin-right: 8px;
+  transition: all 0.3s ease;
+}
+
+.navbar__sound-toggle:hover {
+  border-color: var(--color-text);
+  background: rgba(0, 0, 0, 0.04);
+  transform: scale(1.05);
+}
+
+.navbar--scrolled .navbar__sound-toggle {
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.navbar--menu-open .navbar__sound-toggle {
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #fff !important;
+}
+
+.navbar--menu-open .navbar__sound-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #fff;
+}
+
+.sound-toggle__tooltip {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: #0f0f0f;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 1010;
+}
+
+.navbar__sound-toggle:hover .sound-toggle__tooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
 /* ── Fullscreen Menu Overlay ─────────────────────── */
 .menu-overlay {
   position: fixed;
@@ -254,10 +313,6 @@
 /* ── Menu Open State ─────────────────────────────── */
 /* Adjust child elements for dark background when menu is open */
 .navbar--menu-open .status-pulse__label {
-  color: #fff !important;
-}
-
-.navbar--menu-open .navbar__sound-toggle {
   color: #fff !important;
 }
 
