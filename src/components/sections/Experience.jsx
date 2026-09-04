@@ -61,8 +61,16 @@ export default function Experience({ preview = false }) {
       const track = trackRef.current;
       
       // Calculate how far to move left
-      // scrollWidth is total width of track, clientWidth is what's visible
-      const getScrollAmount = () => -(track.scrollWidth - window.innerWidth + 80); // 80px buffer
+      const getScrollAmount = () => {
+        const panels = gsap.utils.toArray('.experience__panel', track);
+        if (panels.length === 0) return 0;
+        
+        // Calculate amount to perfectly center the last panel on the screen
+        const lastPanel = panels[panels.length - 1];
+        const amount = lastPanel.offsetLeft + (lastPanel.offsetWidth / 2) - (window.innerWidth / 2);
+        
+        return amount > 0 ? -amount : 0;
+      };
 
       const tween = gsap.to(track, {
         x: getScrollAmount,
@@ -72,10 +80,18 @@ export default function Experience({ preview = false }) {
       ScrollTrigger.create({
         trigger: sectionRef.current,
         start: "top top",
-        end: () => `+=${track.scrollWidth}`,
+        end: () => {
+          const panels = gsap.utils.toArray('.experience__panel', track);
+          if (panels.length === 0) return "+=0";
+          
+          const lastPanel = panels[panels.length - 1];
+          const amount = lastPanel.offsetLeft + (lastPanel.offsetWidth / 2) - (window.innerWidth / 2);
+          
+          return `+=${amount > 0 ? amount : 0}`;
+        },
         pin: true,
         animation: tween,
-        scrub: 1,
+        scrub: true,
         invalidateOnRefresh: true,
         anticipatePin: 1
       });
