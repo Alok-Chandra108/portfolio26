@@ -12,6 +12,7 @@ import { AuthProvider } from './context/AuthContext';
 import { AudioProvider } from './context/AudioContext.jsx';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import CommandPalette from './components/ui/CommandPalette.jsx';
+import ScrollToTop from './components/ScrollToTop.jsx';
 
 
 // List of known routes to check against
@@ -79,6 +80,7 @@ function AppContent() {
         <CustomCursor />
         <ErrorBoundary>
           <SmoothScroll>
+            <ScrollToTop />
             <Navbar />
             <main>
               <AnimatedRoutes />

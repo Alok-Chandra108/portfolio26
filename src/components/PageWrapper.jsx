@@ -60,9 +60,10 @@ const contentVariants = {
 export default function PageWrapper({ children }) {
   const lenis = useLenis();
 
-  // Scroll to top on navigation — Lenis driven, layout effect to avoid visual pops
   useLayoutEffect(() => {
     window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
     if (lenis) {
       lenis.scrollTo(0, { immediate: true, force: true });
     }
@@ -71,6 +72,10 @@ export default function PageWrapper({ children }) {
   // Refresh GSAP ScrollTrigger after the entrance transition finishes
   const handleTransitionComplete = (definition) => {
     if (definition === 'animate') {
+      window.scrollTo(0, 0);
+      if (lenis) {
+        lenis.scrollTo(0, { immediate: true, force: true });
+      }
       setTimeout(() => {
         ScrollTrigger.refresh();
       }, 100);
