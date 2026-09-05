@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { gsap, useGSAP, Flip, ScrollTrigger } from '../utils/gsapPlugins.js';
 import BookCard from '../components/ui/BookCard.jsx';
+import SEO from '../components/ui/SEO.jsx';
 import { db } from '../firebase/config';
 import { collection, getDocs } from 'firebase/firestore';
 import './AllReadsPage.css';
@@ -81,6 +82,10 @@ export default function AllReadsPage() {
 
   return (
     <div className="reads-page">
+      <SEO 
+        title="My Reads — Recommended Books & Catalog" 
+        description="Explore books, reading notes, recommendations, and literature curated by Alok Chandra across Tech, Product, Design, and Engineering leadership."
+      />
       <div className="container">
         <div className="reads-page__header">
           <h1 className="heading-hero">ALL MY READS</h1>

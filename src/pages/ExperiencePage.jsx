@@ -3,6 +3,7 @@ import { gsap, useGSAP } from '../utils/gsapPlugins.js';
 import { experienceService } from '../firebase/experienceService.js';
 import DownloadCV from '../components/ui/DownloadCV.jsx';
 import AnimatedButton from '../components/ui/AnimatedButton.jsx';
+import SEO from '../components/ui/SEO.jsx';
 import './ExperiencePage.css';
 
 const placeholderData = [
