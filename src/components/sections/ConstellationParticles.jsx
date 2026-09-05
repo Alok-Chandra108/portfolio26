@@ -2,10 +2,9 @@ import { useRef, useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export default function ConstellationParticles({ count = 800, isSoundEnabled = false }) {
+export default function ConstellationParticles({ count = 800 }) {
   const pointsRef = useRef();
   const { viewport } = useThree();
-  const mouse = useRef({ x: 0, y: 0 });
 
   // Generate initial particle positions, colors, and velocities
   const [positions, colors, initialPositions] = useMemo(() => {
@@ -51,29 +50,27 @@ export default function ConstellationParticles({ count = 800, isSoundEnabled = f
     const mouseX = (pointer.x * viewport.width) / 2;
     const mouseY = (pointer.y * viewport.height) / 2;
 
-    const audioBoost = isSoundEnabled ? Math.sin(time * 6) * 0.3 + 1.2 : 1;
-
     for (let i = 0; i < count; i++) {
       const i3 = i * 3;
       const initX = initialPositions[i3];
       const initY = initialPositions[i3 + 1];
       const initZ = initialPositions[i3 + 2];
 
-      // Subtle ambient drift
-      let currentX = initX + Math.sin(time * 0.5 + i) * 0.4 * audioBoost;
-      let currentY = initY + Math.cos(time * 0.6 + i * 0.5) * 0.4 * audioBoost;
-      let currentZ = initZ + Math.sin(time * 0.4 + i * 0.2) * 0.3;
+      // Smooth, natural ambient float
+      let currentX = initX + Math.sin(time * 0.4 + i) * 0.35;
+      let currentY = initY + Math.cos(time * 0.5 + i * 0.5) * 0.35;
+      let currentZ = initZ + Math.sin(time * 0.3 + i * 0.2) * 0.25;
 
-      // Mouse attraction / vortex distortion
+      // Mouse attraction / vortex interaction
       const dx = mouseX - currentX;
       const dy = mouseY - currentY;
       const dist = Math.sqrt(dx * dx + dy * dy);
 
       if (dist < 3.5) {
-        const force = (1 - dist / 3.5) * 0.8;
+        const force = (1 - dist / 3.5) * 0.7;
         currentX -= (dx / dist) * force;
         currentY -= (dy / dist) * force;
-        currentZ += force * 0.5;
+        currentZ += force * 0.4;
       }
 
       positionAttr.array[i3] = currentX;
@@ -82,7 +79,7 @@ export default function ConstellationParticles({ count = 800, isSoundEnabled = f
     }
 
     positionAttr.needsUpdate = true;
-    pointsRef.current.rotation.y = time * 0.02;
+    pointsRef.current.rotation.y = time * 0.015;
   });
 
   return (
@@ -98,10 +95,10 @@ export default function ConstellationParticles({ count = 800, isSoundEnabled = f
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.06}
+        size={0.065}
         vertexColors
         transparent
-        opacity={0.7}
+        opacity={0.65}
         sizeAttenuation
         depthWrite={false}
         blending={THREE.AdditiveBlending}
