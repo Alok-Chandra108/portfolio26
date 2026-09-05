@@ -115,8 +115,12 @@ export default function Experience({ preview = false }) {
 
   return (
     <section className="experience" ref={sectionRef}>
-
-
+      <div className="experience__sticky-header">
+        <span className="experience__label mono-label">(03) Experience</span>
+        <h2 className="experience__heading" ref={headingRef}>
+          EXPERIENCE
+        </h2>
+      </div>
 
       <div className="experience__scroll-wrapper">
         <div className="experience__track" ref={trackRef}>
