@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { gsap, useGSAP } from '../utils/gsapPlugins.js';
 import ProjectCard from '../components/ui/ProjectCard.jsx';
+import SEO from '../components/ui/SEO.jsx';
 import { projectsService } from '../firebase/projectsService';
 import './WorkPage.css';
 
@@ -51,6 +52,10 @@ export default function WorkPage() {
 
   return (
     <div className="work-page">
+      <SEO 
+        title="Selected Work — Portfolio Projects" 
+        description="Explore engineering projects, cloud architectures, and full-stack software applications developed by Alok Chandra."
+      />
       <div className="container">
         <div className="work-page__header">
           <h1 className="heading-hero">SELECTED WORK</h1>

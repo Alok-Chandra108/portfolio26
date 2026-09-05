@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { gsap, useGSAP } from '../utils/gsapPlugins.js';
 import AnimatedButton from '../components/ui/AnimatedButton.jsx';
+import SEO from '../components/ui/SEO.jsx';
 import { aboutService } from '../firebase/aboutService';
 import './AboutPage.css';
 
@@ -102,6 +103,10 @@ export default function AboutPage() {
 
   return (
     <div className="about-page">
+      <SEO 
+        title="About Me — Cloud & DevOps Engineer" 
+        description="Learn about Alok Chandra — Lead DevOps & Cloud Engineer specializing in AWS, Kubernetes, Terraform, CI/CD, and scalable system engineering."
+      />
       <div className="container">
         <div className="about-page__header" ref={headingRef}>
           <h1 className="heading-hero">ABOUT ME</h1>

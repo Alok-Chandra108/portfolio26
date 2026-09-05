@@ -86,6 +86,10 @@ export default function ExperiencePage() {
 
   return (
     <div className="experience-page brutal-ledger" ref={containerRef}>
+      <SEO 
+        title="Professional Experience | Alok Chandra" 
+        description="Comprehensive professional career record and experience archive of Alok Chandra across cloud platforms, DevOps automation, and infrastructure engineering."
+      />
       
       {/* Ledger Header */}
       <header className="ledger-header" ref={headerRef}>

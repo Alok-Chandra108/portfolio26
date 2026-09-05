@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { gsap, useGSAP } from '../utils/gsapPlugins.js';
 import AnimatedButton from '../components/ui/AnimatedButton.jsx';
 import Toast from '../components/ui/Toast.jsx';
+import SEO from '../components/ui/SEO.jsx';
 import { messagesService } from '../firebase/messagesService';
 import React, { Suspense, lazy } from 'react';
 import './ContactPage.css';
@@ -142,6 +143,10 @@ export default function ContactPage() {
 
   return (
     <div className="contact-page">
+      <SEO 
+        title="Contact — Let's Talk" 
+        description="Get in touch with Alok Chandra — Lead DevOps & Cloud Engineer for projects, cloud architecture consulting, infrastructure scaling, or collaborations."
+      />
       <Toast message={toast.message} type={toast.type} onClose={() => setToast({ message: '', type: 'info' })} />
       <div className="container">
         <div className="contact-page__header" ref={headingRef}>
