@@ -24,7 +24,7 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
   overflow: hidden;
-  box-shadow: 
+  box-shadow:
     0 4px 20px rgba(0, 0, 0, 0.05);
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
   will-change: transform, background, box-shadow;
@@ -36,7 +36,7 @@
   -webkit-backdrop-filter: blur(0);
   border-color: var(--color-accent);
   color: var(--color-text);
-  box-shadow: 
+  box-shadow:
     0 10px 40px rgba(184, 255, 0, 0.3),
     0 0 0 1px rgba(184, 255, 0, 0.1);
 }
@@ -50,12 +50,14 @@
   z-index: 1;
   pointer-events: none;
   overflow: hidden;
-  opacity: 0; /* Hidden initially */
+  opacity: 0;
+  /* Hidden initially */
   transition: opacity 0.4s ease;
 }
 
 .cv-button:hover .cv-button__bg-orbs {
-  opacity: 0; /* Still hidden on hover for the solid green look */
+  opacity: 0;
+  /* Still hidden on hover for the solid green look */
 }
 
 .cv-orb {
@@ -70,7 +72,8 @@
   left: 10%;
   width: 80px;
   height: 80px;
-  background: #ff8c00; /* Orange */
+  background: #ff8c00;
+  /* Orange */
   animation: orbFloat1 8s infinite alternate ease-in-out;
 }
 
@@ -79,7 +82,8 @@
   right: 15%;
   width: 100px;
   height: 100px;
-  background: #8b00ff; /* Purple */
+  background: #8b00ff;
+  /* Purple */
   animation: orbFloat2 10s infinite alternate ease-in-out;
 }
 
@@ -88,23 +92,39 @@
   right: -10%;
   width: 60px;
   height: 60px;
-  background: #ff00ea; /* Pink/Purple */
+  background: #ff00ea;
+  /* Pink/Purple */
   animation: orbFloat3 7s infinite alternate ease-in-out;
 }
 
 @keyframes orbFloat1 {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(30px, 15px) scale(1.2); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(30px, 15px) scale(1.2);
+  }
 }
 
 @keyframes orbFloat2 {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(-40px, -20px) scale(1.1); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(-40px, -20px) scale(1.1);
+  }
 }
 
 @keyframes orbFloat3 {
-  0% { transform: translate(0, 0) scale(1); }
-  100% { transform: translate(-20px, 30px) scale(1.3); }
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  100% {
+    transform: translate(-20px, 30px) scale(1.3);
+  }
 }
 
 .cv-button__text {
@@ -148,7 +168,7 @@
   .cv-button-container {
     margin: 30px 0 40px;
   }
-  
+
   .cv-button {
     padding: 14px 32px;
   }

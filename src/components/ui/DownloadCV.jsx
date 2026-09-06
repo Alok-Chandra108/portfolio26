@@ -1,14 +1,28 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { gsap } from '../../utils/gsapPlugins';
+import { useAudio } from '../../context/AudioContext.jsx';
+import { resumeService } from '../../firebase/resumeService';
 import './DownloadCV.css';
 
 export default function DownloadCV() {
   const buttonRef = useRef(null);
   const glowRef = useRef(null);
+  const { playHover, playClick } = useAudio();
+  const [resumeData, setResumeData] = useState(null);
+
+  useEffect(() => {
+    // Real-time synchronization with Firestore/Cloudinary
+    const unsubscribe = resumeService.subscribeToResume((data) => {
+      setResumeData(data);
+    });
+
+    return () => unsubscribe && unsubscribe();
+  }, []);
 
   useEffect(() => {
     const button = buttonRef.current;
     const glow = glowRef.current;
+    if (!button || !glow) return;
 
     const handleMouseMove = (e) => {
       const rect = button.getBoundingClientRect();
@@ -29,17 +43,27 @@ export default function DownloadCV() {
     return () => {
       button.removeEventListener('mousemove', handleMouseMove);
     };
-  }, []);
+  }, [resumeData?.resumeUrl]);
+
+  // If no resume is uploaded, return empty (render nothing)
+  if (!resumeData?.resumeUrl) {
+    return null;
+  }
+
+  const downloadUrl = resumeService.getAttachmentUrl(resumeData.resumeUrl);
+  const downloadFilename = resumeData.fileName || "Alok_Chandra_Resume.pdf";
 
   return (
     <div className="cv-button-container">
-      <button 
+      <a 
         ref={buttonRef} 
+        href={downloadUrl}
+        download={downloadFilename}
+        target="_blank"
+        rel="noopener noreferrer"
         className="cv-button"
-        onClick={() => {
-          // Placeholder for CV download logic
-          console.log('Downloading CV...');
-        }}
+        onMouseEnter={() => playHover && playHover()}
+        onClick={() => playClick && playClick()}
       >
         <div className="cv-button__bg-orbs">
           <div className="cv-orb cv-orb--1"></div>
@@ -49,7 +73,7 @@ export default function DownloadCV() {
         <div ref={glowRef} className="cv-button__glow"></div>
         <span className="cv-button__text">Download CV</span>
         <span className="cv-button__icon">↓</span>
-      </button>
+      </a>
     </div>
   );
 }

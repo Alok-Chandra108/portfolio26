@@ -76,6 +76,12 @@ const AdminDashboard = () => {
             <Link to="/admin/about" className="btn-manage" style={{ textDecoration: 'none' }}>Edit About</Link>
           </div>
 
+          <div className="admin-card">
+            <h3>Resume / CV</h3>
+            <p>Upload, update, or remove your downloadable PDF resume via Cloudinary.</p>
+            <Link to="/admin/resume" className="btn-manage" style={{ textDecoration: 'none' }}>Manage Resume</Link>
+          </div>
+
           <div className="admin-card status-card">
             <h3>Live Availability</h3>
             <p>Show visitors if you are open for new projects or currently deep in work.</p>
