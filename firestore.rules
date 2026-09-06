@@ -1,0 +1,99 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ============================================================================
+    // AUTHENTICATION & ROLE HELPERS
+    // ============================================================================
+
+    // Check if the request is originating from an authenticated user
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Portfolio administrator validation:
+    // In this single-tenant project, only the portfolio owner has credentials in Firebase Auth.
+    // To optionally lock down to an explicit UID or email, set:
+    // return isAuthenticated() && (request.auth.uid == "YOUR_FIREBASE_UID");
+    function isAdmin() {
+      return isAuthenticated();
+    }
+
+    // ============================================================================
+    // PUBLIC CONTENT COLLECTIONS (Read: Public, Write: Admin Only)
+    // ============================================================================
+
+    // Portfolio items & showcase projects
+    match /projects/{projectId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Career journey & timeline
+    match /experience/{experienceId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Technical capabilities & skill matrix
+    match /skills/{skillId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Real-time availability pulse (e.g. status/current)
+    match /status/{statusId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Cloudinary-backed resume document (e.g. resume/current)
+    match /resume/{resumeId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // About profile bio, avatar, and headline (e.g. about/current)
+    match /about/{aboutId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Reading library & book recommendations
+    match /reads/{readId} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ============================================================================
+    // CONTACT FORM & INBOX (Write: Public with Validation, Read/Manage: Admin Only)
+    // ============================================================================
+
+    match /messages/{messageId} {
+      // Only the authenticated admin can read, mark as read, or delete submissions
+      allow read, update, delete: if isAdmin();
+
+      // Visitors can submit messages with strict schema & size validation
+      allow create: if request.resource.data.name is string
+                    && request.resource.data.name.size() > 0
+                    && request.resource.data.name.size() <= 100
+                    && request.resource.data.email is string
+                    && request.resource.data.email.size() > 0
+                    && request.resource.data.email.size() <= 150
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() > 0
+                    && request.resource.data.message.size() <= 3000
+                    && request.resource.data.status == 'unread';
+    }
+
+    // ============================================================================
+    // DEFAULT DENY FALLTHROUGH
+    // ============================================================================
+
+    // Block any unspecified collections or sensitive paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -30,6 +30,7 @@ const VALID_ROUTES = [
   '/admin/reads', 
   '/admin/messages',
   '/admin/about',
+  '/admin/resume',
   '/experience'
 ];
 

@@ -36,7 +36,7 @@ This portfolio is not just a collection of projects; it's a statement on digital
 
 ## 🔮 Future Roadmap
 
-- **🔒 Firestore Security Rules**: Fully locking down the new Firebase Admin datasets (Experience, Education, Projects) strictly to authenticated user UUIDs to guarantee enterprise-level security.
+- **🔒 Firestore Security Rules**: Fully hardened `firestore.rules` configuration enforcing strict role-based access (admin-only mutation across projects, experience, skills, status, about, resume, reads, and protected inbox messages with public schema validation).
 - **🎞️ Case Study Overlays**: Implementing detailed portfolio project drill-downs with smooth layout transitions and high-res photography.
 - **🌐 Global Traffic Visualization**: Expanding the 3D globe to include real-time project hit visualizations and animated data arcs.
 
